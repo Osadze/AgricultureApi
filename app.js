@@ -1,30 +1,27 @@
 require("dotenv").config();
 const cors = require("cors");
 
-const express = require('express');
+const express = require("express");
+const sequelize = require("./util/database");
 const app = express();
 
-const response = ["erti", "ori", "sami"]
 
 app.use(cors());
 
+const agroRouter = require('./routes/agriculture')
 
-app.get('/', (req, res) => {
-  res.json({response});
-});
+app.use("/api/v1/", agroRouter);
 
 
 const port = process.env.PORT || 3001;
 
-const start = async () => {
-  try {
-    // await connectDB(process.env.MONGO_URI);
-    app.listen(port, () =>
-      console.log(`========= Server is listening on port ${port} =========`)
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
+sequelize
+  .sync()
+  .then((result) => {
+    app.listen(port);
+    console.log(`=========== Server Is Running On Port ${port} =============`)
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-start();

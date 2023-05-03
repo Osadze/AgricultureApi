@@ -23,7 +23,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "sequelize": "^6.31.0"
+    "mysql2": "^3.2.4",
+    "sequelize": "^6.31.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
