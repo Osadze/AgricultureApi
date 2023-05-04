@@ -1,8 +1,15 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
+const Section = require('./sectionCL')
+const Indicator = require('./indicatorCL')
+const Region = require('./regionCL')
+const Species = require('./speciesCL')
+const Species_1 = require('./species_1CL')
+const Unit = require('./unitCL')
+
 
 const Agriculture = sequelize.define(
-  "agriculture",
+  "main",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -13,37 +20,22 @@ const Agriculture = sequelize.define(
     section: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[1, 2, 3, 4]],
-      },
     },
     indicator: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[11, 12, 13, 14]],
-      },
     },
     unit: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[1, 2, 3, 4]],
-      },
     },
     species: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[10, 11, 12, 13]],
-      },
     },
     species_1: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[4101, 4102, 4103, 4104]],
-      },
     },
     period: {
       type: DataTypes.INTEGER,
@@ -62,9 +54,16 @@ const Agriculture = sequelize.define(
     },
   },
   {
-    tableName: "Main",
+    tableName: "main",
     timestamps: false,
   }
 );
+
+Agriculture.belongsTo(Section, { foreignKey: 'section'});
+Agriculture.belongsTo(Indicator, { foreignKey: 'indicator'});
+Agriculture.belongsTo(Unit, { foreignKey: 'unit'});
+Agriculture.belongsTo(Species, { foreignKey: 'species'});
+Agriculture.belongsTo(Species_1, { foreignKey: 'species_1'});
+Agriculture.belongsTo(Region, { foreignKey: 'region'});
 
 module.exports = Agriculture;
