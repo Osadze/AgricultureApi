@@ -17,7 +17,7 @@ const getAgriculture = async (req, res) => {
   }
 };
 
-const getPlantText = async (req, res) => {
+const getVegetationText = async (req, res) => {
   try {
     const sectionId = 1;
 
@@ -43,16 +43,23 @@ const getPlantText = async (req, res) => {
     }, {});
 
     // Map species to include children property
-    const speciesWithChildren = speciesByParentId["null"].map(
-        (parentSpecies) => {
-          // Create a copy of the dataValues object without the _previousDataValues property
-          const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-          return {
-            ...dataValues,
-            childrens: speciesByParentId[parentSpecies.code] || [],
-          };
+    const speciesWithChildren = speciesByParentId["null"].reduce(
+      (acc, parentSpecies) => {
+        // Create a copy of the dataValues object without the _previousDataValues property
+        const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
+        const species = {
+          ...dataValues,
+          childrens: speciesByParentId[parentSpecies.code] || [],
+        };
+        if (species.code < 21) {
+          acc.species1.push(species);
+        } else {
+          acc.species2.push(species);
         }
-      );
+        return acc;
+      },
+      { species1: [], species2: [] }
+    );
 
     const years = await Agriculture.findAll({
       attributes: [
@@ -67,7 +74,12 @@ const getPlantText = async (req, res) => {
       order: [["code", "ASC"]],
     });
 
-    res.json({ species: speciesWithChildren, years, regions });
+    res.json({
+      species1: speciesWithChildren.species1,
+      species2: speciesWithChildren.species2,
+      years,
+      regions,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
@@ -76,5 +88,5 @@ const getPlantText = async (req, res) => {
 
 module.exports = {
   getAgriculture,
-  getPlantText,
+  getVegetationText,
 };

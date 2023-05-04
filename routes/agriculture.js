@@ -2,9 +2,9 @@ const express = require('express')
 
 
 const router = express.Router();
-const {getAgriculture,getPlantText} = require("../controllers/agriculture")
+const {getAgriculture , getVegetationText} = require("../controllers/agriculture")
 
 router.route('/agriculture').get(getAgriculture)
-router.route('/plants/text').get(getPlantText)
+router.route('/vegetations/text').get(getVegetationText)
 
 module.exports = router;
