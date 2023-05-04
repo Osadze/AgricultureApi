@@ -6,6 +6,7 @@ const Species = require("../models/speciesCL");
 const Species_1 = require("../models/species_1CL");
 const Unit = require("../models/unitCL");
 const { Sequelize } = require("sequelize");
+const indicator = require("../models/indicatorCL");
 
 const getAgriculture = async (req, res) => {
   try {
@@ -17,7 +18,7 @@ const getAgriculture = async (req, res) => {
   }
 };
 
-const getVegetationText = async (req, res) => {
+const getVegetationsText = async (req, res) => {
   try {
     const sectionId = 1;
 
@@ -62,9 +63,7 @@ const getVegetationText = async (req, res) => {
     );
 
     const years = await Agriculture.findAll({
-      attributes: [
-        [Sequelize.fn("DISTINCT", Sequelize.col("period")), "period"],
-      ],
+      attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("period")), "name"]],
       where: { section: sectionId },
       order: [["period", "ASC"]],
     });
@@ -86,7 +85,59 @@ const getVegetationText = async (req, res) => {
   }
 };
 
+const getVegetations = async (req, res) => {
+  let { indicator, period, species, region } = req.query;
+
+  const query = {};
+
+  if (indicator) {
+    query.indicator = indicator;
+  } else {
+    indicator = 1;
+  }
+  if (period) {
+    query.period = period;
+  } else {
+    const maxYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+    });
+    period = maxYearResult.dataValues.maxPeriod - 1;
+    query.period = period;
+  }
+  //   console.log(query.year);
+
+  if (species) {
+    query.species = species;
+  }
+
+  if (region) {
+    query.region = region;
+  } else {
+    region = 1;
+  }
+
+  try {
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ['id', 'value'],
+      include: [
+        { model: Unit, attributes: ['name', 'code'] },
+      ],
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+  
+
+
+
+
 module.exports = {
   getAgriculture,
-  getVegetationText,
+  getVegetationsText,
+  getVegetations,
 };

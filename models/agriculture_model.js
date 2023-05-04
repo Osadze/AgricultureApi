@@ -49,7 +49,7 @@ const Agriculture = sequelize.define(
       },
     },
     value: {
-      type: DataTypes.DECIMAL(3, 1),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
