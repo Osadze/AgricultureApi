@@ -5,7 +5,7 @@ const Region = sequelize.define("cl_region", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    autoIncrement: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   nameKa: {

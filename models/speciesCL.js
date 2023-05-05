@@ -5,7 +5,7 @@ const Species = sequelize.define("cl_species", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    autoIncrement: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   nameKa: {

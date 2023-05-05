@@ -5,7 +5,7 @@ const Unit = sequelize.define("cl_unit", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    autoIncrement: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   nameKa: {

@@ -1,30 +1,25 @@
 const Agriculture = require("../models/agriculture_model");
-const Section = require("../models/sectionCL");
-const Indicator = require("../models/indicatorCL");
 const Region = require("../models/regionCL");
 const Species = require("../models/speciesCL");
-const Species_1 = require("../models/species_1CL");
 const Unit = require("../models/unitCL");
 const { Sequelize } = require("sequelize");
-const indicator = require("../models/indicatorCL");
 
-const getAgriculture = async (req, res) => {
-  try {
-    const data = await Agriculture.findAll();
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
+const getAgricultureText = async (req, res) => {
+  let { section } = req.query;
+
+  const query = {};
+
+  if (!section) {
+    res.status(400).send("Missing section parameter");
+    return;
+  } else {
+    query.section = section;
   }
-};
 
-const getVegetationsText = async (req, res) => {
   try {
-    const sectionId = 1;
-
     const species = await Agriculture.aggregate("species", "DISTINCT", {
       plain: false,
-      where: { section: sectionId },
+      where: query,
     });
 
     const speciesCodesAndNames = await Species.findAll({
@@ -52,19 +47,21 @@ const getVegetationsText = async (req, res) => {
           ...dataValues,
           childrens: speciesByParentId[parentSpecies.code] || [],
         };
-        if (species.code < 21) {
+        // If section = 1 , vegetation, then split it into two arrays
+        // vegetatins with code under 21 are Annual crops and 21 or more than 21 Perennial cultivars
+        if (section == 1 && species.code < 21) {
           acc.species1.push(species);
         } else {
-          acc.species2.push(species);
+          acc.species.push(species);
         }
         return acc;
       },
-      { species1: [], species2: [] }
+      { species: [], species1: [] }
     );
 
     const years = await Agriculture.findAll({
       attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("period")), "name"]],
-      where: { section: sectionId },
+      where: query,
       order: [["period", "ASC"]],
     });
 
@@ -73,19 +70,29 @@ const getVegetationsText = async (req, res) => {
       order: [["code", "ASC"]],
     });
 
-    res.json({
-      species1: speciesWithChildren.species1,
-      species2: speciesWithChildren.species2,
-      years,
-      regions,
-    });
+    if (section == 1) {
+      res.json({
+        species1: speciesWithChildren.species1,
+        species2: speciesWithChildren.species,
+        years,
+        regions,
+      });
+    } else {
+      res.json({
+        species1: speciesWithChildren.species,
+        years,
+        regions,
+      });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
+    
   }
 };
 
-const getVegetations = async (req, res) => {
+
+const getAgricultures = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
   const query = {};
@@ -119,25 +126,21 @@ const getVegetations = async (req, res) => {
   try {
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ['id', 'value'],
+      attributes: ["id", "value"],
       include: [
-        { model: Unit, attributes: ['name', 'code'] },
+        { model: Species, attributes: ["name", "code"] },
+        { model: Unit, attributes: ["name", "code"] },
       ],
     });
 
     res.json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
-  
-
-
-
 
 module.exports = {
-  getAgriculture,
-  getVegetationsText,
-  getVegetations,
+  getAgricultureText,
+  getAgricultures,
 };

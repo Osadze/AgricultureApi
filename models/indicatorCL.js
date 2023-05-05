@@ -5,7 +5,7 @@ const indicator = sequelize.define("cl_indicator", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    autoIncrement: false,
+    autoIncrement: true,
     primaryKey: true,
   },
   nameKa: {
