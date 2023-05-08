@@ -2,7 +2,7 @@ const Agriculture = require("../models/agriculture_model");
 const Region = require("../models/regionCL");
 const Species = require("../models/speciesCL");
 const Unit = require("../models/unitCL");
-const { Sequelize } = require("sequelize");
+const { Sequelize, Op } = require("sequelize");
 
 const getAgricultureText = async (req, res) => {
   let { section } = req.query;
@@ -87,13 +87,16 @@ const getAgricultureText = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
-    
   }
 };
 
-
 const getAgricultures = async (req, res) => {
   let { indicator, period, species, region } = req.query;
+
+  console.log("indicator:", indicator);
+  console.log("period:", period);
+  console.log("species:", species);
+  console.log("region:", region);
 
   const query = {};
 
@@ -102,8 +105,12 @@ const getAgricultures = async (req, res) => {
   } else {
     indicator = 1;
   }
+
   if (period) {
-    query.period = period;
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
   } else {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
@@ -111,14 +118,19 @@ const getAgricultures = async (req, res) => {
     period = maxYearResult.dataValues.maxPeriod - 1;
     query.period = period;
   }
-  //   console.log(query.year);
 
   if (species) {
-    query.species = species;
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
   }
 
   if (region) {
-    query.region = region;
+    const regionArray = String(region).split(",");
+    query.region = {
+      [Op.in]: regionArray,
+    };
   } else {
     region = 1;
   }
@@ -130,6 +142,7 @@ const getAgricultures = async (req, res) => {
       include: [
         { model: Species, attributes: ["name", "code"] },
         { model: Unit, attributes: ["name", "code"] },
+        { model: Region, attributes: ["name", "code"] },
       ],
     });
 
