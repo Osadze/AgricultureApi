@@ -126,7 +126,7 @@ const getAgricultures = async (req, res) => {
   try {
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ["id", "value"],
+      attributes: ["id", "value", "period"],
       include: [
         { model: Species, attributes: ["name", "code"] },
         { model: Unit, attributes: ["name", "code"] },
