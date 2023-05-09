@@ -9,8 +9,11 @@ const app = express();
 app.use(cors());
 
 const agroRouter = require('./routes/agriculture')
+const agroRouterV2 = require('./routes/agricultureV2')
+
 
 app.use("/api/v1/", agroRouter);
+app.use("/api/v2/", agroRouterV2);
 
 
 const port = process.env.PORT || 3001;
