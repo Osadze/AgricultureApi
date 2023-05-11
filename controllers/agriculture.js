@@ -5,8 +5,17 @@ const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/database")
 
+
+const getMainStats = async (req, res) => {
+  res.json("yo")
+}
+
+
+
+
 const getAgricultureText = async (req, res) => {
-  let { section } = req.query;
+  let { section, indicator } = req.query;
+
 
   const query = {};
 
@@ -15,6 +24,13 @@ const getAgricultureText = async (req, res) => {
     return;
   } else {
     query.section = section;
+  }
+
+  if (!indicator) {
+    res.status(400).send("Missing indicator parameter");
+    return;
+  } else {
+    query.indicator = indicator;
   }
 
   try {
@@ -94,6 +110,11 @@ const getAgricultureText = async (req, res) => {
 const getAgricultures = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
+  console.log("indicator:", indicator);
+  console.log("period:", period);
+  console.log("species:", species);
+  console.log("region:", region);
+
   const query = {};
 
   if (indicator) {
@@ -136,7 +157,7 @@ const getAgricultures = async (req, res) => {
       where: query,
       attributes: ["id", "value", "period"],
       include: [
-        {Species, attributes: ["name", "code"] },
+        { model: Species, attributes: ["name", "code"] },
         { model: Unit, attributes: ["name", "code"] },
         { model: Region, attributes: ["name", "code"] },
       ],
@@ -261,6 +282,7 @@ const agricultureV1_1 = async (req, res) => {
 
 
 module.exports = {
+  getMainStats,
   getAgricultureText,
   getAgricultures,
   agricultureV1_1
