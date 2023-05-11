@@ -3,6 +3,7 @@ const Region = require("../models/regionCL");
 const Species = require("../models/speciesCL");
 const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
+const sequelize = require("../util/database")
 
 const getAgricultureText = async (req, res) => {
   let { section } = req.query;
@@ -93,11 +94,6 @@ const getAgricultureText = async (req, res) => {
 const getAgricultures = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
-  console.log("indicator:", indicator);
-  console.log("period:", period);
-  console.log("species:", species);
-  console.log("region:", region);
-
   const query = {};
 
   if (indicator) {
@@ -140,7 +136,7 @@ const getAgricultures = async (req, res) => {
       where: query,
       attributes: ["id", "value", "period"],
       include: [
-        { model: Species, attributes: ["name", "code"] },
+        {Species, attributes: ["name", "code"] },
         { model: Unit, attributes: ["name", "code"] },
         { model: Region, attributes: ["name", "code"] },
       ],
@@ -152,13 +148,11 @@ const getAgricultures = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-const getAgriculturesV2 = async (req, res) => {
+
+const agricultureV1_1 = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
-  console.log("indicator:", indicator);
-  console.log("period:", period);
-  console.log("species:", species);
-  console.log("region:", region);
+
 
   const query = {};
 
@@ -177,8 +171,7 @@ const getAgriculturesV2 = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    period = maxYearResult.dataValues.maxPeriod - 1;
-    query.period = period;
+    query.period  = maxYearResult.dataValues.maxPeriod - 1;
   }
 
   if (species) {
@@ -200,54 +193,75 @@ const getAgriculturesV2 = async (req, res) => {
   try {
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ["id", "value", "period", "species"],
-      order: [["period", "ASC"], ["species", "ASC"]],
+      attributes: ["id", "value", "period", "species", "region"],
+      include: [
+        { model: Species, attributes: ["name", "code"] },
+        { model: Unit, attributes: ["name", "code"] },
+        { model: Region, attributes: ["name", "code"] },
+      ],
+      order: [["period", "ASC"], ["species", "ASC"], ["region", "ASC"]],
     });
 
-    const speciesByYear = {};
+
+    const speciesByYearAndRegion = {};
+    
 
     result.forEach(agriculture => {
       const year = agriculture.period;
       const speciesId = agriculture.species;
       const speciesValue = agriculture.value;
+      const regionId = agriculture.region;
 
-      if (!speciesByYear[year]) {
-        speciesByYear[year] = {};
+      if (!speciesByYearAndRegion[year]) {
+        speciesByYearAndRegion[year] = {};
       }
 
-      if (!speciesByYear[year][speciesId]) {
-        speciesByYear[year][speciesId] = [];
+      if (!speciesByYearAndRegion[year][regionId]) {
+        speciesByYearAndRegion[year][regionId] = {};
       }
 
-      speciesByYear[year][speciesId].push(speciesValue);
+      if (!speciesByYearAndRegion[year][regionId][speciesId]) {
+        speciesByYearAndRegion[year][regionId][speciesId] = [];
+      }
+
+
+
+      speciesByYearAndRegion[year][regionId][speciesId] = parseFloat(speciesValue) ;
     });
 
-    const speciesByYearArray = [];
+    const speciesByYearAndRegionArray = [];
 
     for (let year = 2015; year <= 2021; year++) {
-      if (speciesByYear[year]) {
-        const speciesObjects = [];
+      if (speciesByYearAndRegion[year]) {
+        const regionsArray = Object.keys(speciesByYearAndRegion[year]);
 
-        Object.keys(speciesByYear[year]).forEach(speciesId => {
-          const speciesValues = speciesByYear[year][speciesId];
-          const averageValue = speciesValues.reduce((total, value) => total + value, 0) / speciesValues.length;
+        const speciesObjectsArray = regionsArray.map(regionId => {
+          const speciesObjects = [];
 
-          speciesObjects.push({ speciesId: speciesId, value: averageValue });
+          Object.keys(speciesByYearAndRegion[year][regionId]).forEach(speciesId => {
+            const speciesValues = speciesByYearAndRegion[year][regionId][speciesId];
+            // const speciesValue = speciesValues.reduce((a, b) => a + b, 0);
+            speciesObjects.push({ speciesId: speciesId,  value: speciesValues });
+          });
+
+          return { region: regionId, species: speciesObjects };
         });
 
-        speciesByYearArray.push({ year: year, species: speciesObjects });
+        speciesByYearAndRegionArray.push({ year: year, values: speciesObjectsArray });
       }
     }
 
-    res.json(speciesByYearArray);
+
+    res.json(speciesByYearAndRegionArray);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+
 module.exports = {
   getAgricultureText,
   getAgricultures,
-  getAgriculturesV2
+  agricultureV1_1
 };

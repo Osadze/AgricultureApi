@@ -8,7 +8,7 @@ const Species = sequelize.define("cl_species", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nameKa: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
