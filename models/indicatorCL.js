@@ -8,7 +8,7 @@ const indicator = sequelize.define("cl_indicator", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nameKa: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },

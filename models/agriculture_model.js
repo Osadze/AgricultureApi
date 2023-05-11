@@ -44,9 +44,6 @@ const Agriculture = sequelize.define(
     region: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        isIn: [[1, 11, 15, 23]],
-      },
     },
     value: {
       type: DataTypes.INTEGER,

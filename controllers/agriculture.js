@@ -3,19 +3,85 @@ const Region = require("../models/regionCL");
 const Species = require("../models/speciesCL");
 const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
-const sequelize = require("../util/database")
-
+const sequelize = require("../util/database");
 
 const getMainStats = async (req, res) => {
-  res.json("yo")
-}
+  const firstSlide = {};
 
+  const defaultRegion = 1;
+
+  const maxYearResult = await Agriculture.findOne({
+    attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+  });
+
+  const lastYear = maxYearResult.dataValues.maxPeriod;
+
+  firstSlide.region = defaultRegion;
+  firstSlide.period = lastYear;
+  firstSlide.species = [
+    10, 13, 16, 17, 30, 32, 35, 3801, 26, 39, 40, 42, 2901, 2902, 2903, 2904,
+  ];
+  firstSlide.indicator = [12, 21, 31, 43];
+
+  try {
+    const result = await Agriculture.findAll({
+      where: firstSlide,
+      attributes: ["value", "indicator", "species"],
+      include: [
+        { model: Species, attributes: ["name"] },
+        { model: Unit, attributes: ["name"] },
+      ],
+    });
+
+    const filteredResult = result.reduce(
+      (obj, item) => {
+        switch (item.indicator) {
+          case 12:
+            if (item.species != 26)
+            obj.firstSlide.push({
+              value: item.value,
+              name: item.cl_specy.name,
+              unit: item.cl_unit.name,
+            });
+            break;
+          case 21:
+            obj.secondSlide.push({
+              value: item.value,
+              name: item.cl_specy.name,
+              unit: item.cl_unit.name,
+            });
+            break;
+          case 31:
+            obj.thirdSlide.push({
+              value: item.value,
+              name: item.cl_specy.name,
+              unit: item.cl_unit.name,
+            });
+            break;
+          case 43:
+            obj.fourthSlide.push({
+              value: item.value,
+              name: item.cl_specy.name,
+              unit: item.cl_unit.name,
+            });
+            break;
+        }
+        return obj;
+      },
+      { firstSlide: [], secondSlide: [], thirdSlide: [], fourthSlide: [] }
+    );
+
+    res.json(filteredResult);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
 
 
 
 const getAgricultureText = async (req, res) => {
   let { section, indicator } = req.query;
-
 
   const query = {};
 
@@ -110,11 +176,6 @@ const getAgricultureText = async (req, res) => {
 const getAgricultures = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
-  console.log("indicator:", indicator);
-  console.log("period:", period);
-  console.log("species:", species);
-  console.log("region:", region);
-
   const query = {};
 
   if (indicator) {
@@ -132,7 +193,7 @@ const getAgricultures = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    period = maxYearResult.dataValues.maxPeriod - 1;
+    period = maxYearResult.dataValues.maxPeriod;
     query.period = period;
   }
 
@@ -173,8 +234,6 @@ const getAgricultures = async (req, res) => {
 const agricultureV1_1 = async (req, res) => {
   let { indicator, period, species, region } = req.query;
 
-
-
   const query = {};
 
   if (indicator) {
@@ -192,7 +251,7 @@ const agricultureV1_1 = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    query.period  = maxYearResult.dataValues.maxPeriod - 1;
+    query.period = maxYearResult.dataValues.maxPeriod;
   }
 
   if (species) {
@@ -220,58 +279,78 @@ const agricultureV1_1 = async (req, res) => {
         { model: Unit, attributes: ["name", "code"] },
         { model: Region, attributes: ["name", "code"] },
       ],
-      order: [["period", "ASC"], ["species", "ASC"], ["region", "ASC"]],
+      order: [
+        ["period", "ASC"],
+        ["species", "ASC"],
+        ["region", "ASC"],
+      ],
     });
 
-
     const speciesByYearAndRegion = {};
-    
 
-    result.forEach(agriculture => {
+    result.forEach((agriculture) => {
       const year = agriculture.period;
-      const speciesId = agriculture.species;
+      const name = agriculture.cl_specy.name;
       const speciesValue = agriculture.value;
-      const regionId = agriculture.region;
+      const region = agriculture.cl_region.name;
 
       if (!speciesByYearAndRegion[year]) {
         speciesByYearAndRegion[year] = {};
       }
 
-      if (!speciesByYearAndRegion[year][regionId]) {
-        speciesByYearAndRegion[year][regionId] = {};
+      if (!speciesByYearAndRegion[year][region]) {
+        speciesByYearAndRegion[year][region] = {};
       }
 
-      if (!speciesByYearAndRegion[year][regionId][speciesId]) {
-        speciesByYearAndRegion[year][regionId][speciesId] = [];
+      if (!speciesByYearAndRegion[year][region][name]) {
+        speciesByYearAndRegion[year][region][name] = [];
       }
 
-
-
-      speciesByYearAndRegion[year][regionId][speciesId] = parseFloat(speciesValue) ;
+      speciesByYearAndRegion[year][region][name] = parseFloat(speciesValue);
     });
 
     const speciesByYearAndRegionArray = [];
 
-    for (let year = 2015; year <= 2021; year++) {
+    const maxYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+    });
+    let lastYear = maxYearResult.dataValues.maxPeriod
+
+    const minYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("Min", Sequelize.col("period")), "maxPeriod"]],
+    });
+    let firstYear = minYearResult.dataValues.maxPeriod
+
+    console.log(firstYear,lastYear,"year");
+
+
+
+    for (let year = firstYear; year <= lastYear; year++) {
       if (speciesByYearAndRegion[year]) {
         const regionsArray = Object.keys(speciesByYearAndRegion[year]);
 
-        const speciesObjectsArray = regionsArray.map(regionId => {
+        const speciesObjectsArray = regionsArray.map((region) => {
           const speciesObjects = [];
 
-          Object.keys(speciesByYearAndRegion[year][regionId]).forEach(speciesId => {
-            const speciesValues = speciesByYearAndRegion[year][regionId][speciesId];
+          Object.keys(speciesByYearAndRegion[year][region]).forEach((name) => {
+            const speciesValues = speciesByYearAndRegion[year][region][name];
             // const speciesValue = speciesValues.reduce((a, b) => a + b, 0);
-            speciesObjects.push({ speciesId: speciesId,  value: speciesValues });
+            speciesObjects.push({
+              name: name,
+              value: speciesValues,
+            });
           });
 
-          return { region: regionId, species: speciesObjects };
+          return { region: region, species: speciesObjects };
         });
 
-        speciesByYearAndRegionArray.push({ year: year, values: speciesObjectsArray });
+        speciesByYearAndRegionArray.push({
+          year: year,
+          unit: result[0].cl_unit.name,
+          values: speciesObjectsArray,
+        });
       }
     }
-
 
     res.json(speciesByYearAndRegionArray);
   } catch (error) {
@@ -280,10 +359,9 @@ const agricultureV1_1 = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getMainStats,
   getAgricultureText,
   getAgricultures,
-  agricultureV1_1
+  agricultureV1_1,
 };

@@ -8,7 +8,7 @@ const Region = sequelize.define("cl_region", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nameKa: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
