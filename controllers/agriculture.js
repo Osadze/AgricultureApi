@@ -14,7 +14,7 @@ const getMainStats = async (req, res) => {
     attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
   });
 
-  const lastYear = maxYearResult.dataValues.maxPeriod;
+  const lastYear = maxYearResult.dataValues.maxPeriod -1;
 
   firstSlide.region = defaultRegion;
   firstSlide.period = lastYear;
@@ -37,12 +37,13 @@ const getMainStats = async (req, res) => {
       (obj, item) => {
         switch (item.indicator) {
           case 12:
-            if (item.species != 26)
-            obj.firstSlide.push({
-              value: item.value,
-              name: item.cl_specy.name,
-              unit: item.cl_unit.name,
-            });
+            if (item.species != 26) {
+              obj.firstSlide.push({
+                value: item.value,
+                name: item.cl_specy.name,
+                unit: item.cl_unit.name,
+              });
+            }
             break;
           case 21:
             obj.secondSlide.push({
@@ -77,8 +78,6 @@ const getMainStats = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
-
 
 const getAgricultureText = async (req, res) => {
   let { section, indicator } = req.query;
@@ -314,16 +313,14 @@ const agricultureV1_1 = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    let lastYear = maxYearResult.dataValues.maxPeriod
+    let lastYear = maxYearResult.dataValues.maxPeriod;
 
     const minYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("Min", Sequelize.col("period")), "maxPeriod"]],
     });
-    let firstYear = minYearResult.dataValues.maxPeriod
+    let firstYear = minYearResult.dataValues.maxPeriod;
 
-    console.log(firstYear,lastYear,"year");
-
-
+    // console.log(firstYear,lastYear,"year");
 
     for (let year = firstYear; year <= lastYear; year++) {
       if (speciesByYearAndRegion[year]) {
