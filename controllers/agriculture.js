@@ -6,7 +6,7 @@ const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/database");
 
 const getMainStats = async (req, res) => {
-  const firstSlide = {};
+  const query = {};
 
   const defaultRegion = 1;
 
@@ -14,23 +14,20 @@ const getMainStats = async (req, res) => {
     attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
   });
 
-  const lastYear = maxYearResult.dataValues.maxPeriod -1;
+  const lastYear = maxYearResult.dataValues.maxPeriod - 1;
 
-  firstSlide.region = defaultRegion;
-  firstSlide.period = lastYear;
-  firstSlide.species = [
+  query.region = defaultRegion;
+  query.period = lastYear;
+  query.species = [
     10, 13, 16, 17, 30, 32, 35, 3801, 26, 39, 40, 42, 2901, 2902, 2903, 2904,
   ];
-  firstSlide.indicator = [12, 21, 31, 43];
+  query.indicator = [12, 21, 31, 43];
 
   try {
     const result = await Agriculture.findAll({
-      where: firstSlide,
+      where: query,
       attributes: ["value", "indicator", "species"],
-      include: [
-        { model: Species, attributes: ["name"] },
-        { model: Unit, attributes: ["name"] },
-      ],
+      include: [{ model: Species, attributes: ["name"] }],
     });
 
     const filteredResult = result.reduce(
@@ -38,38 +35,77 @@ const getMainStats = async (req, res) => {
         switch (item.indicator) {
           case 12:
             if (item.species != 26) {
-              obj.firstSlide.push({
-                value: item.value,
+              obj.firstSlide.data.push({
                 name: item.cl_specy.name,
-                unit: item.cl_unit.name,
+                value: parseInt(item.value),
               });
             }
             break;
           case 21:
-            obj.secondSlide.push({
-              value: item.value,
+            obj.secondSlide.data.push({
               name: item.cl_specy.name,
-              unit: item.cl_unit.name,
+              value: parseInt(item.value),
             });
             break;
           case 31:
-            obj.thirdSlide.push({
-              value: item.value,
+            obj.thirdSlide.data.push({
               name: item.cl_specy.name,
-              unit: item.cl_unit.name,
+              value: parseInt(item.value),
             });
             break;
           case 43:
-            obj.fourthSlide.push({
-              value: item.value,
+            obj.fourthSlide.data.push({
               name: item.cl_specy.name,
-              unit: item.cl_unit.name,
+              value: parseInt(item.value),
             });
             break;
         }
         return obj;
       },
-      { firstSlide: [], secondSlide: [], thirdSlide: [], fourthSlide: [] }
+      {
+        firstSlide: { title: "წარმოება, 2021 წელი (ათასი ტონა)", data: [] },
+        secondSlide: { title: "სულადობა 2021 წელი (ათასი ერთეული)", data: [] },
+        thirdSlide: { title: " თევზის წარმოება, 2021 წელი (ტონა)", data: [] },
+        fourthSlide: {
+          title: "თვითუზრუნველყოფის კოეფიციენტი, 2021 წელი (%)",
+          data: [],
+        },
+        fifthSlide: {
+          title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
+          data: [
+            {
+              name: "მშპ",
+              value: 7.4,
+              unit: "%",
+            },
+            {
+              name: "დასაქმება",
+              value: 230.3,
+              unit: "ათასი კაცი",
+            },
+            {
+              name: "საშუალო ხელფასი",
+              value: 950.3,
+              unit: "ლარი",
+            },
+            {
+              name: "მთლიანი გამოშვება",
+              value: 6330.6,
+              unit: "მლნ. ლარი",
+            },
+            {
+              name: "ექსპორტი",
+              value: 1141.6,
+              unit: "მლნ. აშშ დოლარი",
+            },
+            {
+              name: "მთლიანი გამოშვება",
+              value: 1349.6,
+              unit: "მლნ. აშშ დოლარი",
+            },
+          ],
+        },
+      }
     );
 
     res.json(filteredResult);
