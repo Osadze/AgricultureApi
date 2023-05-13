@@ -216,7 +216,7 @@ const getAgricultures = async (req, res) => {
   if (indicator) {
     query.indicator = indicator;
   } else {
-    indicator = 1;
+    query.indicator = 1;
   }
 
   if (period) {
@@ -237,6 +237,10 @@ const getAgricultures = async (req, res) => {
     query.species = {
       [Op.in]: speciesArray,
     };
+    
+  }
+  else {
+    query.species = 10;
   }
 
   if (region) {
@@ -245,7 +249,7 @@ const getAgricultures = async (req, res) => {
       [Op.in]: regionArray,
     };
   } else {
-    region = 1;
+    query.region = 1;
   }
 
   try {
@@ -274,7 +278,7 @@ const agricultureV1_1 = async (req, res) => {
   if (indicator) {
     query.indicator = indicator;
   } else {
-    indicator = 1;
+    query.indicator = 1;
   }
 
   if (period) {
@@ -294,7 +298,10 @@ const agricultureV1_1 = async (req, res) => {
     query.species = {
       [Op.in]: speciesArray,
     };
+  }else {
+    query.species = 10;
   }
+   
 
   if (region) {
     const regionArray = String(region).split(",");
@@ -302,7 +309,7 @@ const agricultureV1_1 = async (req, res) => {
       [Op.in]: regionArray,
     };
   } else {
-    region = 1;
+    query.region = 1;
   }
 
   try {
@@ -313,12 +320,7 @@ const agricultureV1_1 = async (req, res) => {
         { model: Species, attributes: ["name", "code"] },
         { model: Unit, attributes: ["name", "code"] },
         { model: Region, attributes: ["name", "code"] },
-      ],
-      order: [
-        ["period", "ASC"],
-        ["species", "ASC"],
-        ["region", "ASC"],
-      ],
+      ]
     });
 
     const speciesByYearAndRegion = {};
