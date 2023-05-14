@@ -58,6 +58,10 @@ const getMainStats = async (req, res) => {
               name: item.cl_specy.name,
               value: parseInt(item.value),
             });
+            obj.fourthSlide.data.push({
+              name: item.cl_specy.name,
+              value: parseInt(item.value),
+            });
             break;
         }
         return obj;
@@ -68,7 +72,10 @@ const getMainStats = async (req, res) => {
         thirdSlide: { title: " თევზის წარმოება, 2021 წელი (ტონა)", data: [] },
         fourthSlide: {
           title: "თვითუზრუნველყოფის კოეფიციენტი, 2021 წელი (%)",
-          data: [],
+          data: [            {
+            name: "რძე და რძის პროდუქტები",
+            value: 81,
+          },],
         },
         fifthSlide: {
           title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
@@ -124,14 +131,20 @@ const getAgricultureText = async (req, res) => {
     res.status(400).send("Missing section parameter");
     return;
   } else {
-    query.section = section;
+    const sectionArray = String(section).split(",");
+    query.section = {
+      [Op.in]: sectionArray,
+    };
   }
 
   if (!indicator) {
     res.status(400).send("Missing indicator parameter");
     return;
   } else {
-    query.indicator = indicator;
+    const indicatorArray = String(indicator).split(",");
+    query.indicator = {
+      [Op.in]: indicatorArray,
+    };
   }
 
   try {
@@ -228,7 +241,7 @@ const getAgricultures = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    period = maxYearResult.dataValues.maxPeriod;
+    period = maxYearResult.dataValues.maxPeriod - 1;
     query.period = period;
   }
 
