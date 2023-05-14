@@ -58,10 +58,6 @@ const getMainStats = async (req, res) => {
               name: item.cl_specy.name,
               value: parseInt(item.value),
             });
-            obj.fourthSlide.data.push({
-              name: item.cl_specy.name,
-              value: parseInt(item.value),
-            });
             break;
         }
         return obj;
