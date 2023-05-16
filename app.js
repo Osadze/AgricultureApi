@@ -8,12 +8,12 @@ const app = express();
 
 app.use(cors());
 
-const agroRouter = require('./routes/agriculture')
-const agroRouterV1_1 = require('./routes/agricultureV1_1')
+const dataRouter = require('./routes/agriData')
+const textRouter = require('./routes/agriText')
 
 
-app.use("/api/v1/", agroRouter);
-app.use("/api/v1.1/", agroRouterV1_1);
+app.use("/api/v1/agri/data", dataRouter);
+app.use("/api/v1/agri/text", textRouter);
 
 
 const port = process.env.PORT || 3001;
