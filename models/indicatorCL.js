@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../util/database");
 
-const indicator = sequelize.define("cl_indicator", {
+const Indicator = sequelize.define("cl_indicator", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -20,6 +20,10 @@ const indicator = sequelize.define("cl_indicator", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  sortId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 
 },
 {
@@ -27,4 +31,4 @@ const indicator = sequelize.define("cl_indicator", {
   timestamps: false,
 });
 
-module.exports = indicator;
+module.exports = Indicator;

@@ -12,11 +12,13 @@ app.use(languageMiddleware);
 
 const dataRouter = require("./routes/agriData");
 const textRouter = require("./routes/agriText");
+const oldRouter = require("./routes/oldrouter");
 
 // language middleware
 
-app.use("/api/v1/agri/data", dataRouter);
-app.use("/api/v1/agri/text", textRouter);
+app.use("/api/v1.1/agri/data", dataRouter);
+app.use("/api/v1.1/agri/text", textRouter);
+app.use("/api/v1/agri", oldRouter);
 
 const port = process.env.PORT || 3001;
 
