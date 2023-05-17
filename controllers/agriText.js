@@ -127,7 +127,7 @@ const getSelectTexts = async (req, res) => {
     const regionSelector = {
       title: "region selector",
       placeholder: "choose region",
-      regionNameAndCode,
+      selectValues:regionNameAndCode,
     };
 
     switch (true) {
