@@ -4,10 +4,11 @@ const Species = require("../models/speciesCL");
 const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/database");
+const languageMiddleware = require("../middleware/language");
 
 const getMainData = async (req, res) => {
+  const langName = req.langName;
   const query = {};
-
   const defaultRegion = 1;
 
   const maxYearResult = await Agriculture.findOne({
@@ -27,35 +28,34 @@ const getMainData = async (req, res) => {
     const result = await Agriculture.findAll({
       where: query,
       attributes: ["value", "indicator", "species"],
-      include: [{ model: Species, attributes: ["nameKa"] }],
+      include: [{ model: Species, attributes: [langName] }],
     });
-
     const filteredResult = result.reduce(
       (obj, item) => {
         switch (item.indicator) {
           case 12:
             if (item.species != 26) {
               obj.firstSlide.data.push({
-                name: item.cl_specy.name,
+                name: item.cl_specy[`${langName}`],
                 value: parseInt(item.value),
               });
             }
             break;
           case 21:
             obj.secondSlide.data.push({
-              name: item.cl_specy.name,
+              name: item.cl_specy[`${langName}`],
               value: parseInt(item.value),
             });
             break;
           case 31:
             obj.thirdSlide.data.push({
-              name: item.cl_specy.name,
+              name: item.cl_specy[`${langName}`],
               value: parseInt(item.value),
             });
             break;
           case 43:
             obj.fourthSlide.data.push({
-              name: item.cl_specy.name,
+              name: item.cl_specy[`${langName}`],
               value: parseInt(item.value),
             });
             break;
@@ -280,6 +280,8 @@ const getMainData = async (req, res) => {
 // };
 
 const getSectionData = async (req, res) => {
+  const langName = req.langName;
+
   let { section, indicator, period, species, region } = req.query;
 
   console.log(req.query, "req.query");
@@ -341,9 +343,9 @@ const getSectionData = async (req, res) => {
       where: query,
       attributes: ["id", "value", "period", "species", "region"],
       include: [
-        { model: Species, attributes: ["nameKa", "code"] },
-        { model: Unit, attributes: ["nameKa", "code"] },
-        { model: Region, attributes: ["nameKa", "code"] },
+        { model: Species, attributes: [langName, "code"] },
+        { model: Unit, attributes: [langName, "code"] },
+        { model: Region, attributes: [langName, "code"] },
       ],
     });
 
@@ -351,9 +353,9 @@ const getSectionData = async (req, res) => {
 
     result.forEach((agriculture) => {
       const year = agriculture.period;
-      const name = agriculture.cl_specy.name;
+      const name = agriculture.cl_specy[`${langName}`];
       const speciesValue = agriculture.value;
-      const region = agriculture.cl_region.name;
+      const region = agriculture.cl_region[`${langName}`];
 
       if (!speciesByYearAndRegion[year]) {
         speciesByYearAndRegion[year] = {};
@@ -405,7 +407,7 @@ const getSectionData = async (req, res) => {
 
         speciesByYearAndRegionArray.push({
           year: year,
-          unit: result[0].cl_unit.name,
+          unit: result[0].cl_unit[`${langName}`],
           values: speciesObjectsArray,
         });
       }

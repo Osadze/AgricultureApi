@@ -4,8 +4,11 @@ const Species = require("../models/speciesCL");
 const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/database");
+const languageMiddleware = require("../middleware/language");
 
 const getSelectTexts = async (req, res) => {
+  const langName = req.langName;
+
   let { section, indicator, species, period, region } = req.query;
 
   if (!section || !indicator) {
@@ -37,10 +40,15 @@ const getSelectTexts = async (req, res) => {
       order: [["period", "ASC"]],
     });
 
+    const periodData = years.map((year) => ({
+      name: year.dataValues.year,
+      code: year.dataValues.year,
+    }));
+
     const periodSelector = {
       title: "წელი",
       placeholder: "აირჩიეთ წელი",
-      selectValues: years,
+      selectValues: periodData,
     };
 
     const species = await Agriculture.aggregate("species", "DISTINCT", {
@@ -49,7 +57,7 @@ const getSelectTexts = async (req, res) => {
     });
 
     const speciesCodesAndNames = await Species.findAll({
-      attributes: ["code", "nameKa", "parentId"],
+      attributes: ["code", langName, "parentId"],
       where: { code: species.map((s) => s.DISTINCT) },
       order: [["code", "ASC"]],
     });
@@ -115,32 +123,30 @@ const getSelectTexts = async (req, res) => {
     //   regionNameAndCode,
     // };
     const result = await Agriculture.findAll({
-        where: query,
-        attributes: ["id", "value", "period", "species", "region"],
-        include: [
-          { model: Species, attributes: ["nameKa", "code"] },
-          { model: Unit, attributes: ["nameKa", "code"] },
-          { model: Region, attributes: ["nameKa", "code"] },
-        ],
-      });
-      
-      const regionSet = new Set();
-      
-      const regionNameAndCode = result.reduce((acc, region) => {
-        const { nameKa, code } = region.cl_region;
-        const regionKey = `${nameKa}_${code}`;
-        if (!regionSet.has(regionKey)) {
-          regionSet.add(regionKey);
-          acc.push({ name: nameKa, code });
-        }
-        return acc;
-      }, []);
-      
-      const regionSelector = {
-        title: "region selector",
-        placeholder: "choose region",
-        regionNameAndCode,
-      };
+      where: query,
+      attributes: ["id", "value", "period", "species", "region"],
+      include: [{ model: Region, attributes: [langName, "code"] }],
+    });
+
+    const regionSet = new Set();
+
+    const regionNameAndCode = result.reduce((acc, region) => {
+      const code = region.cl_region.code;
+      const name = region.cl_region[`${langName}`];
+
+      const regionKey = `${name}_${code}`;
+      if (!regionSet.has(regionKey)) {
+        regionSet.add(regionKey);
+        acc.push({ name: name, code });
+      }
+      return acc;
+    }, []);
+
+    const regionSelector = {
+      title: "region selector",
+      placeholder: "choose region",
+      regionNameAndCode,
+    };
 
     switch (true) {
       case !query.species && !query.period && !query.region:
@@ -154,7 +160,7 @@ const getSelectTexts = async (req, res) => {
 
       case query.species && query.period && !query.region:
         res.json({
-          regions,
+          regionSelector,
         });
         break;
 
@@ -173,14 +179,14 @@ const getSelectTexts = async (req, res) => {
       case query.species && !query.period && !query.region:
         res.json({
           periodSelector,
-          regions,
+          regionSelector,
         });
         break;
       case !query.species && query.period && !query.region:
         res.json({
           speciesSelector,
           speciesSelector2,
-          regions,
+          regionSelector,
         });
         break;
       case !query.species && !query.period && query.region:
