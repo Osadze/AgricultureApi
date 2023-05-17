@@ -56,10 +56,10 @@ const getSelectTexts = async (req, res) => {
     const species = await Agriculture.aggregate("species", "DISTINCT", {
       plain: false,
       where: query,
-    });
+    },"name");
 
     const speciesCodesAndNames = await Species.findAll({
-      attributes: ["code", langName, "parentId"],
+      attributes: ["code", [langName, "name"], "parentId"],
       where: { code: species.map((s) => s.DISTINCT) },
       order: [["code", "ASC"]],
     });
@@ -133,7 +133,7 @@ const getSelectTexts = async (req, res) => {
     switch (true) {
       case !query.species && !query.period && !query.region:
         res.json({
-          periodSelector,
+            speciesCodesAndNames,
           speciesSelector,
           speciesSelector2,
           regionSelector,
