@@ -431,15 +431,15 @@ const getFoodBalance = async (req, res) => {
       include: [
         {
           model: Species,
-          attributes: [langName, "code"],
+          attributes: [[langName, "name"], "code"],
           as: "cl_specy",
         },
         {
           model: Species_1,
-          attributes: [langName, "code"],
+          attributes: [[langName, "name"], "code"],
           as: "cl_species_1",
         },
-        { model: Unit, attributes: [langName, "code"] },
+        { model: Unit, attributes: [[langName, "name"], "code"] },
       ],
       order: [["species_1", "ASC"],["period", "ASC"]],
     });
