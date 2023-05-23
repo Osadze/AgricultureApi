@@ -136,11 +136,23 @@ const getSelectTexts = async (req, res) => {
     };
 
     switch (true) {
+      case section == 4:
+        console.log("hereeeee");
+        res.json({
+          periodSelector,
+          speciesSelector,
+          // speciesSelector2,
+          // regionSelector,
+        });
+        break;
       case !query.species && !query.period && !query.region:
         res.json({
           periodSelector,
           speciesSelector,
-          speciesSelector2,
+          speciesSelector2:
+            speciesSelector2 && speciesSelector2.length > 0
+              ? speciesSelector2
+              : undefined,
           regionSelector,
         });
         break;
@@ -154,7 +166,7 @@ const getSelectTexts = async (req, res) => {
       case !query.species && query.period && query.region:
         res.json({
           speciesSelector,
-          speciesSelector2,
+          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
         });
         break;
 
@@ -172,7 +184,7 @@ const getSelectTexts = async (req, res) => {
       case !query.species && query.period && !query.region:
         res.json({
           speciesSelector,
-          speciesSelector2,
+          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
           regionSelector,
         });
         break;
@@ -180,7 +192,7 @@ const getSelectTexts = async (req, res) => {
         res.json({
           periodSelector,
           speciesSelector,
-          speciesSelector2,
+          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
         });
         break;
     }

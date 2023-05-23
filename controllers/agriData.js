@@ -375,8 +375,7 @@ const getFoodBalance = async (req, res) => {
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
     query.period = maxYearResult.dataValues.maxPeriod - 1;
-  } else if (period.toLowerCase() === "all") {
-    query.period = await getAllPeriods();
+
   } else {
     const periodArray = String(period).split(",");
     query.period = {
