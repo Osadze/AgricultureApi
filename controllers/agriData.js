@@ -1,10 +1,26 @@
 const Agriculture = require("../models/agriculture_model");
 const Region = require("../models/regionCL");
 const Species = require("../models/speciesCL");
+const Species_1 = require("../models/species_1CL");
 const Unit = require("../models/unitCL");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/database");
 const languageMiddleware = require("../middleware/language");
+
+const getAllPeriods = async () => {
+  try {
+    const periods = await Agriculture.findAll({
+      attributes: [
+        [Sequelize.fn("DISTINCT", Sequelize.col("period")), "period"],
+      ],
+      raw: true,
+    });
+    return periods.map((item) => item.period);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to retrieve periods from the database");
+  }
+};
 
 const getMainData = async (req, res) => {
   const langName = req.langName;
@@ -117,38 +133,63 @@ const getMainData = async (req, res) => {
   }
 };
 
+const getSectionData = async (req, res) => {
+  const langName = req.langName;
 
-const getSectionDatav1 = async (req, res) => {
-  let { indicator, period, species, region } = req.query;
+  let { section, indicator, period, species, region } = req.query;
+
+  // console.log(req.query, "req.query");
 
   const query = {};
 
-  if (indicator) {
-    query.indicator = indicator;
+  if (!section) {
+    res.status(400).send("Missing section parameter");
+    return;
   } else {
-    indicator = 1;
+    const sectionArray = String(section).split(",");
+    query.section = {
+      [Op.in]: sectionArray,
+    };
   }
-  if (period) {
-    query.period = period;
+
+  if (!indicator) {
+    res.status(400).send("Missing indicator parameter");
+    return;
   } else {
+    const indicatorArray = String(indicator).split(",");
+    query.indicator = {
+      [Op.in]: indicatorArray,
+    };
+  }
+
+  if (!period) {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    period = maxYearResult.dataValues.maxPeriod - 1;
-    query.period = period;
-  }
-  //   console.log(query.year);
-
-  if (species) {
-    query.species = species;
+    query.period = maxYearResult.dataValues.maxPeriod - 1;
   } else {
-    query.species = 10;
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
   }
 
-  if (region) {
-    query.region = region;
+  if (!species) {
+    // query.species = 10;
   } else {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  if (!region) {
     query.region = 1;
+  } else {
+    const regionArray = String(region).split(",");
+    query.region = {
+      [Op.in]: regionArray,
+    };
   }
 
   try {
@@ -156,9 +197,9 @@ const getSectionDatav1 = async (req, res) => {
       where: query,
       attributes: ["id", "value", "period"],
       include: [
-        { model: Unit, attributes: [langName, "code"] },
-        { model: Species, attributes: [langName, "code"] },
-        { model: Region, attributes: [langName, "code"] },
+        { model: Unit, attributes: [[langName, "name"], "code"] },
+        { model: Species, attributes: [[langName, "name"], "code"] },
+        { model: Region, attributes: [[langName, "name"], "code"] },
       ],
     });
 
@@ -169,12 +210,12 @@ const getSectionDatav1 = async (req, res) => {
   }
 };
 
-const getSectionData = async (req, res) => {
+const getSectionDataV1_1 = async (req, res) => {
   const langName = req.langName;
 
   let { section, indicator, period, species, region } = req.query;
 
-  console.log(req.query, "req.query");
+  // console.log(req.query, "req.query");
 
   const query = {};
 
@@ -310,8 +351,134 @@ const getSectionData = async (req, res) => {
   }
 };
 
+const getFoodBalance = async (req, res) => {
+  const langName = req.langName;
+
+  let { indicator, period, species } = req.query;
+
+  const query = {};
+  query.section = 4;
+  query.indicator = 41;
+
+  // if (!indicator) {
+  //   res.status(400).send("Missing indicator parameter");
+  //   return;
+  // } else {
+  //   const indicatorArray = String(indicator).split(",");
+  //   query.indicator = {
+  //     [Op.in]: indicatorArray,
+  //   };
+  // }
+
+  if (!period) {
+    const maxYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+    });
+    query.period = maxYearResult.dataValues.maxPeriod - 1;
+
+  } else {
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
+  }
+  if (!species) {
+    query.species = 10;
+  } else {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  try {
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["id", "species", "species_1", "value"],
+      include: [
+        {
+          model: Species,
+          attributes: [langName, "code"],
+          as: "cl_specy",
+        },
+        {
+          model: Species_1,
+          attributes: [langName, "code"],
+          as: "cl_species_1",
+        },
+        { model: Unit, attributes: [langName, "code"] },
+      ],
+    });
+
+    const sankeyData = result.map((item) => {
+      const from =
+        item.species_1 > 4102
+          ? item.cl_specy[`${langName}`]
+          : item.cl_species_1[`${langName}`];
+      const to =
+        item.species_1 > 4102
+          ? item.cl_species_1[`${langName}`]
+          : item.cl_specy[`${langName}`];
+      return { from: from, to: to, value: parseInt(item.value) };
+    });
+
+    const otherData = await Agriculture.findAll({
+      where: {
+        ...query,
+        period: await getAllPeriods(), // Exclude the period filter
+      },
+      attributes: ["id", "species", "species_1", "value", "period"],
+      include: [
+        {
+          model: Species,
+          attributes: [langName, "code"],
+          as: "cl_specy",
+        },
+        {
+          model: Species_1,
+          attributes: [langName, "code"],
+          as: "cl_species_1",
+        },
+        { model: Unit, attributes: [langName, "code"] },
+      ],
+      order: [["species_1", "ASC"],["period", "ASC"]],
+    });
+
+    const chartData = otherData.reduce((result, item) => {
+      if (!result[`chart${item.species_1}`]) {
+        result[`chart${item.species_1}`] = [];
+      }
+      result[`chart${item.species_1}`].push(item);
+      return result;
+    }, {});
+    
+    // Rename the chart keys
+    let chartCount = 1;
+    const renamedChartData = {};
+    for (const key in chartData) {
+      renamedChartData[`chart${chartCount}`] = chartData[key];
+      chartCount++;
+    }
+
+    renamedChartData.sankeyChart = sankeyData;
+
+    // Create the final response object
+    const finalResponse = {
+      sankeyChart: sankeyData,
+      ...renamedChartData,
+    };
+
+    res.json(finalResponse);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getMainData,
   getSectionData,
-  getSectionDatav1
+  getSectionDataV1_1,
+  getFoodBalance,
 };
