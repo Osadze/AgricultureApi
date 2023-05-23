@@ -358,16 +358,17 @@ const getFoodBalance = async (req, res) => {
 
   const query = {};
   query.section = 4;
+  query.indicator = 41;
 
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-    return;
-  } else {
-    const indicatorArray = String(indicator).split(",");
-    query.indicator = {
-      [Op.in]: indicatorArray,
-    };
-  }
+  // if (!indicator) {
+  //   res.status(400).send("Missing indicator parameter");
+  //   return;
+  // } else {
+  //   const indicatorArray = String(indicator).split(",");
+  //   query.indicator = {
+  //     [Op.in]: indicatorArray,
+  //   };
+  // }
 
   if (!period) {
     const maxYearResult = await Agriculture.findOne({
