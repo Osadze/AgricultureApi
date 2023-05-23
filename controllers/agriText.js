@@ -24,16 +24,26 @@ const getSelectTexts = async (req, res) => {
   };
 
   if (species) {
-    query.species = species;
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
   }
 
   if (period) {
-    query.period = period;
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
   }
 
   if (region) {
-    query.region = region;
+    const regionArray = String(region).split(",");
+    query.region = {
+      [Op.in]: regionArray,
+    };
   }
+
 
   try {
     const years = await Agriculture.findAll({
@@ -107,7 +117,7 @@ const getSelectTexts = async (req, res) => {
           placeholder: "აირჩიეთ სახეობა",
           selectValues: speciesWithChildren.species1,
         }
-      : {};
+      : undefined;
 
     const result = await Agriculture.findAll({
       where: query,
@@ -135,67 +145,72 @@ const getSelectTexts = async (req, res) => {
       selectValues: regionNameAndCode,
     };
 
-    switch (true) {
-      case section == 4:
-        console.log("hereeeee");
-        res.json({
-          periodSelector,
-          speciesSelector,
-          // speciesSelector2,
-          // regionSelector,
-        });
-        break;
-      case !query.species && !query.period && !query.region:
-        res.json({
-          periodSelector,
-          speciesSelector,
-          speciesSelector2:
-            speciesSelector2 && speciesSelector2.length > 0
-              ? speciesSelector2
-              : undefined,
-          regionSelector,
-        });
-        break;
+    // TEST CODE ->
 
-      case query.species && query.period && !query.region:
-        res.json({
-          regionSelector,
-        });
-        break;
+    // if(!query.species && !query.period && query.region){
+    //   console.log("yas");
 
-      case !query.species && query.period && query.region:
-        res.json({
-          speciesSelector,
-          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
-        });
-        break;
+    // res.json({
+    //   periodSelector,
+    //   speciesSelector,
+    //   speciesSelector,
+    //   // regionSelector,
+    // });
+    // }
 
-      case query.species && !query.period && query.region:
-        res.json({
-          periodSelector,
-        });
-        break;
-      case query.species && !query.period && !query.region:
-        res.json({
-          periodSelector,
-          regionSelector,
-        });
-        break;
-      case !query.species && query.period && !query.region:
-        res.json({
-          speciesSelector,
-          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
-          regionSelector,
-        });
-        break;
-      case !query.species && !query.period && query.region:
-        res.json({
-          periodSelector,
-          speciesSelector,
-          speciesSelector2: speciesSelector2 && speciesSelector2.length > 0 ? speciesSelector2 : undefined,
-        });
-        break;
+    // TEST CODE <=
+
+    console.log(query);
+
+    const responseObj = {};
+
+    if (section == 4) {
+      console.log("hereeeee");
+      responseObj.periodSelector = periodSelector;
+      responseObj.speciesSelector = speciesSelector;
+      // responseObj.speciesSelector2 = speciesSelector2;
+      // responseObj.regionSelector = regionSelector;
+    } else if (!query.species && !query.period && !query.region) {
+      console.log(1);
+      responseObj.periodSelector = periodSelector;
+      responseObj.speciesSelector = speciesSelector;
+      responseObj.regionSelector = regionSelector;
+    } else if (!query.region && query.species && query.period) {
+      console.log(2);
+      responseObj.regionSelector = regionSelector;
+    } else if (query.region && query.period && !query.species) {
+      console.log(3);
+      responseObj.speciesSelector = speciesSelector;
+      responseObj.speciesSelector2 = speciesSelector2;
+    } else if (query.region && query.species && !query.period) {
+      console.log(4);
+      responseObj.periodSelector = periodSelector;
+    } else if (!query.region && query.species && !query.period) {
+      console.log(5);
+      responseObj.periodSelector = periodSelector;
+      responseObj.regionSelector = regionSelector;
+    } else if (!query.region && !query.species && query.period) {
+      console.log(6);
+      responseObj.speciesSelector = speciesSelector;
+      responseObj.speciesSelector2 = speciesSelector2;
+      responseObj.regionSelector = regionSelector;
+    } else if (query.region && !query.species && !query.period) {
+      console.log(7);
+      responseObj.periodSelector = periodSelector;
+      responseObj.speciesSelector = speciesSelector;
+      responseObj.speciesSelector2 = speciesSelector2;
+    } else {
+      res.json("def");
+      return;
     }
+
+    res.json(responseObj);
+    // res.json({
+    //   periodSelector,
+    //   speciesSelector,
+    //   speciesSelector,
+    //   regionSelector,
+    // });
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
@@ -277,118 +292,118 @@ const getTitleTexts = async (req, res) => {
   }
 };
 
-const getSelectTextsv1 = async (req, res) => {
-  let { section, indicator, species, period, region } = req.query;
+// const getSelectTextsv1 = async (req, res) => {
+//   let { section, indicator, species, period, region } = req.query;
 
-  const query = {};
+//   const query = {};
 
-  if (!section) {
-    res.status(400).send("Missing section parameter");
-    return;
-  } else {
-    const sectionArray = String(section).split(",");
-    query.section = {
-      [Op.in]: sectionArray,
-    };
-  }
+//   if (!section) {
+//     res.status(400).send("Missing section parameter");
+//     return;
+//   } else {
+//     const sectionArray = String(section).split(",");
+//     query.section = {
+//       [Op.in]: sectionArray,
+//     };
+//   }
 
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-    return;
-  } else {
-    const indicatorArray = String(indicator).split(",");
-    query.indicator = {
-      [Op.in]: indicatorArray,
-    };
-  }
+//   if (!indicator) {
+//     res.status(400).send("Missing indicator parameter");
+//     return;
+//   } else {
+//     const indicatorArray = String(indicator).split(",");
+//     query.indicator = {
+//       [Op.in]: indicatorArray,
+//     };
+//   }
 
-  if (species) {
-    query.species = species;
-  }
+//   if (species) {
+//     query.species = species;
+//   }
 
-  if (period) {
-    query.period = period;
-  }
+//   if (period) {
+//     query.period = period;
+//   }
 
-  if (region) {
-    query.region = region;
-  }
+//   if (region) {
+//     query.region = region;
+//   }
 
-  try {
-    const species = await Agriculture.aggregate("species", "DISTINCT", {
-      plain: false,
-      where: query,
-    });
+//   try {
+//     const species = await Agriculture.aggregate("species", "DISTINCT", {
+//       plain: false,
+//       where: query,
+//     });
 
-    const speciesCodesAndNames = await Species.findAll({
-      attributes: ["code", "nameKa", "parentId"],
-      where: { code: species.map((s) => s.DISTINCT) },
-      order: [["code", "ASC"]],
-    });
+//     const speciesCodesAndNames = await Species.findAll({
+//       attributes: ["code", "nameKa", "parentId"],
+//       where: { code: species.map((s) => s.DISTINCT) },
+//       order: [["code", "ASC"]],
+//     });
 
-    // Group species by parent id
-    const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
-      const parentId = curr.parentId || "null";
-      if (!acc[parentId]) {
-        acc[parentId] = [];
-      }
-      acc[parentId].push(curr);
-      return acc;
-    }, {});
+//     // Group species by parent id
+//     const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
+//       const parentId = curr.parentId || "null";
+//       if (!acc[parentId]) {
+//         acc[parentId] = [];
+//       }
+//       acc[parentId].push(curr);
+//       return acc;
+//     }, {});
 
-    // Map species to include children property
-    const speciesWithChildren = speciesByParentId["null"].reduce(
-      (acc, parentSpecies) => {
-        // Create a copy of the dataValues object without the _previousDataValues property
-        const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-        const species = {
-          ...dataValues,
-          childrens: speciesByParentId[parentSpecies.code] || [],
-        };
-        // If section = 1 , vegetation, then split it into two arrays
-        // vegetatins with code under 21 are Annual crops and 21 or more than 21 Perennial cultivars
-        if (section == 1 && species.code < 21) {
-          acc.species1.push(species);
-        } else {
-          acc.species.push(species);
-        }
-        return acc;
-      },
-      { species: [], species1: [] }
-    );
+//     // Map species to include children property
+//     const speciesWithChildren = speciesByParentId["null"].reduce(
+//       (acc, parentSpecies) => {
+//         // Create a copy of the dataValues object without the _previousDataValues property
+//         const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
+//         const species = {
+//           ...dataValues,
+//           childrens: speciesByParentId[parentSpecies.code] || [],
+//         };
+//         // If section = 1 , vegetation, then split it into two arrays
+//         // vegetatins with code under 21 are Annual crops and 21 or more than 21 Perennial cultivars
+//         if (section == 1 && species.code < 21) {
+//           acc.species1.push(species);
+//         } else {
+//           acc.species.push(species);
+//         }
+//         return acc;
+//       },
+//       { species: [], species1: [] }
+//     );
 
-    const years = await Agriculture.findAll({
-      attributes: [
-        [Sequelize.fn("DISTINCT", Sequelize.col("period")), "nameKa"],
-      ],
-      where: query,
-      order: [["period", "ASC"]],
-    });
+//     const years = await Agriculture.findAll({
+//       attributes: [
+//         [Sequelize.fn("DISTINCT", Sequelize.col("period")), "nameKa"],
+//       ],
+//       where: query,
+//       order: [["period", "ASC"]],
+//     });
 
-    const regions = await Region.findAll({
-      attributes: ["code", "nameKa"],
-      order: [["code", "ASC"]],
-    });
+//     const regions = await Region.findAll({
+//       attributes: ["code", "nameKa"],
+//       order: [["code", "ASC"]],
+//     });
 
-    if (section == 1) {
-      res.json({
-        species1: speciesWithChildren.species1,
-        species2: speciesWithChildren.species,
-        years,
-        regions,
-      });
-    } else {
-      res.json({
-        species1: speciesWithChildren.species,
-        years,
-        regions,
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Internal Server Error");
-  }
-};
+//     if (section == 1) {
+//       res.json({
+//         species1: speciesWithChildren.species1,
+//         species2: speciesWithChildren.species,
+//         years,
+//         regions,
+//       });
+//     } else {
+//       res.json({
+//         species1: speciesWithChildren.species,
+//         years,
+//         regions,
+//       });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
 
 // const getAgricultureText = async (req, res) => {
 //   let { section, indicator } = req.query;
@@ -552,5 +567,4 @@ const getSelectTextsv1 = async (req, res) => {
 module.exports = {
   getSelectTexts,
   getTitleTexts,
-  getSelectTextsv1,
 };
