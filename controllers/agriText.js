@@ -44,7 +44,6 @@ const getSelectTexts = async (req, res) => {
     };
   }
 
-
   try {
     const years = await Agriculture.findAll({
       where: query,
@@ -168,34 +167,28 @@ const getSelectTexts = async (req, res) => {
       console.log("hereeeee");
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
-      // responseObj.speciesSelector2 = speciesSelector2;
+      responseObj.speciesSelector2 = speciesSelector2;
       // responseObj.regionSelector = regionSelector;
     } else if (!query.species && !query.period && !query.region) {
-      console.log(1);
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
+      responseObj.speciesSelector2 = speciesSelector2;
       responseObj.regionSelector = regionSelector;
     } else if (!query.region && query.species && query.period) {
-      console.log(2);
       responseObj.regionSelector = regionSelector;
     } else if (query.region && query.period && !query.species) {
-      console.log(3);
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
     } else if (query.region && query.species && !query.period) {
-      console.log(4);
       responseObj.periodSelector = periodSelector;
     } else if (!query.region && query.species && !query.period) {
-      console.log(5);
       responseObj.periodSelector = periodSelector;
       responseObj.regionSelector = regionSelector;
     } else if (!query.region && !query.species && query.period) {
-      console.log(6);
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
       responseObj.regionSelector = regionSelector;
     } else if (query.region && !query.species && !query.period) {
-      console.log(7);
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
