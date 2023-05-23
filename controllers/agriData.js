@@ -156,9 +156,9 @@ const getSectionDatav1 = async (req, res) => {
       where: query,
       attributes: ["id", "value", "period"],
       include: [
-        { model: Unit, attributes: ["nameKa", "code"] },
-        { model: Species, attributes: ["nameKa", "code"] },
-        { model: Region, attributes: ["nameKa", "code"] },
+        { model: Unit, attributes: [langName, "code"] },
+        { model: Species, attributes: [langName, "code"] },
+        { model: Region, attributes: [langName, "code"] },
       ],
     });
 
