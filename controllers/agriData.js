@@ -155,6 +155,8 @@ const getSectionData = async (req, res) => {
   if (!indicator) {
     res.status(400).send("Missing indicator parameter");
     return;
+  } else if (indicator == 23 || indicator == 24) {
+    query.indicator = [23,24];
   } else {
     const indicatorArray = String(indicator).split(",");
     query.indicator = {
@@ -193,9 +195,9 @@ const getSectionData = async (req, res) => {
   }
 
   try {
-    const result = await Agriculture.findAll({
+    const data = await Agriculture.findAll({
       where: query,
-      attributes: ["id", "value", "period"],
+      attributes: ["id", "value", "period", "indicator"],
       include: [
         { model: Unit, attributes: [[langName, "name"], "code"] },
         { model: Species, attributes: [[langName, "name"], "code"] },
@@ -203,7 +205,28 @@ const getSectionData = async (req, res) => {
       ],
     });
 
-    res.json(result);
+    const result = [];
+    const result2 = [];
+
+    if (indicator == 23 || indicator == 24) {
+      data.forEach((item) => {
+        switch (item.indicator) {
+          case 23:
+            result.push(item);
+            break;
+          case 24:
+            result2.push(item);
+            break;
+          default:
+            break;
+        }
+      });
+      res.json({ result, result2 });
+    }else {
+      res.json({result: data})
+    }
+
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -375,7 +398,6 @@ const getFoodBalance = async (req, res) => {
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
     query.period = maxYearResult.dataValues.maxPeriod - 1;
-
   } else {
     const periodArray = String(period).split(",");
     query.period = {
@@ -441,7 +463,10 @@ const getFoodBalance = async (req, res) => {
         },
         { model: Unit, attributes: [[langName, "name"], "code"] },
       ],
-      order: [["species_1", "ASC"],["period", "ASC"]],
+      order: [
+        ["species_1", "ASC"],
+        ["period", "ASC"],
+      ],
     });
 
     const chartData = otherData.reduce((result, item) => {
@@ -451,7 +476,7 @@ const getFoodBalance = async (req, res) => {
       result[`chart${item.species_1}`].push(item);
       return result;
     }, {});
-    
+
     // Rename the chart keys
     let chartCount = 1;
     const renamedChartData = {};
@@ -469,7 +494,6 @@ const getFoodBalance = async (req, res) => {
     };
 
     res.json(finalResponse);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
