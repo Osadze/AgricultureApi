@@ -3,10 +3,10 @@ const languageMiddleware = (req, res, next) => {
   console.log("Language Middleware called");
   if (lang === "en") {
     req.langName = "nameEn";
-    console.log(lang, "shouldbeEN");
+    // console.log(lang, "shouldbeEN");
   } else {
     req.langName = "nameKa"; // Default language variable
-    console.log(lang, "shouldbeKa");
+    // console.log(lang, "shouldbeKa");
   }
 
   next();

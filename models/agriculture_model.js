@@ -60,7 +60,7 @@ Agriculture.belongsTo(Section, { foreignKey: 'section'});
 Agriculture.belongsTo(Indicator, { foreignKey: 'indicator'});
 Agriculture.belongsTo(Unit, { foreignKey: 'unit'});
 Agriculture.belongsTo(Species, { foreignKey: 'species'});
-Agriculture.belongsTo(Species_1, { foreignKey: 'species_1'});
+Agriculture.belongsTo(Species_1, { foreignKey: 'species_1', as: 'cl_species_1' });
 Agriculture.belongsTo(Region, { foreignKey: "region" });
 
 module.exports = Agriculture;
