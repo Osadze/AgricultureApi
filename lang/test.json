@@ -1,0 +1,53 @@
+{
+    "defaultS": {
+      "period": { "title": "წელი", "placeholder": "აირჩიეთ წელი" },
+      "region": { "title": "რეგიონი", "placeholder": "აირჩიეთ რეგიონი" }
+    },
+  
+    "vegi": {
+      "production": "მემცენარეობის კულტურების წარმოება",
+      "productionCT1": "ერთწლიანი კულტურების წარმოება - ათასი ტონა",
+      "productionCT2": "მრავალწლოვანი კულტურების წარმოება - ათასი ტონა",
+      "sownArea": "ნათესი ფართობი",
+      "averageYield": "საშუალო მოსავლიანობა",
+      "gatePrice": "ფასი ფერმის კართან",
+      "ertwlianiS": {
+        "title": "ერთწლიანი კულტურები",
+        "placeholder": "აირჩიეთ კულტურა"
+      },
+      "mravalwlovaniS": {
+        "title": "მრავალწლოვანი კულტურები",
+        "placeholder": "აირჩიეთ კულტურა"
+      }
+    },
+    "animal": {
+      "livestock": "პირუტყვის, ფრინველისა და ფუტკრის ოჯახების რაოდენობა",
+      "production": "მეცხოველეობის პროდუქტების წარმოება",
+      "lossesAndLitter": "ნამატი და დაცემა",
+      "gatePrice": "ფასი ფერმის კართან",
+      "indicatorS": {
+        "title": "მეცხოველეობის მაჩვენებლები",
+        "placeholder": "აირჩიეთ"
+      },
+      "additionS": { "title": "ნამატი", "placeholder": "აირჩიეთ" },
+      "fallS": { "title": "დაცემა", "placeholder": "აირჩიეთ" }
+    },
+    "aqua": {
+      "production": "თევზის წარმოება ",
+      "fishWaterbodies": "წყალსატევებში არსებული თევზი",
+      "share": "რეალიზებული თევზის წილი",
+      "gatePrice": "ფასი ფერმის კართან",
+      "indicatorS": {
+        "title": "აკვაკულტურის მაჩვენებლები",
+        "placeholder": "აირჩიეთ"
+      }
+    },
+    "foodBalance": {
+      "production": "მემცენარეობა",
+      "sownArea": "მემცენარეობა",
+      "averageYield": "მემცენარეობა",
+      "indicatorS": {
+        "placeholder": "აირჩიეთ პროდუქტი"
+      }
+    }
+  }

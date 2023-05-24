@@ -1,0 +1,36 @@
+{
+  "defaultS": {
+    "period": { "title": "წელი", "placeholder": "აირჩიეთ წელი" },
+    "region": { "title": "რეგიონი", "placeholder": "აირჩიეთ რეგიონი" }
+  },
+
+  "vegi": {
+    "ertwlianiS": {
+      "title": "ერთწლიანი კულტურები",
+      "placeholder": "აირჩიეთ კულტურა"
+    },
+    "mravalwlovaniS": {
+      "title": "მრავალწლოვანი კულტურები",
+      "placeholder": "აირჩიეთ კულტურა"
+    }
+  },
+  "animal": {
+    "indicatorS": {
+      "title": "მეცხოველეობის მაჩვენებლები",
+      "placeholder": "აირჩიეთ"
+    },
+    "LitterS": { "title": "ნამატის მაჩვენებლები", "placeholder": "აირჩიეთ" },
+    "lossesS": { "title": "დაცემის მაჩვენებლები", "placeholder": "აირჩიეთ" }
+  },
+  "aqua": {
+    "indicatorS": {
+      "title": "აკვაკულტურის მაჩვენებლები",
+      "placeholder": "აირჩიეთ"
+    }
+  },
+  "foodBalance": {
+    "indicatorS": {
+      "placeholder": "აირჩიეთ პროდუქტი"
+    }
+  }
+}

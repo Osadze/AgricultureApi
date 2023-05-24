@@ -1,0 +1,36 @@
+{
+  "defaultS": {
+    "period": { "title": "year", "placeholder": "Select a year" },
+    "region": { "title": "region", "placeholder": "Select a region" }
+  },
+
+  "vegi": {
+    "ertwlianiS": {
+      "title": "Annual Crops",
+      "placeholder": "Select a Culture"
+    },
+    "mravalwlovaniS": {
+      "title": "Perennial Crops",
+      "placeholder": "Select a Culture"
+    }
+  },
+  "animal": {
+    "indicatorS": {
+      "title": "Animal Husbandry Indicators",
+      "placeholder": "Select a Indicator"
+    },
+    "LitterS": { "title": "Litter Indicators", "placeholder": "Select a Indicator" },
+    "lossesS": { "title": "Losses Indicators", "placeholder": "Select a Indicator" }
+  },
+  "aqua": {
+    "indicatorS": {
+      "title": "Aquaculture Indicators",
+      "placeholder": "Select a Indicator"
+    }
+  },
+  "foodBalance": {
+    "indicatorS": {
+      "placeholder": "Select a Product"
+    }
+  }
+}

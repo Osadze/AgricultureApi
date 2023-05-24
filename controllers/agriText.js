@@ -10,6 +10,9 @@ const Indicator = require("../models/indicatorCL");
 
 const getSelectTexts = async (req, res) => {
   const langName = req.langName;
+  const lang = req.langTranslations;
+
+  console.log(lang, "lang");
 
   let { section, indicator, species, period, region } = req.query;
 
@@ -57,8 +60,8 @@ const getSelectTexts = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: "წელი",
-      placeholder: "აირჩიეთ წელი",
+      title: lang.defaultS.period.title,
+      placeholder: lang.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -104,16 +107,51 @@ const getSelectTexts = async (req, res) => {
       },
       { species: [], species1: [] }
     );
+
+    let speciesSTitle = "";
+    let speciesSPlaceholder = "";
+
+    switch (true) {
+      case section == 1:
+        speciesSTitle = lang.vegi.ertwlianiS.title;
+        speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
+        break;
+      case section == 2 && indicator != 23 && indicator != 24:
+        speciesSTitle = lang.animal.indicatorS.title;
+        speciesSPlaceholder = lang.animal.indicatorS.placeholder;
+        break;
+      case indicator == 24:
+        speciesSTitle = lang.animal.LitterS.title;
+        speciesSPlaceholder = lang.animal.LitterS.placeholder;
+        break;
+      case indicator == 23:
+        speciesSTitle = lang.animal.lossesS.title;
+        speciesSPlaceholder = lang.animal.lossesS.placeholder;
+        break;
+      case section == 3:
+        speciesSTitle = lang.aqua.indicatorS.title;
+        speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
+        break;
+      case section == 4:
+        speciesSTitle = "";
+        speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
+        break;
+
+      default:
+        console.log("def");
+        break;
+    }
+
     const speciesSelector = {
-      title: "სათაური",
-      placeholder: "აირჩიეთ სახეობა",
+      title: speciesSTitle,
+      placeholder: speciesSPlaceholder,
       selectValues: speciesWithChildren.species,
     };
 
     const speciesSelector2 = speciesWithChildren.species1.length
       ? {
-          title: "სათაური",
-          placeholder: "აირჩიეთ სახეობა",
+          title: lang.vegi.mravalwlovaniS.title,
+          placeholder: lang.vegi.mravalwlovaniS.placeholder,
           selectValues: speciesWithChildren.species1,
         }
       : undefined;
@@ -139,32 +177,16 @@ const getSelectTexts = async (req, res) => {
     }, []);
 
     const regionSelector = {
-      title: "region selector",
-      placeholder: "choose region",
+      title: lang.defaultS.region.title,
+      placeholder: lang.defaultS.region.placeholder,
       selectValues: regionNameAndCode,
     };
 
-    // TEST CODE ->
-
-    // if(!query.species && !query.period && query.region){
-    //   console.log("yas");
-
-    // res.json({
-    //   periodSelector,
-    //   speciesSelector,
-    //   speciesSelector,
-    //   // regionSelector,
-    // });
-    // }
-
-    // TEST CODE <=
-
-    console.log(query);
+    // console.log(query);
 
     const responseObj = {};
 
     if (section == 4) {
-      console.log("hereeeee");
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
@@ -198,12 +220,6 @@ const getSelectTexts = async (req, res) => {
     }
 
     res.json(responseObj);
-    // res.json({
-    //   periodSelector,
-    //   speciesSelector,
-    //   speciesSelector,
-    //   regionSelector,
-    // });
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
@@ -233,7 +249,7 @@ const getTitleTexts = async (req, res) => {
       include: [
         {
           model: Indicator,
-          attributes: [langName, "code", "sortId"],
+          attributes: [langName, "code", "sort_Id"],
         },
       ],
     });
@@ -246,13 +262,13 @@ const getTitleTexts = async (req, res) => {
       const indicatorKey = `${title}_${code}`;
       if (!indicatorSet.has(indicatorKey)) {
         indicatorSet.add(indicatorKey);
-        acc.push({ title, code, sortId: item.cl_indicator.sortId });
+        acc.push({ title, code, sort_Id: item.cl_indicator.sort_Id });
       }
       return acc;
     }, []);
 
-    // Sort the uniqueIndicators array based on the sortId attribute
-    uniqueIndicators.sort((a, b) => a.sortId - b.sortId);
+    // Sort the uniqueIndicators array based on the sort_Id attribute
+    uniqueIndicators.sort((a, b) => a.sort_Id - b.sort_Id);
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;

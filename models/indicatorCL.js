@@ -8,19 +8,19 @@ const Indicator = sequelize.define("cl_indicator", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nameKa: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  nameEn: {
-    type: DataTypes.STRING,
-    allowNull: true,
   },
   code: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  sortId: {
+  name_en: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  sort_Id: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },

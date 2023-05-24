@@ -8,17 +8,17 @@ const Section = sequelize.define("cl_section", {
     autoIncrement: true,
     primaryKey: true,
   },
-  nameKa: {
+  name: {
     type: DataTypes.INTEGER,
     allowNull: false,
-  },
-  nameEn: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
   },
   code: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  name_en: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
 },
 {
