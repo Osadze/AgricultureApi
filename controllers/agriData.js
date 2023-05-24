@@ -155,8 +155,8 @@ const getSectionData = async (req, res) => {
   if (!indicator) {
     res.status(400).send("Missing indicator parameter");
     return;
-  } else if (indicator == 23 || indicator == 24) {
-    query.indicator = [23,24];
+  // } else if (indicator == 23 || indicator == 24) {
+  //   query.indicator = [23,24];
   } else {
     const indicatorArray = String(indicator).split(",");
     query.indicator = {
@@ -208,23 +208,23 @@ const getSectionData = async (req, res) => {
     const result = [];
     const result2 = [];
 
-    if (indicator == 23 || indicator == 24) {
-      data.forEach((item) => {
-        switch (item.indicator) {
-          case 23:
-            result.push(item);
-            break;
-          case 24:
-            result2.push(item);
-            break;
-          default:
-            break;
-        }
-      });
-      res.json({ result, result2 });
-    }else {
+    // if (indicator == 23 || indicator == 24) {
+    //   data.forEach((item) => {
+    //     switch (item.indicator) {
+    //       case 23:
+    //         result.push(item);
+    //         break;
+    //       case 24:
+    //         result2.push(item);
+    //         break;
+    //       default:
+    //         break;
+    //     }
+    //   });
+    //   res.json({ result, result2 });
+    // }else {
       res.json({result: data})
-    }
+    // }
 
 
   } catch (error) {
