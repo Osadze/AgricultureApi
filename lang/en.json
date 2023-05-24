@@ -12,6 +12,14 @@
     "mravalwlovaniS": {
       "title": "Perennial Crops",
       "placeholder": "Select a Culture"
+    },
+    "chartTitles": {
+      "production": "EN__TITLE",
+      "production2": "EN__TITLE",
+      "sownArea": "EN__TITLE",
+      "averageYield": "EN__TITLE",
+      "gatePrice": "EN__TITLE",
+      "gatePrice2": "EN__TITLE"
     }
   },
   "animal": {
@@ -19,18 +27,99 @@
       "title": "Animal Husbandry Indicators",
       "placeholder": "Select a Indicator"
     },
-    "LitterS": { "title": "Litter Indicators", "placeholder": "Select a Indicator" },
-    "lossesS": { "title": "Losses Indicators", "placeholder": "Select a Indicator" }
+    "LitterS": {
+      "title": "Litter Indicators",
+      "placeholder": "Select a Indicator"
+    },
+    "lossesS": {
+      "title": "Losses Indicators",
+      "placeholder": "Select a Indicator"
+    },
+    "chartTitles": {
+      "livestock": "EN__TITLE",
+      "production": "EN__TITLE",
+      "lossesAndLitter": "EN__TITLE",
+      "gatePrice": "EN__TITLE"
+    }
   },
   "aqua": {
     "indicatorS": {
       "title": "Aquaculture Indicators",
       "placeholder": "Select a Indicator"
+    },
+    "chartTitles": {
+      "production": "EN__TITLE",
+      "fishWaterbodies": "EN__TITLE",
+      "share": "EN__TITLE",
+      "gatePrice": "EN__TITLE"
     }
   },
   "foodBalance": {
     "indicatorS": {
       "placeholder": "Select a Product"
+    },
+    "chartTitles": {
+      "sankey": "EN__TITLE",
+      "mainTitle": "EN__TITLE",
+      "miniCharts": "EN__TITLE"
+    }
+  },
+  "1": {
+    "card1": {
+      "chartTitle": "EN__TITLE",
+      "chartTitle2": "EN__TITLE"
+    },
+    "card2": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card3": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card4": {
+      "chartTitle": "EN__TITLE",
+      "chartTitle2": "EN__TITLE"
+    }
+  },
+  "2": {
+    "card1": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card2": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card3": {
+      "chartTitle": "EN__TITLE",
+      "chartTitle2": "EN__TITLE"
+    },
+    "card4": {
+      "chartTitle": "EN__TITLE"
+    }
+  },
+  "3": {
+    "card1": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card2": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card3": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card4": {
+      "chartTitle": "EN__TITLE"
+    }
+  },
+  "4": {
+    "card1": {
+      "chartTitle": "EN__TITLE",
+      "chartTitle2": "EN__TITLE",
+      "chartTitle3": "EN__TITLE"
+    },
+    "card2": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card3": {
+      "chartTitle": "EN__TITLE"
     }
   }
 }

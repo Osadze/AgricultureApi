@@ -225,8 +225,9 @@ const getSelectTexts = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 const getTitleTexts = async (req, res) => {
+  const lang = req.langTranslations;
+
   const langName = req.langName;
   const { section } = req.query;
 
@@ -258,7 +259,6 @@ const getTitleTexts = async (req, res) => {
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;
       const title = item.cl_indicator[langName];
-
       const indicatorKey = `${title}_${code}`;
       if (!indicatorSet.has(indicatorKey)) {
         indicatorSet.add(indicatorKey);
@@ -272,7 +272,46 @@ const getTitleTexts = async (req, res) => {
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
-      acc[cardName] = { title: item.title, code: parseInt(item.code) };
+      let chartTitle = "charttitle"; // Default chartTitle
+      let chartTitle2 = undefined; // Default chartTitle
+      let chartTitle3 = undefined; // Default chartTitle
+
+      // Modify chartTitle based on the card
+
+      switch (cardName) {
+        case "card1":
+          chartTitle = lang[`${section}`].card1.chartTitle;
+          chartTitle2 = lang[`${section}`].card1.chartTitle2;
+          chartTitle3 = lang[`${section}`].card1.chartTitle3;
+          break;
+        case "card2":
+          chartTitle = lang[`${section}`].card2.chartTitle;
+          chartTitle2 = lang[`${section}`].card2.chartTitle2;
+          chartTitle3 = lang[`${section}`].card2.chartTitle3;
+          break;
+        case "card3":
+          chartTitle = lang[`${section}`].card3.chartTitle;
+          chartTitle2 = lang[`${section}`].card3.chartTitle2;
+          chartTitle3 = lang[`${section}`].card3.chartTitle3;
+          break;
+        case "card4":
+          chartTitle = lang[`${section}`].card4.chartTitle;
+          chartTitle2 = lang[`${section}`].card4.chartTitle2;
+          chartTitle3 = lang[`${section}`].card4.chartTitle3;
+          break;
+        default:
+          break;
+      }
+      
+      // Add more conditions to modify chartTitle for other cards
+
+      acc[cardName] = {
+        title: item.title,
+        code: parseInt(item.code),
+        chartTitle: chartTitle,
+        chartTitle2: chartTitle2,
+        chartTitle3: chartTitle3
+      };
       return acc;
     }, {});
 
@@ -289,17 +328,97 @@ const getTitleTexts = async (req, res) => {
       // Change card5 to card4
       const card5 = cards.card5;
       if (card5) {
-        cards.card4 = { title: card5.title, code: card5.code };
+        cards.card4 = {
+          title: card5.title,
+          code: card5.code,
+          chartTitle: card4.chartTitle,
+          chartTitle2: card4.chartTitle2,
+          chartTitle3: card4.chartTitle3,
+        };
         delete cards.card5;
       }
     }
-
     res.json({ cards });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// const getTitleTexts = async (req, res) => {
+//   const langName = req.langName;
+//   const { section } = req.query;
+
+//   const query = {};
+
+//   if (!section) {
+//     res.status(400).send("Missing section parameter");
+//     return;
+//   } else {
+//     const sectionArray = String(section).split(",");
+//     query.section = {
+//       [Op.in]: sectionArray,
+//     };
+//   }
+
+//   try {
+//     const result = await Agriculture.findAll({
+//       where: query,
+//       attributes: ["indicator"],
+//       include: [
+//         {
+//           model: Indicator,
+//           attributes: [langName, "code", "sort_Id"],
+//         },
+//       ],
+//     });
+
+//     const indicatorSet = new Set();
+//     const uniqueIndicators = result.reduce((acc, item) => {
+//       const code = item.cl_indicator.code;
+//       const title = item.cl_indicator[langName];
+
+//       const indicatorKey = `${title}_${code}`;
+//       if (!indicatorSet.has(indicatorKey)) {
+//         indicatorSet.add(indicatorKey);
+//         acc.push({ title, code, sort_Id: item.cl_indicator.sort_Id });
+//       }
+//       return acc;
+//     }, []);
+
+//     // Sort the uniqueIndicators array based on the sort_Id attribute
+//     uniqueIndicators.sort((a, b) => a.sort_Id - b.sort_Id);
+
+//     const cards = uniqueIndicators.reduce((acc, item, index) => {
+//       const cardName = `card${index + 1}`;
+//       acc[cardName] = { title: item.title, code: parseInt(item.code) };
+//       return acc;
+//     }, {});
+
+//     // Remove card4 and add its title to card3
+//     if (section === "2") {
+//       const card4 = cards.card4;
+//       if (card4) {
+//         const card3 = cards.card3;
+//         if (card3) {
+//           card3.title = `${card4.title} და ${card3.title}`;
+//         }
+//         delete cards.card4;
+//       }
+//       // Change card5 to card4
+//       const card5 = cards.card5;
+//       if (card5) {
+//         cards.card4 = { title: card5.title, code: card5.code };
+//         delete cards.card5;
+//       }
+//     }
+
+    // res.json({ cards });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
 
 // const getSelectTextsv1 = async (req, res) => {
 //   let { section, indicator, species, period, region } = req.query;
