@@ -77,8 +77,11 @@ const getSelectTexts = async (req, res) => {
     });
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ["id", "value", "period", "species", "region"],
-      include: [{ model: Region, attributes: [langName, "code"] }],
+      attributes: ["id", "value", "period", "species", "region", "indicator"],
+      include: [
+        { model: Region, attributes: [langName, "code"] },
+        { model: Indicator, attributes: [langName, "code"] },
+      ],
     });
 
     // Group species by parent id
@@ -177,7 +180,7 @@ const getSelectTexts = async (req, res) => {
     } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
       speciesSelector2 = {
         title: "needs text",
-        placeholder:"needs text",
+        placeholder: "needs text",
         selectValues: speciesWithChildren.species1,
       };
     }
@@ -196,6 +199,50 @@ const getSelectTexts = async (req, res) => {
       return acc;
     }, []);
 
+    let indicatorSelector;
+
+    if (section == 6) {
+      const indicatorSet = new Set();
+
+      const indicatorNameAndCode = result.reduce((acc, indicator) => {
+        const code = indicator.cl_indicator.code;
+        const name = indicator.cl_indicator[`${langName}`];
+
+        const indicatorKey = `${name}_${code}`;
+        if (!indicatorSet.has(indicatorKey)) {
+          indicatorSet.add(indicatorKey);
+          const item = { name: name, code, childrens: [] };
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+
+      // Find the item with code 61
+      const itemWithCode61 = indicatorNameAndCode.find(
+        (item) => item.code === "61"
+      );
+
+      // Push items with codes 62, 63, and 64 into the childrens list of item with code 61
+      indicatorNameAndCode.forEach((item) => {
+        if (["62", "63", "64"].includes(item.code)) {
+          itemWithCode61.childrens.push(item);
+        }
+      });
+
+      // Remove items with codes 62, 63, and 64 from outside the childrens list
+      const filteredResult = indicatorNameAndCode.filter(
+        (item) => !["62", "63", "64"].includes(item.code)
+      );
+
+      indicatorSelector = {
+        title: "needs title",
+        placeholder: "needs title",
+        selectValues: filteredResult,
+      };
+
+      // console.log(filteredResult);
+    }
+
     const regionSelector = {
       title: lang.defaultS.region.title,
       placeholder: lang.defaultS.region.placeholder,
@@ -210,6 +257,10 @@ const getSelectTexts = async (req, res) => {
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
+    } else if (section == 6) {
+      responseObj.periodSelector = periodSelector;
+      responseObj.indicatorSelector = indicatorSelector;
+      responseObj.speciesSelector = speciesSelector;
     } else if (!query.species && !query.period && !query.region) {
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
