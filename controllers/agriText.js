@@ -108,6 +108,11 @@ const getSelectTexts = async (req, res) => {
           acc.species1.push(species);
 
           // console.log("dummy dev");
+        } else if (indicator == [52, 53] && species.code == 530) {
+          // needs change in future
+          acc.species1.push(species);
+
+          // console.log("dummy dev");
         } else {
           acc.species.push(species);
         }
@@ -132,7 +137,10 @@ const getSelectTexts = async (req, res) => {
         speciesSTitle = lang.animal.LitterS.title;
         speciesSPlaceholder = lang.animal.LitterS.placeholder;
         break;
-
+      case indicator == [52, 53]:
+        speciesSTitle = "needs text";
+        speciesSPlaceholder = "needs text";
+        break;
       case section == 3:
         speciesSTitle = lang.aqua.indicatorS.title;
         speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
@@ -143,7 +151,7 @@ const getSelectTexts = async (req, res) => {
         break;
 
       default:
-        console.log("def");
+        console.log("No Title");
         break;
     }
 
@@ -160,11 +168,16 @@ const getSelectTexts = async (req, res) => {
         placeholder: lang.vegi.mravalwlovaniS.placeholder,
         selectValues: speciesWithChildren.species1,
       };
-    }
-    if (speciesWithChildren.species1.length && indicator == [23, 24]) {
+    } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
       speciesSelector2 = {
         title: lang.animal.lossesS.title,
         placeholder: lang.animal.lossesS.placeholder,
+        selectValues: speciesWithChildren.species1,
+      };
+    } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
+      speciesSelector2 = {
+        title: "needs text",
+        placeholder:"needs text",
         selectValues: speciesWithChildren.species1,
       };
     }
@@ -193,11 +206,10 @@ const getSelectTexts = async (req, res) => {
 
     const responseObj = {};
 
-    if (section == 4) {
+    if (section == 4 || section == 5) {
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
       responseObj.speciesSelector2 = speciesSelector2;
-      // responseObj.regionSelector = regionSelector;
     } else if (!query.species && !query.period && !query.region) {
       responseObj.periodSelector = periodSelector;
       responseObj.speciesSelector = speciesSelector;
