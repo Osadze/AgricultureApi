@@ -84,6 +84,14 @@ const getSelectTexts = async (req, res) => {
       ],
     });
 
+    // console.log(result);
+
+    if (!result || result.length === 0) {
+      // Handle the case when the result is empty
+      res.status(400).send("No data found");
+      return;
+    }
+
     // Group species by parent id
 
     const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
@@ -92,6 +100,7 @@ const getSelectTexts = async (req, res) => {
       acc[parentId].push(curr);
       return acc;
     }, {});
+
 
     const speciesWithChildren = speciesByParentId["null"].reduce(
       (acc, parentSpecies) => {
