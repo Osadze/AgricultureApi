@@ -12,8 +12,6 @@ const getSelectTexts = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
 
-  console.log(lang, "lang");
-
   let { section, indicator, species, period, region } = req.query;
 
   if (!section || !indicator) {
@@ -65,20 +63,22 @@ const getSelectTexts = async (req, res) => {
       selectValues: periodData,
     };
 
-    const species = await Agriculture.aggregate(
-      "species",
-      "DISTINCT",
-      {
-        plain: false,
-        where: query,
-      },
-      "name"
-    );
+    const species = await Agriculture.aggregate("species", "DISTINCT", {
+      plain: false,
+      where: query,
+    });
+
+    // console.log(species,"speciesspeciesspeciesspeciesspecies");
 
     const speciesCodesAndNames = await Species.findAll({
       attributes: ["code", [langName, "name"], "parentId"],
       where: { code: species.map((s) => s.DISTINCT) },
       order: [["code", "ASC"]],
+    });
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["id", "value", "period", "species", "region"],
+      include: [{ model: Region, attributes: [langName, "code"] }],
     });
 
     // Group species by parent id
@@ -100,6 +100,14 @@ const getSelectTexts = async (req, res) => {
 
         if (section == 1 && species.code >= 21) {
           acc.species1.push(species);
+        } else if (
+          indicator == [23, 24] &&
+          (species.code == 30 || species.code == 35)
+        ) {
+          // needs change in future
+          acc.species1.push(species);
+
+          // console.log("dummy dev");
         } else {
           acc.species.push(species);
         }
@@ -116,18 +124,15 @@ const getSelectTexts = async (req, res) => {
         speciesSTitle = lang.vegi.ertwlianiS.title;
         speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
         break;
-      case section == 2 && indicator != 23 && indicator != 24:
+      case section == 2 && indicator != [23, 24]:
         speciesSTitle = lang.animal.indicatorS.title;
         speciesSPlaceholder = lang.animal.indicatorS.placeholder;
         break;
-      case indicator == 24:
+      case indicator == [23, 24]:
         speciesSTitle = lang.animal.LitterS.title;
         speciesSPlaceholder = lang.animal.LitterS.placeholder;
         break;
-      case indicator == 23:
-        speciesSTitle = lang.animal.lossesS.title;
-        speciesSPlaceholder = lang.animal.lossesS.placeholder;
-        break;
+
       case section == 3:
         speciesSTitle = lang.aqua.indicatorS.title;
         speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
@@ -148,19 +153,21 @@ const getSelectTexts = async (req, res) => {
       selectValues: speciesWithChildren.species,
     };
 
-    const speciesSelector2 = speciesWithChildren.species1.length
-      ? {
-          title: lang.vegi.mravalwlovaniS.title,
-          placeholder: lang.vegi.mravalwlovaniS.placeholder,
-          selectValues: speciesWithChildren.species1,
-        }
-      : undefined;
-
-    const result = await Agriculture.findAll({
-      where: query,
-      attributes: ["id", "value", "period", "species", "region"],
-      include: [{ model: Region, attributes: [langName, "code"] }],
-    });
+    let speciesSelector2 = undefined;
+    if (speciesWithChildren.species1.length && section == 1) {
+      speciesSelector2 = {
+        title: lang.vegi.mravalwlovaniS.title,
+        placeholder: lang.vegi.mravalwlovaniS.placeholder,
+        selectValues: speciesWithChildren.species1,
+      };
+    }
+    if (speciesWithChildren.species1.length && indicator == [23, 24]) {
+      speciesSelector2 = {
+        title: lang.animal.lossesS.title,
+        placeholder: lang.animal.lossesS.placeholder,
+        selectValues: speciesWithChildren.species1,
+      };
+    }
 
     const regionSet = new Set();
 
@@ -225,6 +232,7 @@ const getSelectTexts = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 const getTitleTexts = async (req, res) => {
   const lang = req.langTranslations;
 
@@ -302,7 +310,7 @@ const getTitleTexts = async (req, res) => {
         default:
           break;
       }
-      
+
       // Add more conditions to modify chartTitle for other cards
 
       acc[cardName] = {
@@ -310,7 +318,7 @@ const getTitleTexts = async (req, res) => {
         code: parseInt(item.code),
         chartTitle: chartTitle,
         chartTitle2: chartTitle2,
-        chartTitle3: chartTitle3
+        chartTitle3: chartTitle3,
       };
       return acc;
     }, {});
@@ -413,7 +421,7 @@ const getTitleTexts = async (req, res) => {
 //       }
 //     }
 
-    // res.json({ cards });
+// res.json({ cards });
 //   } catch (error) {
 //     console.error(error);
 //     res.status(500).json({ message: "Server error" });
