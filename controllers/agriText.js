@@ -101,37 +101,97 @@ const getSelectTexts = async (req, res) => {
       return acc;
     }, {});
 
+    let speciesWithChildren;
 
-    const speciesWithChildren = speciesByParentId["null"].reduce(
-      (acc, parentSpecies) => {
-        const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-        const species = {
-          ...dataValues,
-          childrens: speciesByParentId[parentSpecies.code] || [],
-        };
+    // NEEDS CHANGE
 
-        if (section == 1 && species.code >= 21) {
-          acc.species1.push(species);
-        } else if (
-          indicator == [23, 24] &&
-          (species.code == 30 || species.code == 35)
-        ) {
-          // needs change in future
-          acc.species1.push(species);
+    if (indicator == 14) {
+      speciesWithChildren = Object.values(speciesByParentId).reduce(
+        (acc, parentSpecies) => {
+          parentSpecies.forEach((species) => {
+            const { _previousDataValues, ...dataValues } = species.dataValues;
+            const speciesItem = {
+              ...dataValues,
+              childrens: speciesByParentId[species.code] || [],
+            };
 
-          // console.log("dummy dev");
-        } else if (indicator == [52, 53] && species.code == 530) {
-          // needs change in future
-          acc.species1.push(species);
+            if (section == 1 && species.code >= 21 && species.code <= 99) {
+              acc.species1.push(speciesItem);
+            } else if (
+              indicator == [23, 24] &&
+              (species.code == 30 || species.code == 35)
+            ) {
+              acc.species1.push(speciesItem);
+            } else if (indicator == [52, 53] && species.code == 530) {
+              acc.species1.push(speciesItem);
+            } else {
+              acc.species.push(speciesItem);
+            }
+          });
 
-          // console.log("dummy dev");
-        } else {
-          acc.species.push(species);
-        }
-        return acc;
-      },
-      { species: [], species1: [] }
-    );
+          return acc;
+        },
+        { species: [], species1: [] }
+      );
+    } else {
+      speciesWithChildren = speciesByParentId["null"].reduce(
+        (acc, parentSpecies) => {
+          const { _previousDataValues, ...dataValues } =
+            parentSpecies.dataValues;
+          const species = {
+            ...dataValues,
+            childrens: speciesByParentId[parentSpecies.code] || [],
+          };
+
+          if (section == 1 && species.code >= 21 && species.code <= 99) {
+            acc.species1.push(species);
+          } else if (
+            indicator == [23, 24] &&
+            (species.code == 30 || species.code == 35)
+          ) {
+            acc.species1.push(species);
+          } else if (indicator == [52, 53] && species.code == 530) {
+            acc.species1.push(species);
+          } else {
+            acc.species.push(species);
+          }
+
+          return acc;
+        },
+        { species: [], species1: [] }
+      );
+    }
+
+    // const speciesWithChildren = speciesByParentId["null"].reduce(
+    //   (acc, parentSpecies) => {
+    //     const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
+    //     const species = {
+    //       ...dataValues,
+    //       childrens: speciesByParentId[parentSpecies.code] || [],
+    //     };
+
+    //     if (section == 1 && species.code >= 21) {
+    //       acc.species1.push(species);
+    //     } else if (
+    //       indicator == [23, 24] &&
+    //       (species.code == 30 || species.code == 35)
+    //     ) {
+    //       // needs change in future
+    //       acc.species1.push(species);
+
+    //       // console.log("dummy dev");
+    //     } else if (indicator == [52, 53] && species.code == 530) {
+    //       // needs change in future
+    //       acc.species1.push(species);
+
+    //       // console.log("dummy dev");
+    //     } else {
+    //       acc.species.push(species);
+    //     }
+    //     return acc;
+    //   },
+    //   { species: [], species1: [] }
+    // );
 
     let speciesSTitle = "";
     let speciesSPlaceholder = "";
