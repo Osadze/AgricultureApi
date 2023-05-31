@@ -177,7 +177,7 @@ const getSectionData = async (req, res) => {
   }
 
   if (!species) {
-    query.species = 10;
+    // query.species = 10;
   } else {
     const speciesArray = String(species).split(",");
     query.species = {
@@ -223,6 +223,7 @@ const getSectionData = async (req, res) => {
     //   });
     //   res.json({ result, result2 });
     // }else {
+      console.log(data);
       res.json({result: data})
     // }
 
