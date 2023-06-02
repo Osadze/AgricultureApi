@@ -1,6 +1,6 @@
 {
   "defaultS": {
-    "period": { "title": "year", "placeholder": "Select a year" },
+    "period": { "title": "Year", "placeholder": "Select a year" },
     "region": { "title": "region", "placeholder": "Select a region" }
   },
 
@@ -12,14 +12,6 @@
     "mravalwlovaniS": {
       "title": "Perennial Crops",
       "placeholder": "Select a Culture"
-    },
-    "chartTitles": {
-      "production": "EN__TITLE",
-      "production2": "EN__TITLE",
-      "sownArea": "EN__TITLE",
-      "averageYield": "EN__TITLE",
-      "gatePrice": "EN__TITLE",
-      "gatePrice2": "EN__TITLE"
     }
   },
   "animal": {
@@ -34,36 +26,47 @@
     "lossesS": {
       "title": "Losses Indicators",
       "placeholder": "Select a Indicator"
-    },
-    "chartTitles": {
-      "livestock": "EN__TITLE",
-      "production": "EN__TITLE",
-      "lossesAndLitter": "EN__TITLE",
-      "gatePrice": "EN__TITLE"
     }
   },
   "aqua": {
     "indicatorS": {
       "title": "Aquaculture Indicators",
       "placeholder": "Select a Indicator"
-    },
-    "chartTitles": {
-      "production": "EN__TITLE",
-      "fishWaterbodies": "EN__TITLE",
-      "share": "EN__TITLE",
-      "gatePrice": "EN__TITLE"
     }
   },
   "foodBalance": {
     "indicatorS": {
       "placeholder": "Select a Product"
-    },
-    "chartTitles": {
-      "sankey": "EN__TITLE",
-      "mainTitle": "EN__TITLE",
-      "miniCharts": "EN__TITLE"
     }
   },
+  "employment": {
+    "indicatorS": {
+      "title": "EN__TITLE",
+      "placeholder": "EN__TITLE"
+    }
+  },
+  "salary": {
+    "indicatorTitle": "Salaries",
+    "avarage": {
+      "title": "Avarage Salary",
+      "placeholder": "Select a Salary"
+    },
+    "median": {
+      "title": "Median Salary"
+    }
+  },
+
+  "business": {
+    "indicatorS": {
+      "title": "EN__TITLE",
+      "placeholder": "EN__TITLE"
+    },
+    "speciesSelector": {
+      "title": "EN__TITLE",
+      "placeholder": "EN__TITLE"
+    }
+  },
+
   "1": {
     "card1": {
       "chartTitle": "EN__TITLE",
@@ -119,6 +122,19 @@
       "chartTitle": "EN__TITLE"
     },
     "card3": {
+      "chartTitle": "EN__TITLE"
+    }
+  },
+  "5": {
+    "card1": {
+      "chartTitle": "EN__TITLE"
+    },
+    "card2": {
+      "chartTitle": "EN__TITLE"
+    }
+  },
+  "6": {
+    "card1": {
       "chartTitle": "EN__TITLE"
     }
   }

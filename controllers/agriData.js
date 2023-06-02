@@ -223,7 +223,7 @@ const getSectionData = async (req, res) => {
     //   });
     //   res.json({ result, result2 });
     // }else {
-      console.log(data);
+      // console.log(data);
       res.json({result: data})
     // }
 

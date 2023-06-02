@@ -210,8 +210,8 @@ const getSelectTexts = async (req, res) => {
         speciesSPlaceholder = lang.animal.LitterS.placeholder;
         break;
       case indicator == [52, 53]:
-        speciesSTitle = "needs text";
-        speciesSPlaceholder = "needs text";
+        speciesSTitle = lang.salary.avarage.title;
+        speciesSPlaceholder = lang.salary.avarage.placeholder;
         break;
       case section == 3:
         speciesSTitle = lang.aqua.indicatorS.title;
@@ -221,9 +221,19 @@ const getSelectTexts = async (req, res) => {
         speciesSTitle = "";
         speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
         break;
+      case section == 5 && !indicator == [52, 53]:
+        speciesSTitle = lang.employment.indicatorS.title;
+        speciesSPlaceholder = lang.employment.indicatorS.placeholder;
+        break;
+      case section == 6:
+        speciesSTitle = lang.business.speciesSelector.title;
+        speciesSPlaceholder = lang.business.speciesSelector.placeholder;
+        indicatorTitle = lang.business.indicatorS.title
+        indicatorPlaceholder = lang.business.indicatorS.placeholder
+        break;
 
       default:
-        console.log("No Title");
+        console.log("Something Is Not Right! No Title (Or Placeholder) Found");
         break;
     }
 
@@ -248,9 +258,9 @@ const getSelectTexts = async (req, res) => {
       };
     } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
       speciesSelector2 = {
-        title: "needs text",
-        placeholder: "needs text",
-        selectValues: speciesWithChildren.species1,
+        title: lang.salary.median.title,
+        placeholder: undefined,
+        selectValues: undefined,
       };
     }
 
@@ -304,8 +314,8 @@ const getSelectTexts = async (req, res) => {
       );
 
       indicatorSelector = {
-        title: "needs title",
-        placeholder: "needs title",
+        title: indicatorTitle,
+        placeholder: indicatorPlaceholder,
         selectValues: filteredResult,
       };
 
@@ -412,36 +422,75 @@ const getTitleTexts = async (req, res) => {
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
-      let chartTitle = "charttitle"; // Default chartTitle
-      let chartTitle2 = undefined; // Default chartTitle
-      let chartTitle3 = undefined; // Default chartTitle
+      // console.log(lang[`${section}`][cardName]?.chartTitle);
+      const choosenCard = lang[`${section}`][cardName];
+
+      const chartTitle = choosenCard?.chartTitle;
+      const chartTitle2 = choosenCard?.chartTitle2;
+      const chartTitle3 = choosenCard?.chartTitle3;
+
+      if (section === "5" && cardName == "card2") {
+        item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
+        // console.log("cardName", cardName);
+      }
+
+      if (section === "5" && cardName === "card3") {
+        // console.log("cardName", cardName);
+
+        return acc; // Skip adding card3 to the cards object
+      }
+      if (
+        section === "6" &&
+        (cardName === "card2" || cardName === "card3" || cardName === "card4")
+      ) {
+        // console.log("cardName", cardName);
+
+        return acc; // Skip adding card3 to the cards object
+      }
+      if (section === "6" && cardName == "card1") {
+        item.title = undefined;
+        // console.log("cardName", cardName);
+      }
+
+      // OLD CODE START
 
       // Modify chartTitle based on the card
 
-      switch (cardName) {
-        case "card1":
-          chartTitle = lang[`${section}`].card1.chartTitle;
-          chartTitle2 = lang[`${section}`].card1.chartTitle2;
-          chartTitle3 = lang[`${section}`].card1.chartTitle3;
-          break;
-        case "card2":
-          chartTitle = lang[`${section}`].card2.chartTitle;
-          chartTitle2 = lang[`${section}`].card2.chartTitle2;
-          chartTitle3 = lang[`${section}`].card2.chartTitle3;
-          break;
-        case "card3":
-          chartTitle = lang[`${section}`].card3.chartTitle;
-          chartTitle2 = lang[`${section}`].card3.chartTitle2;
-          chartTitle3 = lang[`${section}`].card3.chartTitle3;
-          break;
-        case "card4":
-          chartTitle = lang[`${section}`].card4.chartTitle;
-          chartTitle2 = lang[`${section}`].card4.chartTitle2;
-          chartTitle3 = lang[`${section}`].card4.chartTitle3;
-          break;
-        default:
-          break;
-      }
+      // switch (cardName) {
+      //   case "card1":
+      //     chartTitle = lang[`${section}`].card1.chartTitle;
+      //     chartTitle2 = lang[`${section}`].card1.chartTitle2;
+      //     chartTitle3 = lang[`${section}`].card1.chartTitle3;
+      //     break;
+      //   case "card2":
+      //     if (section === "5") {
+      //       item.title = "test"; // Modify title for card2 in section 5
+      //     }
+      //     chartTitle = lang[`${section}`].card2.chartTitle;
+      //     chartTitle2 = lang[`${section}`].card2.chartTitle2;
+      //     chartTitle3 = lang[`${section}`].card2.chartTitle3;
+      //     break;
+      //   case "card3":
+      //     if (section === "5") {
+      //       return acc; // Skip adding card3 to the cards object
+      //     } else {
+      //       chartTitle = lang[`${section}`].card3.chartTitle;
+      //       chartTitle2 = lang[`${section}`].card3.chartTitle2;
+      //       chartTitle3 = lang[`${section}`].card3.chartTitle3;
+      //     }
+      //     break;
+      //   case "card4":
+      //     console.log(cardName);
+      //     chartTitle = lang[`${section}`].card4.chartTitle;
+      //     chartTitle2 = lang[`${section}`].card4.chartTitle2;
+      //     chartTitle3 = lang[`${section}`].card4.chartTitle3;
+      //     break;
+      //   default:
+      //     // console.log("def");
+      //     break;
+      // }
+
+      // OLD CODE END
 
       // Add more conditions to modify chartTitle for other cards
 
