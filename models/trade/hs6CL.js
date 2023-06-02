@@ -1,30 +1,30 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../../util/tradeDb");
 
-const Region = sequelize.define("cl_region", {
+
+const Hs6 = sequelize.define("hs6_table", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
-    type: DataTypes.STRING,
+  hs6_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  code: {
-    type: DataTypes.INTEGER,
+  name_ka: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   name_en: {
     type: DataTypes.STRING,
     allowNull: true,
-  },
+  }
 },
 {
-  tableName: "cl_region",
+  tableName: "hs6_table",
   timestamps: false,
 });
 
-
-module.exports = Region;
+module.exports = Hs6;

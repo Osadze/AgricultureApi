@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../../util/agriDb");
 const Section = require('./sectionCL')
 const Indicator = require('./indicatorCL')
 const Region = require('./regionCL')

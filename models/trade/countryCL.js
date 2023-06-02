@@ -1,29 +1,30 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../../util/tradeDb");
 
-const Species_1 = sequelize.define("cl_species_1", {
+
+const Country = sequelize.define("country", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
-    type: DataTypes.STRING,
+  country_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
-  code: {
-    type: DataTypes.INTEGER,
+  name_ka: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   name_en: {
     type: DataTypes.STRING,
     allowNull: true,
-  },
+  }
 },
 {
-  tableName: "cl_species_1",
+  tableName: "country",
   timestamps: false,
 });
 
-module.exports = Species_1;
+module.exports = Country;

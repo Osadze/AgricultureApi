@@ -1,10 +1,10 @@
-const Agriculture = require("../models/agriculture_model");
-const Region = require("../models/regionCL");
-const Species = require("../models/speciesCL");
-const Species_1 = require("../models/species_1CL");
-const Unit = require("../models/unitCL");
+const Agriculture = require("../models/agriculture/agriculture_model");
+const Region = require("../models/agriculture/regionCL");
+const Species = require("../models/agriculture/speciesCL");
+const Species_1 = require("../models/agriculture/species_1CL");
+const Unit = require("../models/agriculture/unitCL");
 const { Sequelize, Op } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
 
 const getAllPeriods = async () => {

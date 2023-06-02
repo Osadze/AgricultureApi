@@ -1,7 +1,8 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../../util/agriDb");
 
-const Section = sequelize.define("cl_section", {
+
+const Species_1 = sequelize.define("cl_species_1", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -9,7 +10,7 @@ const Section = sequelize.define("cl_section", {
     primaryKey: true,
   },
   name: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   code: {
@@ -17,13 +18,13 @@ const Section = sequelize.define("cl_section", {
     allowNull: false,
   },
   name_en: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: true,
   },
 },
 {
-  tableName: "cl_section",
+  tableName: "cl_species_1",
   timestamps: false,
 });
 
-module.exports = Section;
+module.exports = Species_1;

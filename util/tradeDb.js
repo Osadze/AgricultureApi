@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("agriculture", "root", process.env.SQLPASW, {
-  host: "localhost",
+const sequelize = new Sequelize("trade1", "root", "Ana2013Mari", {
+  host: "192.168.0.139",
   dialect: "mysql",
   pool: {
     max: 5,
@@ -15,10 +15,10 @@ const sequelize = new Sequelize("agriculture", "root", process.env.SQLPASW, {
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Connection has been established successfully.");
+    console.log("Trade Database connection has been established successfully..");
   })
   .catch((error) => {
-    console.error("Unable to connect to the database: ", error);
+    console.error("Unable to connect to the Trade Database", error);
   });
 
 module.exports = sequelize;

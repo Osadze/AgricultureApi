@@ -1,7 +1,8 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../../util/agriDb");
 
-const Unit = sequelize.define("cl_unit", {
+
+const Indicator = sequelize.define("cl_indicator", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -20,10 +21,15 @@ const Unit = sequelize.define("cl_unit", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  sort_Id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+
 },
 {
-  tableName: "cl_unit",
+  tableName: "cl_indicator",
   timestamps: false,
 });
 
-module.exports = Unit;
+module.exports = Indicator;

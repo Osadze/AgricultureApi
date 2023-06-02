@@ -1,12 +1,11 @@
-const Agriculture = require("../models/agriculture_model");
-const Region = require("../models/regionCL");
-const Species = require("../models/speciesCL");
-const Unit = require("../models/unitCL");
-const indicator = require("../models/indicatorCL");
+const Agriculture = require("../models/agriculture/agriculture_model");
+const Region = require("../models/agriculture/regionCL");
+const Species = require("../models/agriculture/speciesCL");
+const Unit = require("../models/agriculture/unitCL");
+const Indicator = require("../models/agriculture/indicatorCL");
 const { Sequelize, Op } = require("sequelize");
-const sequelize = require("../util/database");
+const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
-const Indicator = require("../models/indicatorCL");
 
 const getSelectTexts = async (req, res) => {
   const langName = req.langName;
