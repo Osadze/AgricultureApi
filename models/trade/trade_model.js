@@ -1,11 +1,10 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../util/tradeDb");
-const Hs6 = require('./hs6CL');
-const Types = require('./typesCL');
-const Country = require('./countryCL');
+const Hs6 = require("./hs6CL");
+const Types = require("./typesCL");
+const Country = require("./countryCL");
 
-
-const Trade = sequelize.define(
+const TradeModel = sequelize.define(
   "trade_data",
   {
     id: {
@@ -14,8 +13,7 @@ const Trade = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    tradeType: { 
-      // Error: Unknown column 'tradeType' in 'field list'
+    type: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -27,7 +25,7 @@ const Trade = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    tradeCountry: { // Renamed 'country' attribute to 'tradeCountry'
+    country: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -50,8 +48,8 @@ const Trade = sequelize.define(
   }
 );
 
-Trade.belongsTo(Hs6, { foreignKey: 'hs6' });
-Trade.belongsTo(Types, { foreignKey: 'tradeType', as: 'trade' });
-Trade.belongsTo(Country, { foreignKey: 'tradeCountry' }); // Changed alias to 'tradeCountry'
+TradeModel.belongsTo(Hs6, { foreignKey: "hs6" });
+TradeModel.belongsTo(Types, { foreignKey: "type", as: "typecl" });
+TradeModel.belongsTo(Country, { foreignKey: "country", as: "countrycl"  }); // Changed alias to 'tradeCountry'
 
-module.exports = Trade;
+module.exports = TradeModel;

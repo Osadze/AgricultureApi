@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../../util/tradeDb");
 
 
-const Types = sequelize.define("types", {
+const TypesModel = sequelize.define("types", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -27,4 +27,4 @@ const Types = sequelize.define("types", {
   timestamps: false,
 });
 
-module.exports = Types;
+module.exports = TypesModel;
