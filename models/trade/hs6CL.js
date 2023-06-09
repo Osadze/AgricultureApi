@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../../util/tradeDb");
+const TradeModel = require("./trade_model");
 
 
 const Hs6 = sequelize.define("hs6_table", {
@@ -26,5 +27,6 @@ const Hs6 = sequelize.define("hs6_table", {
   tableName: "hs6_table",
   timestamps: false,
 });
+
 
 module.exports = Hs6;

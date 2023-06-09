@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../../util/tradeDb");
 const Hs6 = require("./hs6CL");
 const Types = require("./typesCL");
-const Country = require("./countryCL");
 
 const TradeModel = sequelize.define(
   "trade_data",
@@ -48,8 +47,8 @@ const TradeModel = sequelize.define(
   }
 );
 
-TradeModel.belongsTo(Hs6, { foreignKey: "hs6" });
-TradeModel.belongsTo(Types, { foreignKey: "type", as: "typecl" });
-TradeModel.belongsTo(Country, { foreignKey: "country", as: "countrycl"  }); // Changed alias to 'tradeCountry'
+TradeModel.belongsTo(Hs6, { foreignKey: "hs6", targetKey: "hs6_id", as: "hs6cl" });
+
+TradeModel.belongsTo(Types, { foreignKey: "type", targetKey: "type_flow",as: "typecl" });
 
 module.exports = TradeModel;

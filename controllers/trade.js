@@ -1,12 +1,11 @@
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const TradeModel = require("../models/trade/trade_model");
-const Country = require("../models/trade/countryCL");
 const Types = require("../models/trade/typesCL");
 const Hs6 = require("../models/trade/hs6CL");
 
 const getTradeData = async (req, res) => {
   const langName = req.langName;
-  let { type, year, hs6, unit, } = req.query;
+  let { type, year, hs6, unit } = req.query;
   const query = {};
 
   if (!type) {
@@ -53,38 +52,19 @@ const getTradeData = async (req, res) => {
     };
   }
 
-  // if (!country) {
-  //   // query.country = 1;
-  // } else {
-  //   const regionArray = String(country).split(",");
-  //   query.country = {
-  //     [Op.in]: regionArray,
-  //   };
-  // }
-
   try {
-    const attributes = [
-      "type",
-      "year",
-      "hs6",
-    ];
+    const attributes = ["type", "year"];
 
     if (unit === "3") {
       attributes.push([
         Sequelize.fn("SUM", Sequelize.col("suppu")),
-        "totalSuppu",
+        "totalvalueSuppu",
       ]);
     } else if (unit === "2") {
       // Show Tons
-      attributes.push([
-        Sequelize.fn("SUM", Sequelize.col("tons")),
-        "totalTons",
-      ]);
+      attributes.push([Sequelize.fn("SUM", Sequelize.col("tons")), "value"]);
     } else {
-      attributes.push([
-        Sequelize.fn("SUM", Sequelize.col("usd1000")),
-        "totalUsd100",
-      ]);
+      attributes.push([Sequelize.fn("SUM", Sequelize.col("usd1000")), "value"]);
     }
 
     const result = await TradeModel.findAll({
@@ -92,20 +72,50 @@ const getTradeData = async (req, res) => {
       limit: 20,
       attributes,
       group: ["type", "year", "hs6"],
+      include: [
+        {
+          model: Hs6,
+          as: "hs6cl",
+          attributes: [
+            ["name_ka", "name"],
+            ["hs6_id", "code"],
+          ],
+        },
+      ],
     });
-    res.json(result);
+
+    // Add unit with its corresponding name to each result object
+    const modifiedResult = result.map((item) => ({
+      ...item.toJSON(),
+      unit: getUnitName(unit),
+    }));
+
+    res.json(modifiedResult);
   } catch (error) {
     console.log(error);
   }
 };
 
-const getTradeText = async (req, res) => {
+// Helper function to get unit name based on its value
+const getUnitName = (unit) => {
+  if (unit === "1") {
+    return { name: "ათასი დოლარი", code: 1 };
+  } else if (unit === "2") {
+    return { name: "ტონა", code: 2 };
+  } else if (unit === "3") {
+    return { name: "რაღაც", code: 3 };
+  }
+  
+};
+
+
+const getSelectText = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
 
   let { type, year, hs6, unit } = req.query;
   const query = {};
-  const filter = {}
+  const filter = {};
 
   if (!type) {
     // res.status(400).send("Missing section parameter");
@@ -214,36 +224,41 @@ const getTradeText = async (req, res) => {
       selectValues: speciesCodesAndNames,
     };
 
-    const responseObj = {};
+    // const responseObj = {};
 
-    if (!query.species && !query.year && !query.region) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-      responseObj.regionSelector = regionSelector;
-    } else if (!query.region && query.species && query.period) {
-      responseObj.regionSelector = regionSelector;
-    } else if (query.region && query.period && !query.species) {
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-    } else if (query.region && query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-    } else if (!query.region && query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.regionSelector = regionSelector;
-    } else if (!query.region && !query.species && query.period) {
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-      responseObj.regionSelector = regionSelector;
-    } else if (query.region && !query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-    } else {
-      res.json("def");
-      return;
-    }
-    res.json({ periodSelector, speciesSelector,speciesSelector2, unitSelector });
+    // if (!query.species && !query.year && !query.region) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (!query.region && query.species && query.period) {
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (query.region && query.period && !query.species) {
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    // } else if (query.region && query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    // } else if (!query.region && query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (!query.region && !query.species && query.period) {
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (query.region && !query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    // } else {
+    //   res.json("def");
+    //   return;
+    // }
+    res.json({
+      periodSelector,
+      speciesSelector,
+      speciesSelector2,
+      unitSelector,
+    });
 
     // res.json(responseObj);
   } catch (err) {
@@ -252,7 +267,33 @@ const getTradeText = async (req, res) => {
   }
 };
 
+const getTitleText = async (req, res) => {
+  const lang = req.langTranslations;
+
+  const langName = req.langName;
+
+  try {
+    const cards = {
+      card1: {
+        title: "მოსაფიქრებელია_სათაური",
+        code: 991,
+        chartTitle: "მოსაფიქრებელია_სათაური",
+      },
+      card2: {
+        title: "მოსაფიქრებელია_სათაური",
+        code: 992,
+        chartTitle: "მოსაფიქრებელია_სათაური",
+      },
+    };
+    res.json({ cards });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   getTradeData,
-  getTradeText,
+  getSelectText,
+  getTitleText,
 };

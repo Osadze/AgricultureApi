@@ -467,7 +467,7 @@ const getFoodBalance = async (req, res) => {
         item.species_1 > 4102
           ? item.cl_species_1[`${langName}`]
           : item.cl_specy[`${langName}`];
-      return { from: from, to: to, value: parseInt(item.value) };
+      return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
     });
 
     const otherData = await Agriculture.findAll({
