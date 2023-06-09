@@ -7,6 +7,8 @@ const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
 
+// needs biiig cleanup hereeeee
+
 const getSelectTexts = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
@@ -23,6 +25,14 @@ const getSelectTexts = async (req, res) => {
     indicator: { [Op.in]: String(indicator).split(",") },
   };
 
+  const filter = {};
+
+  // if (species) {
+  //   const speciesArray = String(species).split(",");
+  //   query.species = {
+  //     [Op.in]: speciesArray,
+  //   };
+  // }
   if (species) {
     const speciesArray = String(species).split(",");
     query.species = {
@@ -45,22 +55,28 @@ const getSelectTexts = async (req, res) => {
   }
 
   try {
-    const years = await Agriculture.findAll({
-      where: query,
-      attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("period")), "year"]],
-      order: [["period", "ASC"]],
-    });
+    let periodSelector;
 
-    const periodData = years.map((year) => ({
-      name: year.dataValues.year,
-      code: year.dataValues.year,
-    }));
+    if (!query.period) {
+      const years = await Agriculture.findAll({
+        where: query,
+        attributes: [
+          [Sequelize.fn("DISTINCT", Sequelize.col("period")), "year"],
+        ],
+        order: [["period", "ASC"]],
+      });
 
-    const periodSelector = {
-      title: lang.defaultS.period.title,
-      placeholder: lang.defaultS.period.placeholder,
-      selectValues: periodData,
-    };
+      const periodData = years.map((year) => ({
+        name: year.dataValues.year,
+        code: year.dataValues.year,
+      }));
+
+      periodSelector = {
+        title: lang.defaultS.period.title,
+        placeholder: lang.defaultS.period.placeholder,
+        selectValues: periodData,
+      };
+    }
 
     const species = await Agriculture.aggregate("species", "DISTINCT", {
       plain: false,
@@ -93,193 +109,209 @@ const getSelectTexts = async (req, res) => {
 
     // Group species by parent id
 
-    const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
-      const parentId = curr.parentId || "null";
-      acc[parentId] = acc[parentId] || [];
-      acc[parentId].push(curr);
-      return acc;
-    }, {});
-
     let speciesWithChildren;
 
-    // NEEDS CHANGE
+    let speciesSelector;
+    let speciesSelector2 = undefined;
 
-    if (indicator == 14) {
-      speciesWithChildren = Object.values(speciesByParentId).reduce(
-        (acc, parentSpecies) => {
-          parentSpecies.forEach((species) => {
-            const { _previousDataValues, ...dataValues } = species.dataValues;
-            const speciesItem = {
+    if (!query.species) {
+      const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
+        const parentId = curr.parentId || "null";
+        acc[parentId] = acc[parentId] || [];
+        acc[parentId].push(curr);
+        return acc;
+      }, {});
+
+      // NEEDS CHANGE
+
+      if (indicator == 14) {
+        speciesWithChildren = Object.values(speciesByParentId).reduce(
+          (acc, parentSpecies) => {
+            parentSpecies.forEach((species) => {
+              const { _previousDataValues, ...dataValues } = species.dataValues;
+              const speciesItem = {
+                ...dataValues,
+                childrens: speciesByParentId[species.code] || [],
+              };
+
+              if (section == 1 && species.code >= 21 && species.code <= 99) {
+                acc.species1.push(speciesItem);
+              } else if (
+                indicator == [23, 24] &&
+                (species.code == 30 || species.code == 35)
+              ) {
+                acc.species1.push(speciesItem);
+              } else if (indicator == [52, 53] && species.code == 530) {
+                acc.species1.push(speciesItem);
+              } else {
+                acc.species.push(speciesItem);
+              }
+            });
+
+            return acc;
+          },
+          { species: [], species1: [] }
+        );
+      } else {
+        speciesWithChildren = speciesByParentId["null"].reduce(
+          (acc, parentSpecies) => {
+            const { _previousDataValues, ...dataValues } =
+              parentSpecies.dataValues;
+            const species = {
               ...dataValues,
-              childrens: speciesByParentId[species.code] || [],
+              childrens: speciesByParentId[parentSpecies.code] || [],
             };
 
             if (section == 1 && species.code >= 21 && species.code <= 99) {
-              acc.species1.push(speciesItem);
+              acc.species1.push(species);
             } else if (
               indicator == [23, 24] &&
               (species.code == 30 || species.code == 35)
             ) {
-              acc.species1.push(speciesItem);
+              acc.species1.push(species);
             } else if (indicator == [52, 53] && species.code == 530) {
-              acc.species1.push(speciesItem);
+              acc.species1.push(species);
             } else {
-              acc.species.push(speciesItem);
+              acc.species.push(species);
             }
-          });
 
-          return acc;
-        },
-        { species: [], species1: [] }
-      );
-    } else {
-      speciesWithChildren = speciesByParentId["null"].reduce(
-        (acc, parentSpecies) => {
-          const { _previousDataValues, ...dataValues } =
-            parentSpecies.dataValues;
-          const species = {
-            ...dataValues,
-            childrens: speciesByParentId[parentSpecies.code] || [],
-          };
-
-          if (section == 1 && species.code >= 21 && species.code <= 99) {
-            acc.species1.push(species);
-          } else if (
-            indicator == [23, 24] &&
-            (species.code == 30 || species.code == 35)
-          ) {
-            acc.species1.push(species);
-          } else if (indicator == [52, 53] && species.code == 530) {
-            acc.species1.push(species);
-          } else {
-            acc.species.push(species);
-          }
-
-          return acc;
-        },
-        { species: [], species1: [] }
-      );
-    }
-
-    // const speciesWithChildren = speciesByParentId["null"].reduce(
-    //   (acc, parentSpecies) => {
-    //     const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-    //     const species = {
-    //       ...dataValues,
-    //       childrens: speciesByParentId[parentSpecies.code] || [],
-    //     };
-
-    //     if (section == 1 && species.code >= 21) {
-    //       acc.species1.push(species);
-    //     } else if (
-    //       indicator == [23, 24] &&
-    //       (species.code == 30 || species.code == 35)
-    //     ) {
-    //       // needs change in future
-    //       acc.species1.push(species);
-
-    //       // console.log("dummy dev");
-    //     } else if (indicator == [52, 53] && species.code == 530) {
-    //       // needs change in future
-    //       acc.species1.push(species);
-
-    //       // console.log("dummy dev");
-    //     } else {
-    //       acc.species.push(species);
-    //     }
-    //     return acc;
-    //   },
-    //   { species: [], species1: [] }
-    // );
-
-    let speciesSTitle = "";
-    let speciesSPlaceholder = "";
-
-    switch (true) {
-      case section == 1:
-        speciesSTitle = lang.vegi.ertwlianiS.title;
-        speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
-        break;
-      case section == 2 && indicator != [23, 24]:
-        speciesSTitle = lang.animal.indicatorS.title;
-        speciesSPlaceholder = lang.animal.indicatorS.placeholder;
-        break;
-      case indicator == [23, 24]:
-        speciesSTitle = lang.animal.LitterS.title;
-        speciesSPlaceholder = lang.animal.LitterS.placeholder;
-        break;
-      case indicator == [52, 53]:
-        speciesSTitle = lang.salary.avarage.title;
-        speciesSPlaceholder = lang.salary.avarage.placeholder;
-        break;
-      case section == 3:
-        speciesSTitle = lang.aqua.indicatorS.title;
-        speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
-        break;
-      case section == 4:
-        speciesSTitle = "";
-        speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
-        break;
-      case section == 5 && !indicator == [52, 53]:
-        speciesSTitle = lang.employment.indicatorS.title;
-        speciesSPlaceholder = lang.employment.indicatorS.placeholder;
-        break;
-      case section == 6:
-        speciesSTitle = lang.business.speciesSelector.title;
-        speciesSPlaceholder = lang.business.speciesSelector.placeholder;
-        indicatorTitle = lang.business.indicatorS.title
-        indicatorPlaceholder = lang.business.indicatorS.placeholder
-        break;
-
-      default:
-        console.log("Something Is Not Right! No Title (Or Placeholder) Found");
-        break;
-    }
-
-    const speciesSelector = {
-      title: speciesSTitle,
-      placeholder: speciesSPlaceholder,
-      selectValues: speciesWithChildren.species,
-    };
-
-    let speciesSelector2 = undefined;
-    if (speciesWithChildren.species1.length && section == 1) {
-      speciesSelector2 = {
-        title: lang.vegi.mravalwlovaniS.title,
-        placeholder: lang.vegi.mravalwlovaniS.placeholder,
-        selectValues: speciesWithChildren.species1,
-      };
-    } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
-      speciesSelector2 = {
-        title: lang.animal.lossesS.title,
-        placeholder: lang.animal.lossesS.placeholder,
-        selectValues: speciesWithChildren.species1,
-      };
-    } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
-      speciesSelector2 = {
-        title: lang.salary.median.title,
-        placeholder: undefined,
-        selectValues: undefined,
-      };
-    }
-
-    const regionSet = new Set();
-
-    const regionNameAndCode = result.reduce((acc, region) => {
-      const code = region.cl_region.code;
-      const name = region.cl_region[`${langName}`];
-
-      const regionKey = `${name}_${code}`;
-      if (!regionSet.has(regionKey)) {
-        regionSet.add(regionKey);
-        acc.push({ name: name, code });
+            return acc;
+          },
+          { species: [], species1: [] }
+        );
       }
-      return acc;
-    }, []);
+
+      // const speciesWithChildren = speciesByParentId["null"].reduce(
+      //   (acc, parentSpecies) => {
+      //     const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
+      //     const species = {
+      //       ...dataValues,
+      //       childrens: speciesByParentId[parentSpecies.code] || [],
+      //     };
+
+      //     if (section == 1 && species.code >= 21) {
+      //       acc.species1.push(species);
+      //     } else if (
+      //       indicator == [23, 24] &&
+      //       (species.code == 30 || species.code == 35)
+      //     ) {
+      //       // needs change in future
+      //       acc.species1.push(species);
+
+      //       // console.log("dummy dev");
+      //     } else if (indicator == [52, 53] && species.code == 530) {
+      //       // needs change in future
+      //       acc.species1.push(species);
+
+      //       // console.log("dummy dev");
+      //     } else {
+      //       acc.species.push(species);
+      //     }
+      //     return acc;
+      //   },
+      //   { species: [], species1: [] }
+      // );
+
+      let speciesSTitle = "";
+      let speciesSPlaceholder = "";
+
+      switch (true) {
+        case section == 1:
+          speciesSTitle = lang.vegi.ertwlianiS.title;
+          speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
+          break;
+        case section == 2 && indicator != [23, 24]:
+          speciesSTitle = lang.animal.indicatorS.title;
+          speciesSPlaceholder = lang.animal.indicatorS.placeholder;
+          break;
+        case indicator == [23, 24]:
+          speciesSTitle = lang.animal.LitterS.title;
+          speciesSPlaceholder = lang.animal.LitterS.placeholder;
+          break;
+        case indicator == [52, 53]:
+          speciesSTitle = lang.salary.avarage.title;
+          speciesSPlaceholder = lang.salary.avarage.placeholder;
+          break;
+        case section == 3:
+          speciesSTitle = lang.aqua.indicatorS.title;
+          speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
+          break;
+        case section == 4:
+          speciesSTitle = "";
+          speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
+          break;
+        case section == 5 && !indicator == [52, 53]:
+          speciesSTitle = lang.employment.indicatorS.title;
+          speciesSPlaceholder = lang.employment.indicatorS.placeholder;
+          break;
+        case section == 6:
+          speciesSTitle = lang.business.speciesSelector.title;
+          speciesSPlaceholder = lang.business.speciesSelector.placeholder;
+          indicatorTitle = lang.business.indicatorS.title;
+          indicatorPlaceholder = lang.business.indicatorS.placeholder;
+          break;
+
+        default:
+          console.log(
+            "Something Is Not Right! No Title (Or Placeholder) Found"
+          );
+          break;
+      }
+
+      speciesSelector = {
+        title: speciesSTitle,
+        placeholder: speciesSPlaceholder,
+        selectValues: speciesWithChildren.species,
+      };
+
+      if (speciesWithChildren.species1.length && section == 1) {
+        speciesSelector2 = {
+          title: lang.vegi.mravalwlovaniS.title,
+          placeholder: lang.vegi.mravalwlovaniS.placeholder,
+          selectValues: speciesWithChildren.species1,
+        };
+      } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
+        speciesSelector2 = {
+          title: lang.animal.lossesS.title,
+          placeholder: lang.animal.lossesS.placeholder,
+          selectValues: speciesWithChildren.species1,
+        };
+      } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
+        speciesSelector2 = {
+          title: lang.salary.median.title,
+          placeholder: undefined,
+          selectValues: undefined,
+        };
+      }
+    }
+
+    let regionSelector;
+
+    if (!query.region) {
+      const regionSet = new Set();
+
+      const regionNameAndCode = result.reduce((acc, region) => {
+        const code = region.cl_region.code;
+        const name = region.cl_region[`${langName}`];
+
+        const regionKey = `${name}_${code}`;
+        if (!regionSet.has(regionKey)) {
+          regionSet.add(regionKey);
+          acc.push({ name: name, code });
+        }
+        return acc;
+      }, []);
+
+      regionSelector = {
+        title: lang.defaultS.region.title,
+        placeholder: lang.defaultS.region.placeholder,
+        selectValues: regionNameAndCode,
+      };
+    }
 
     let indicatorSelector;
 
-    if (section == 6) {
+    if (section == 6 && !query.indicator) {
       const indicatorSet = new Set();
 
       const indicatorNameAndCode = result.reduce((acc, indicator) => {
@@ -321,51 +353,48 @@ const getSelectTexts = async (req, res) => {
       // console.log(filteredResult);
     }
 
-    const regionSelector = {
-      title: lang.defaultS.region.title,
-      placeholder: lang.defaultS.region.placeholder,
-      selectValues: regionNameAndCode,
-    };
-
     // console.log(query);
 
     const responseObj = {};
 
-    if (section == 4 || section == 5) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-    } else if (section == 6) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.indicatorSelector = indicatorSelector;
-      responseObj.speciesSelector = speciesSelector;
-    } else if (!query.species && !query.period && !query.region) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-      responseObj.regionSelector = regionSelector;
-    } else if (!query.region && query.species && query.period) {
-      responseObj.regionSelector = regionSelector;
-    } else if (query.region && query.period && !query.species) {
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-    } else if (query.region && query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-    } else if (!query.region && query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.regionSelector = regionSelector;
-    } else if (!query.region && !query.species && query.period) {
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-      responseObj.regionSelector = regionSelector;
-    } else if (query.region && !query.species && !query.period) {
-      responseObj.periodSelector = periodSelector;
-      responseObj.speciesSelector = speciesSelector;
-      responseObj.speciesSelector2 = speciesSelector2;
-    } else {
-      res.json("def");
-      return;
-    }
+    // if (section == 4 || section == 5) {
+    responseObj.periodSelector = periodSelector;
+    responseObj.speciesSelector = speciesSelector;
+    responseObj.speciesSelector2 = speciesSelector2;
+    responseObj.indicatorSelector = indicatorSelector;
+    responseObj.regionSelector = regionSelector;
+
+    // } else if (section == 6) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.indicatorSelector = indicatorSelector;
+    //   responseObj.speciesSelector = speciesSelector;
+    // } else if (!query.species && !query.period && !query.region) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (!query.region && query.species && query.period) {
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (query.region && query.period && !query.species) {
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    // } else if (query.region && query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    // } else if (!query.region && query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (!query.region && !query.species && query.period) {
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    //   responseObj.regionSelector = regionSelector;
+    // } else if (query.region && !query.species && !query.period) {
+    //   responseObj.periodSelector = periodSelector;
+    //   responseObj.speciesSelector = speciesSelector;
+    //   responseObj.speciesSelector2 = speciesSelector2;
+    // } else {
+    //   res.json("def");
+    //   return;
+    // }
 
     res.json(responseObj);
   } catch (err) {

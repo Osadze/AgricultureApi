@@ -71,10 +71,17 @@ const getMainData = async (req, res) => {
             });
             break;
           case 43:
-            obj.fourthSlide.data.push({
-              name: item.cl_specy[`${langName}`],
-              value: parseInt(item.value),
-            });
+            if (obj.fourthSlide.data.length < 4) {
+              obj.fourthSlide.data.push({
+                name: item.cl_specy[`${langName}`],
+                value: parseInt(item.value),
+              });
+            } else {
+              obj.fifthSlide.data.push({
+                name: item.cl_specy[`${langName}`],
+                value: parseInt(item.value),
+              });
+            }
             break;
         }
         return obj;
@@ -88,6 +95,10 @@ const getMainData = async (req, res) => {
           data: [],
         },
         fifthSlide: {
+          title: "თვითუზრუნველყოფის კოეფიციენტი, 2021 წელი (%)",
+          data: [],
+        },
+        sixsthSlide: {
           //Todo: needs update after db
           title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
           data: [
@@ -111,6 +122,12 @@ const getMainData = async (req, res) => {
               value: 6330.6,
               unit: "მლნ. ლარი",
             },
+          ],
+        },
+        seventhSlide: {
+          //Todo: needs update after db
+          title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
+          data: [
             {
               name: "ექსპორტი",
               value: 1141.6,
@@ -120,6 +137,16 @@ const getMainData = async (req, res) => {
               name: "მთლიანი გამოშვება",
               value: 1349.6,
               unit: "მლნ. აშშ დოლარი",
+            },
+            {
+              name: "პირდაპირი უცხოური ინევსტიციები",
+              value: 1813.9,
+              unit: "ათასი აშშ დოლარი",
+            },
+            {
+              name: "რეგისტრირებული ორგანიზაციები",
+              value: 140,
+              unit: "ერთეული",
             },
           ],
         },
@@ -155,8 +182,8 @@ const getSectionData = async (req, res) => {
   if (!indicator) {
     res.status(400).send("Missing indicator parameter");
     return;
-  // } else if (indicator == 23 || indicator == 24) {
-  //   query.indicator = [23,24];
+    // } else if (indicator == 23 || indicator == 24) {
+    //   query.indicator = [23,24];
   } else {
     const indicatorArray = String(indicator).split(",");
     query.indicator = {
@@ -223,11 +250,9 @@ const getSectionData = async (req, res) => {
     //   });
     //   res.json({ result, result2 });
     // }else {
-      // console.log(data);
-      res.json({result: data})
+    // console.log(data);
+    res.json({ result: data });
     // }
-
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
