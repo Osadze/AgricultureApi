@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("agriculture", "root", process.env.SQLPASW, {
-  host: "localhost",
+const sequelize = new Sequelize("agriculture", "agri", "Admin112358", {
+  host: "192.168.1.29",
   dialect: "mysql",
   pool: {
     max: 5,

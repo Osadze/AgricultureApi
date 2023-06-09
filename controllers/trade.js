@@ -53,7 +53,7 @@ const getTradeData = async (req, res) => {
   }
 
   try {
-    const attributes = ["type", "year"];
+    const attributes = ["type", ["year", "period"]];
 
     if (unit === "3") {
       attributes.push([
@@ -90,7 +90,7 @@ const getTradeData = async (req, res) => {
       unit: getUnitName(unit),
     }));
 
-    res.json(modifiedResult);
+    res.json({ result: modifiedResult });
   } catch (error) {
     console.log(error);
   }
@@ -105,9 +105,7 @@ const getUnitName = (unit) => {
   } else if (unit === "3") {
     return { name: "რაღაც", code: 3 };
   }
-  
 };
-
 
 const getSelectText = async (req, res) => {
   const langName = req.langName;
