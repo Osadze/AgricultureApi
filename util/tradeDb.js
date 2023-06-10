@@ -12,13 +12,13 @@ const sequelize = new Sequelize("trade1", "root", "Ana2013Mari", {
   },
 });
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Trade Database connection has been established successfully..");
-  })
-  .catch((error) => {
-    console.error("Unable to connect to the Trade Database", error);
-  });
+// sequelize
+//   .authenticate()
+//   .then(() => {
+//     console.log("Trade Database connection has been established successfully..");
+//   })
+//   .catch((error) => {
+//     console.error("Unable to connect to the Trade Database", error);
+//   });
 
 module.exports = sequelize;
