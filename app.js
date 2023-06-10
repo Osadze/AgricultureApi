@@ -3,7 +3,8 @@ const cors = require("cors");
 
 const express = require("express");
 const agriDb = require("./util/agriDb");
-const tradeDb  = require("./util/tradeDb");
+const tradeDb = require("./util/tradeDb");
+const fdiDb = require("./util/fdiDb");
 
 const app = express();
 
@@ -26,9 +27,11 @@ app.use("/api/v1.1/agri/data", dataRouterV1_1);
 
 const port = process.env.PORT || 3001;
 
-Promise.all([agriDb.sync(), tradeDb])
+Promise.all([agriDb.sync(), 
+  // tradeDb.sync(), 
+  // fdiDb.sync()
+])
   .then((results) => {
-
     app.listen(port);
     console.log(`=========== Server Is Running On Port ${port} =============`);
   })

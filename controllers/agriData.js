@@ -403,7 +403,7 @@ const getSectionDataV1_1 = async (req, res) => {
 const getFoodBalance = async (req, res) => {
   const langName = req.langName;
 
-  let { indicator, period, species } = req.query;
+  let { period, species } = req.query;
 
   const query = {};
   query.section = 4;
@@ -526,9 +526,15 @@ const getFoodBalance = async (req, res) => {
   }
 };
 
+const getSelfSufficiency = async (req, res) => {
+  res.json("test")
+  // food balance third indicator chart here
+}
+
 module.exports = {
   getMainData,
   getSectionData,
   getSectionDataV1_1,
   getFoodBalance,
+  getSelfSufficiency
 };
