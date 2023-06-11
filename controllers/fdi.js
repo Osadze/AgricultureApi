@@ -2,6 +2,8 @@ const { Sequelize, DataTypes, Op } = require("sequelize");
 const FdiModel = require("../models/fdi/fdi_model");
 
 const getTradeData = async (req, res) => {
+  const langName = req.langName;
+  const lang = req.langTranslations;
   let { year } = req.query;
   const query = {};
 
@@ -30,7 +32,7 @@ const getTradeData = async (req, res) => {
     // Add name: "investments" to each result object
     const modifiedResult = result.map((item) => ({
       ...item.dataValues,
-      name: "investments",
+      name: lang.fdi.investments,
     }));
 
     res.json(modifiedResult);
@@ -60,8 +62,8 @@ const getSelectText = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: "title",
-      placeholder: "title",
+      title: lang.defaultS.period.title,
+      placeholder: lang.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -80,9 +82,8 @@ const getTitleText = async (req, res) => {
   try {
     const cards = {
       card1: {
-        title: "მოსაფიქრებელია_სათაური",
         code: 881,
-        chartTitle: "მოსაფიქრებელია_სათაური",
+        chartTitle: lang.fdi.chartTitle,
       }
     };
     res.json({ cards });

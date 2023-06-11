@@ -1,7 +1,7 @@
 {
   "defaultS": {
-    "period": { "title": "Year", "placeholder": "Select a year" },
-    "region": { "title": "region", "placeholder": "Select a region" }
+    "period": { "title": "Year", "placeholder": "Select a Year" },
+    "region": { "title": "region", "placeholder": "Select a Region" }
   },
 
   "vegi": {
@@ -41,8 +41,8 @@
   },
   "employment": {
     "indicatorS": {
-      "title": "EN__TITLE",
-      "placeholder": "EN__TITLE"
+      "title": "Selectors",
+      "placeholder": "Select"
     }
   },
   "salary": {
@@ -58,84 +58,83 @@
 
   "business": {
     "indicatorS": {
-      "title": "EN__TITLE",
-      "placeholder": "EN__TITLE"
+      "title": "Selectors",
+      "placeholder": "Select"
     },
     "speciesSelector": {
-      "title": "EN__TITLE",
-      "placeholder": "EN__TITLE"
+      "title": "Farming",
+      "placeholder": "Select"
     }
   },
 
   "1": {
     "card1": {
-      "chartTitle": "EN__TITLE",
-      "chartTitle2": "EN__TITLE"
+      "chartTitle": "Production of annual crops - thousand tons",
+      "chartTitle2": "Production of perennial crops - thousand tons"
     },
     "card2": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Cultivated area - thousand hectares"
     },
     "card3": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Average yield - tons/hectare"
     },
     "card4": {
-      "chartTitle": "EN__TITLE",
-      "chartTitle2": "EN__TITLE"
+      "chartTitle": "Price of annual crops at the farm gate - GEL/kg",
+      "chartTitle2": "Price of perennial crops at the farm gate - GEL/kg"
     }
   },
   "2": {
     "card1": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Number of livestock, poultry and bee families - thousand souls"
     },
     "card2": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Production of livestock products - thousand tons"
     },
     "card3": {
-      "chartTitle": "EN__TITLE",
-      "chartTitle2": "EN__TITLE"
+      "chartTitle": "Increment - Thousand Souls",
+      "chartTitle2": "The Fall - A Thousand Souls"
     },
     "card4": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Price at the farm gate - GEL/piece"
     }
   },
   "3": {
     "card1": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Fish production - tons"
     },
     "card2": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Fish in reservoirs - tons"
     },
     "card3": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Share of sold fish - percentage"
     },
     "card4": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Price at the farm gate - GEL/kg"
     }
   },
   "4": {
     "card1": {
-      "chartTitle": "EN__TITLE",
-      "chartTitle2": "EN__TITLE",
-      "chartTitle3": "EN__TITLE"
+      "chartTitle2": "no_longer_needed",
+      "chartTitle3": "no_longer_needed"
     },
     "card2": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "no_longer_needed"
     },
     "card3": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "no_longer_needed"
     }
   },
   "5": {
     "card1": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Number of employees in Georgia"
     },
     "card2": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Average salary in Georgia"
     }
   },
   "6": {
     "card1": {
-      "chartTitle": "EN__TITLE"
+      "chartTitle": "Business Statistics in Georgia"
     }
   },
   "mainDataSlides": {
@@ -183,7 +182,7 @@
       {
         "name": "Foreign Direct Investments",
         "value": 1813.9,
-        "unit": "one thousand US dollars"
+        "unit": "One thousand US dollars"
       },
       {
         "name": "Registered Organizations",
@@ -191,5 +190,39 @@
         "unit": "Unit"
       }
     ]
+  },
+  "trade": {
+    "unitNames": {
+      "1": "Thsd. USD",
+      "2": "Tons",
+      "3": "Others"
+    },
+    "unitS": {
+      "title": "Measurement Unit",
+      "placeholder": "Select"
+    },
+    "speciesS": {
+      "title": "Cassifier",
+      "placeholder": "Select"
+    },
+    "card1": {
+      "title": "Import",
+      "code": 991,
+      "chartTitle": "Import to Georgia"
+    },
+    "card2": {
+      "title": "Export",
+      "code": 992,
+      "chartTitle": "Export to Georgia"
+    }
+  },
+  "fdi": {
+    "chartTitle": "Foreign investments in Georgian agriculture",
+    "investments": "investments"
+  },
+  "price": {
+    "quarter": "quarter",
+    "title": "indicator",
+    "chartTitle": "Index of unit cost of agricultural products"
   }
 }

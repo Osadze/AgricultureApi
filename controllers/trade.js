@@ -89,26 +89,15 @@ const getTradeData = async (req, res) => {
     // Add unit with its corresponding name to each result object
     const modifiedResult = result.map((item) => ({
       ...item.toJSON(),
-      unit:{
+      unit: {
         name: lang.trade.unitNames[unit],
-        code: unit
+        code: unit,
       },
     }));
 
     res.json({ result: modifiedResult });
   } catch (error) {
     console.log(error);
-  }
-};
-
-// Helper function to get unit name based on its value
-const getUnitName = (unit) => {
-  if (unit === "1") {
-    return { name: "ათასი დოლარი", code: 1 };
-  } else if (unit === "2") {
-    return { name: "ტონა", code: 2 };
-  } else if (unit === "3") {
-    return { name: "სხვა", code: 3 };
   }
 };
 
@@ -176,8 +165,8 @@ const getSelectText = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: "title",
-      placeholder: "title",
+      title: lang.defaultS.period.title,
+      placeholder: lang.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -192,83 +181,35 @@ const getSelectText = async (req, res) => {
       where: query,
       // limit: 10,
       attributes: [
+        [langName, "name"],
         ["hs6_id", "code"],
-        ["name_ka", "name"],
       ],
       where: { hs6_id: species.map((s) => s.DISTINCT) },
       order: [["hs6_id", "ASC"]],
     });
 
+    //can be improved
     const units = [
-      { name: "დოლარი", code: 1 },
-      { name: "ტონა", code: 2 },
-      { name: "სხვა", code: 1 },
+      { name: lang.trade.unitNames[1], code: 1 },
+      { name: lang.trade.unitNames[2], code: 2 },
+      { name: lang.trade.unitNames[3], code: 1 },
     ];
 
     const unitSelector = {
-      title: "title",
-      placeholder: "title",
+      title: lang.trade.unitS.title,
+      placeholder: lang.trade.unitS.placeholder,
       selectValues: units,
     };
 
-    // // console.log(result);
-
-    // if (!result || result.length === 0) {
-    //   // Handle the case when the result is empty
-    //   res.status(400).send("No data found");
-    //   return;
-    // }
-
-    // // Group species by parent id
-
-    // let speciesSTitle = "";
-    // let speciesSPlaceholder = "";
-
     const speciesSelector = {
-      title: "title",
-      placeholder: "title",
+      title: lang.trade.speciesS.title,
+      placeholder: lang.trade.speciesS.placeholder,
       selectValues: speciesCodesAndNames,
     };
 
-    const speciesSelector2 = {
-      title: "title",
-      placeholder: "title",
-      selectValues: speciesCodesAndNames,
-    };
-
-    // const responseObj = {};
-
-    // if (!query.species && !query.year && !query.region) {
-    //   responseObj.periodSelector = periodSelector;
-    //   responseObj.speciesSelector = speciesSelector;
-    //   responseObj.speciesSelector2 = speciesSelector2;
-    //   responseObj.regionSelector = regionSelector;
-    // } else if (!query.region && query.species && query.period) {
-    //   responseObj.regionSelector = regionSelector;
-    // } else if (query.region && query.period && !query.species) {
-    //   responseObj.speciesSelector = speciesSelector;
-    //   responseObj.speciesSelector2 = speciesSelector2;
-    // } else if (query.region && query.species && !query.period) {
-    //   responseObj.periodSelector = periodSelector;
-    // } else if (!query.region && query.species && !query.period) {
-    //   responseObj.periodSelector = periodSelector;
-    //   responseObj.regionSelector = regionSelector;
-    // } else if (!query.region && !query.species && query.period) {
-    //   responseObj.speciesSelector = speciesSelector;
-    //   responseObj.speciesSelector2 = speciesSelector2;
-    //   responseObj.regionSelector = regionSelector;
-    // } else if (query.region && !query.species && !query.period) {
-    //   responseObj.periodSelector = periodSelector;
-    //   responseObj.speciesSelector = speciesSelector;
-    //   responseObj.speciesSelector2 = speciesSelector2;
-    // } else {
-    //   res.json("def");
-    //   return;
-    // }
     res.json({
       periodSelector,
       speciesSelector,
-      speciesSelector2,
       unitSelector,
     });
 
@@ -286,17 +227,10 @@ const getTitleText = async (req, res) => {
 
   try {
     const cards = {
-      card1: {
-        title: "მოსაფიქრებელია_სათაური",
-        code: 991,
-        chartTitle: "მოსაფიქრებელია_სათაური",
-      },
-      card2: {
-        title: "მოსაფიქრებელია_სათაური",
-        code: 992,
-        chartTitle: "მოსაფიქრებელია_სათაური",
-      },
+      card1: lang.trade.card1,
+      card2: lang.trade.card2,
     };
+
     res.json({ cards });
   } catch (error) {
     console.error(error);

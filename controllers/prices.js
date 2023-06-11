@@ -7,6 +7,7 @@ const languageMiddleware = require("../middleware/language");
 
 const getSectionDataPrice = async (req, res) => {
   const langName = req.langName;
+  const lang = req.langTranslations;
 
   let { indicator, year, quarter, species } = req.query;
 
@@ -118,23 +119,23 @@ const getSelectTextsPrice = async (req, res) => {
     }
     
     const periodSelector = {
-      title: "title",
-      placeholder: "title",
+      title:lang.defaultS.period.title,
+      placeholder: lang.defaultS.period.placeholder,
       selectValues: periodData,
     };
     
     function getRomanNumeral(number) {
       switch (number) {
         case 1:
-          return "I";
+          return `I ${lang.price.quarter}`;
         case 2:
-          return "II";
+          return  `II ${lang.price.quarter}`;
         case 3:
-          return "III";
+          return `III ${lang.price.quarter}`;
         case 4:
-          return "IV";
+          return `IV ${lang.price.quarter}`;
         default:
-          return "";
+          return "No Quarter";
       }
     }
     
@@ -176,8 +177,8 @@ const getSelectTextsPrice = async (req, res) => {
     );
 
     const speciesSelector = {
-      title: "title",
-      placeholder: "title",
+      title: lang.price.title,
+      placeholder: lang.price.chartTitle,
       selectValues: speciesWithChildren.species,    };
 
     res.json({
@@ -202,7 +203,7 @@ const getTitleTextsPrice = async (req, res) => {
       include: [
         {
           model: Indicator,
-          // attributes: [langName, "code", "sort_Id"],
+          attributes: [langName, "code"],
         },
       ],
     });
@@ -234,7 +235,7 @@ const getTitleTextsPrice = async (req, res) => {
       acc[cardName] = {
         title: item.title,
         code: parseInt(item.code),
-        chartTitle: "title",
+        chartTitle: lang.price.chartTitle,
 
       };
       return acc;
@@ -243,7 +244,7 @@ const getTitleTextsPrice = async (req, res) => {
     res.json({ cards });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 module.exports = {

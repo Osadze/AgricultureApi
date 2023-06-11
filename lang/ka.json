@@ -52,7 +52,7 @@
   },
   "business": {
     "indicatorS": {
-      "title": "ინდიკატორი",
+      "title": "მაჩვენებლები",
       "placeholder": "აირჩიეთ"
     },
     "speciesSelector": {
@@ -192,6 +192,34 @@
       "1": "ათასი დოლარი",
       "2": "ტონა",
       "3": "სხვა"
+    },
+    "unitS": {
+      "title": "ზომის ერთეული",
+      "placeholder": "აირჩიეთ"
+    },
+    "speciesS": {
+      "title": "კლასიფიკატორი",
+      "placeholder": "აირჩიეთ"
+    },
+    "card1": {
+      "title": "იმპორტი",
+      "code": 991,
+      "chartTitle": "იმპორტი საქართველოში"
+    },
+    "card2": {
+      "title": "ექსპორტი",
+      "code": 992,
+      "chartTitle": "ექსპორტი საქართველოში"
     }
+  },
+  "fdi": {
+    "chartTitle": "საგარეო ინვესტიციები საქართველოს სოფლის მეურნეობაში",
+    "investments": "ინვესტიციები"
+  },
+  "price": {
+    "quarter": "კვარტალი",
+    "title": "მაჩვენებელი",
+    "chartTitle": "სოფლის მეურნეობის პროდუქციის ერთეულის ღირებულების ინდექსი",
+    "hover": "!!!ეს ორი ჰოვერია დასამატებელი!!! 2. სოფლის მეურნეობის პროდუქციის ერთეულის ღირებულების ინდექსი(წინა წლის შესაბამისი კვარტალი=100)2. Unit Value Index of Agricultural Products (Same quarter of previous year = 100)||1. სოფლის მეურნეობის პროდუქციის ერთეულის ღირებულების ინდექსი (წინა კვარტალი = 100)1. Unit Value Index of Agricultural Products (Previous quarter = 100)"
   }
 }
