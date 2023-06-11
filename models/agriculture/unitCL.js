@@ -9,7 +9,7 @@ const Unit = sequelize.define("cl_unit", {
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
+  name_ka: {
     type: DataTypes.STRING,
     allowNull: false,
   },

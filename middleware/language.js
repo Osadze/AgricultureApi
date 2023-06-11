@@ -10,7 +10,7 @@ const languageMiddleware = (req, res, next) => {
     req.langTranslations = enTranslations
     // console.log(langTranslations, "shouldbeEN");
   } else {
-    req.langName = "name"; // Default language variable
+    req.langName = "name_ka"; // Default language variable
     req.langTranslations = kaTranslations
     // console.log(langTranslations, "shouldbeKa");
   }

@@ -24,6 +24,8 @@ const getAllPeriods = async () => {
 
 const getMainData = async (req, res) => {
   const langName = req.langName;
+  const lang = req.langTranslations;
+
   const query = {};
   const defaultRegion = 1;
 
@@ -87,68 +89,27 @@ const getMainData = async (req, res) => {
         return obj;
       },
       {
-        firstSlide: { title: "წარმოება, 2021 წელი (ათასი ტონა)", data: [] },
-        secondSlide: { title: "სულადობა 2021 წელი (ათასი ერთეული)", data: [] },
-        thirdSlide: { title: "თევზის წარმოება, 2021 წელი (ტონა)", data: [] },
+        firstSlide: { title: lang.mainDataSlides.firstSlide, data: [] },
+        secondSlide: { title: lang.mainDataSlides.secondSlide, data: [] },
+        thirdSlide: { title:lang.mainDataSlides.thirdSlide, data: [] },
         fourthSlide: {
-          title: "თვითუზრუნველყოფის კოეფიციენტი, 2021 წელი (%)",
+          title: lang.mainDataSlides.fourthSlide,
           data: [],
         },
         fifthSlide: {
-          title: "თვითუზრუნველყოფის კოეფიციენტი, 2021 წელი (%)",
+          title: lang.mainDataSlides.fifthSlide,
           data: [],
         },
         sixsthSlide: {
           //Todo: needs update after db
-          title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
-          data: [
-            {
-              name: "მშპ",
-              value: 7.4,
-              unit: "%",
-            },
-            {
-              name: "დასაქმება",
-              value: 230.3,
-              unit: "ათასი კაცი",
-            },
-            {
-              name: "საშუალო ხელფასი",
-              value: 950.3,
-              unit: "ლარი",
-            },
-            {
-              name: "მთლიანი გამოშვება",
-              value: 6330.6,
-              unit: "მლნ. ლარი",
-            },
-          ],
+          title: lang.mainDataSlides.sixsthSlide,
+          data: lang.mainDataSlides.sixsthSlideTemp,
         },
         seventhSlide: {
           //Todo: needs update after db
-          title: "სოფლის, სატყეო და თევზის მეურნეობები. 2021 წელი",
-          data: [
-            {
-              name: "ექსპორტი",
-              value: 1141.6,
-              unit: "მლნ. აშშ დოლარი",
-            },
-            {
-              name: "მთლიანი გამოშვება",
-              value: 1349.6,
-              unit: "მლნ. აშშ დოლარი",
-            },
-            {
-              name: "პირდაპირი უცხოური ინევსტიციები",
-              value: 1813.9,
-              unit: "ათასი აშშ დოლარი",
-            },
-            {
-              name: "რეგისტრირებული ორგანიზაციები",
-              value: 140,
-              unit: "ერთეული",
-            },
-          ],
+          title: lang.mainDataSlides.seventhSlide,
+          data: lang.mainDataSlides.seventhSlideTemp
+
         },
       }
     );

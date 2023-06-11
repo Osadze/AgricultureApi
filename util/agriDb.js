@@ -15,10 +15,10 @@ const sequelize = new Sequelize("agriculture", "agri", "Admin112358", {
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Agriculture Database connection has been established successfully..");
+    console.log("=====Agriculture Database connection has been established successfully..=====");
   })
   .catch((error) => {
-    console.error("Unable to connect to the Agriculture Database", error);
+    console.error("=====Unable to connect to the Agriculture Database=====", error);
   });
 
 module.exports = sequelize;

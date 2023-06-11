@@ -5,6 +5,8 @@ const Hs6 = require("../models/trade/hs6CL");
 
 const getTradeData = async (req, res) => {
   const langName = req.langName;
+  const lang = req.langTranslations;
+
   let { type, year, hs6, unit } = req.query;
   const query = {};
 
@@ -69,7 +71,7 @@ const getTradeData = async (req, res) => {
 
     const result = await TradeModel.findAll({
       where: query,
-      limit: 20,
+      // limit: 20,
       attributes,
       group: ["type", "year", "hs6"],
       include: [
@@ -77,7 +79,7 @@ const getTradeData = async (req, res) => {
           model: Hs6,
           as: "hs6cl",
           attributes: [
-            ["name_ka", "name"],
+            [langName, "name"],
             ["hs6_id", "code"],
           ],
         },
@@ -87,7 +89,10 @@ const getTradeData = async (req, res) => {
     // Add unit with its corresponding name to each result object
     const modifiedResult = result.map((item) => ({
       ...item.toJSON(),
-      unit: getUnitName(unit),
+      unit:{
+        name: lang.trade.unitNames[unit],
+        code: unit
+      },
     }));
 
     res.json({ result: modifiedResult });
@@ -103,7 +108,7 @@ const getUnitName = (unit) => {
   } else if (unit === "2") {
     return { name: "ტონა", code: 2 };
   } else if (unit === "3") {
-    return { name: "რაღაც", code: 3 };
+    return { name: "სხვა", code: 3 };
   }
 };
 
@@ -134,12 +139,12 @@ const getSelectText = async (req, res) => {
       [Op.in]: indicatorArray,
     };
   }
-  if (!unit) {
-    // res.status(400).send("Missing indicator parameter");
-    // return;
-  } else {
-    query.unit = unit;
-  }
+  // if (!unit) {
+  //   // res.status(400).send("Missing indicator parameter");
+  //   // return;
+  // } else {
+  //   query.unit = unit;
+  // }
 
   if (!year) {
     const maxYearResult = await TradeModel.findOne({
@@ -186,15 +191,24 @@ const getSelectText = async (req, res) => {
     const speciesCodesAndNames = await Hs6.findAll({
       where: query,
       // limit: 10,
-      attributes: ["hs6_id", "name_ka"],
+      attributes: [
+        ["hs6_id", "code"],
+        ["name_ka", "name"],
+      ],
       where: { hs6_id: species.map((s) => s.DISTINCT) },
       order: [["hs6_id", "ASC"]],
     });
 
+    const units = [
+      { name: "დოლარი", code: 1 },
+      { name: "ტონა", code: 2 },
+      { name: "სხვა", code: 1 },
+    ];
+
     const unitSelector = {
       title: "title",
       placeholder: "title",
-      selectValues: "needUnitSelectorHere",
+      selectValues: units,
     };
 
     // // console.log(result);

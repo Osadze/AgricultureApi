@@ -15,10 +15,10 @@ const sequelize = new Sequelize("fdi_new", "fdi", "Asd123$%", {
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Fdi Database connection has been established successfully..");
+    console.log("=====Fdi Database connection has been established successfully...=====");
   })
   .catch((error) => {
-    console.error("Unable to connect to the Fdi Database", error);
+    console.error("=====Unable to connect to the Fdi Database=====", error);
   });
 
 module.exports = sequelize;

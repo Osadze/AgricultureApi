@@ -137,5 +137,59 @@
     "card1": {
       "chartTitle": "EN__TITLE"
     }
+  },
+  "mainDataSlides": {
+    "firstSlide": "Production, 2021 (thousand tons)",
+    "secondSlide": "Suladoba 2021 year (thousand units)",
+    "thirdSlide": "Fish Production, 2021 (Tons)",
+    "fourthSlide": "Coefficient of self-sufficiency, year 2021 (%)",
+    "fifthSlide": "Coefficient of self-sufficiency, year 2021 (%)",
+    "sixsthSlide": "Agriculture, forestry and fisheries. 2021",
+    "sixsthSlideTemp": [
+      {
+        "name": "GDP",
+        "value": 7.4,
+        "unit": "%"
+      },
+      {
+        "name": "Employment",
+        "value": 230.3,
+        "unit": "One thousand men"
+      },
+      {
+        "name": "Average Salary",
+        "value": 950.3,
+        "unit": "GEL"
+      },
+      {
+        "name": "Full Release",
+        "value": 6330.6,
+        "unit": "Million GEL"
+      }
+    ],
+    "seventhSlide": "Agriculture, forestry and fisheries. 2021",
+    "seventhSlideTemp": [
+      {
+        "name": "Export",
+        "value": 1141.6,
+        "unit": "million USD"
+      },
+      {
+        "name": "full release",
+        "value": 1349.6,
+        "unit": "million USD"
+      },
+
+      {
+        "name": "Foreign Direct Investments",
+        "value": 1813.9,
+        "unit": "one thousand US dollars"
+      },
+      {
+        "name": "Registered Organizations",
+        "value": 140,
+        "unit": "Unit"
+      }
+    ]
   }
 }

@@ -240,7 +240,7 @@ const getSelectTexts = async (req, res) => {
           speciesSTitle = "";
           speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
           break;
-        case section == 5 && !indicator == [52, 53]:
+        case section == 5 && indicator != [52, 53]:
           speciesSTitle = lang.employment.indicatorS.title;
           speciesSPlaceholder = lang.employment.indicatorS.placeholder;
           break;
@@ -311,7 +311,7 @@ const getSelectTexts = async (req, res) => {
 
     let indicatorSelector;
 
-    if (section == 6 && !query.indicator) {
+    if (section == 6) {
       const indicatorSet = new Set();
 
       const indicatorNameAndCode = result.reduce((acc, indicator) => {
@@ -360,9 +360,11 @@ const getSelectTexts = async (req, res) => {
     // if (section == 4 || section == 5) {
     responseObj.periodSelector = periodSelector;
     responseObj.speciesSelector = speciesSelector;
-    responseObj.speciesSelector2 = speciesSelector2;
     responseObj.indicatorSelector = indicatorSelector;
+    responseObj.speciesSelector2 = speciesSelector2;
     responseObj.regionSelector = regionSelector;
+
+    res.json(responseObj);
 
     // } else if (section == 6) {
     //   responseObj.periodSelector = periodSelector;
@@ -395,8 +397,6 @@ const getSelectTexts = async (req, res) => {
     //   res.json("def");
     //   return;
     // }
-
-    res.json(responseObj);
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");

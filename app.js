@@ -5,6 +5,7 @@ const express = require("express");
 const agriDb = require("./util/agriDb");
 const tradeDb = require("./util/tradeDb");
 const fdiDb = require("./util/fdiDb");
+// const nationalDb = require("./util/nationalDb");
 
 const app = express();
 
@@ -31,7 +32,8 @@ const port = process.env.PORT || 3001;
 
 Promise.all([agriDb.sync(), 
   tradeDb.sync(), 
-  fdiDb.sync()
+  fdiDb.sync(),
+  // nationalDb.sync()
 ])
   .then((results) => {
     app.listen(port);

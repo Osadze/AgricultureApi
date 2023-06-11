@@ -22,7 +22,7 @@ const getTradeData = async (req, res) => {
       where: query,
       attributes: [
         "year",
-        [Sequelize.fn("SUM", Sequelize.col("usd")), "totalUsd"],
+        [Sequelize.fn("SUM", Sequelize.col("usd")), "value"],
       ],
       group: "year",
     });
