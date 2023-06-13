@@ -391,7 +391,7 @@ const getFoodBalance = async (req, res) => {
     };
   }
   if (!species) {
-    query.species = 10;
+    // query.species = 10;
   } else {
     const speciesArray = String(species).split(",");
     query.species = {
