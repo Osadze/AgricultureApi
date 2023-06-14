@@ -999,11 +999,11 @@ const getSelectText = async (req, res) => {
     const years = await TradeModel.findAll({
       where: query,
       attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("year")), "year"]],
-      where: {
-        year: {
-          [Sequelize.Op.gte]: 2014,
-        },
-      },
+      // where: {
+      //   year: {
+      //     [Sequelize.Op.gte]: 2014,
+      //   },
+      // },
       order: [["year", "ASC"]],
     });
 

@@ -391,7 +391,7 @@ const getFoodBalance = async (req, res) => {
     };
   }
   if (!species) {
-    // query.species = 10;
+    query.species = 10;
   } else {
     const speciesArray = String(species).split(",");
     query.species = {
@@ -421,17 +421,18 @@ const getFoodBalance = async (req, res) => {
         },
         { model: Unit, attributes: [langName, "code"] },
       ],
+      order: [["species_1", "ASC"]],
     });
 
     let finalResponse;
     if (indicator == 41) {
       const sankeyData = result.map((item) => {
         const from =
-          item.species_1 > 4102
+          item.species_1 > 4103
             ? item.cl_specy[`${langName}`]
             : item.cl_species_1[`${langName}`];
         const to =
-          item.species_1 > 4102
+          item.species_1 > 4103
             ? item.cl_species_1[`${langName}`]
             : item.cl_specy[`${langName}`];
         return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only

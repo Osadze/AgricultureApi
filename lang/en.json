@@ -58,11 +58,11 @@
 
   "business": {
     "indicatorS": {
-      "title": "Selectors",
+      "title": "Economic Activity",
       "placeholder": "Select"
     },
     "speciesSelector": {
-      "title": "Farming",
+      "title": "Selectors",
       "placeholder": "Select"
     }
   },
@@ -208,16 +208,16 @@
     "card1": {
       "title": "Import",
       "code": 991,
-      "chartTitle": "Import to Georgia"
+      "chartTitle": "Import"
     },
     "card2": {
       "title": "Export",
       "code": 992,
-      "chartTitle": "Export to Georgia"
+      "chartTitle": "Export"
     }
   },
   "fdi": {
-    "chartTitle": "Foreign investments in Georgian agriculture",
+    "chartTitle": "Foreign direct investment in agriculture",
     "investments": "investments"
   },
   "price": {
