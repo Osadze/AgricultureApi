@@ -368,17 +368,7 @@ const getFoodBalance = async (req, res) => {
 
   const query = {};
   query.section = 4;
-  query.species_1 == [4101, 4102, 4110];
-
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-    return;
-  } else {
-    const indicatorArray = String(indicator).split(",");
-    query.indicator = {
-      [Op.in]: indicatorArray,
-    };
-  }
+  query.indicator == 41;
 
   if (!period) {
     const maxYearResult = await Agriculture.findOne({
@@ -399,11 +389,6 @@ const getFoodBalance = async (req, res) => {
       [Op.in]: speciesArray,
     };
   }
-
-  // if (indicator == [41, 43]){
-  //   query.species_1 == [4101,4102,4110]
-  //   console.log("test");
-  // }
 
   try {
     const result = await Agriculture.findAll({
@@ -426,70 +411,67 @@ const getFoodBalance = async (req, res) => {
     });
 
     let finalResponse;
-    if (indicator == 41) {
-      const sankeyData = result.map((item) => {
-        const from =
-          item.species_1 > 4103
-            ? item.cl_specy[`${langName}`]
-            : item.cl_species_1[`${langName}`];
-        const to =
-          item.species_1 > 4103
-            ? item.cl_species_1[`${langName}`]
-            : item.cl_specy[`${langName}`];
-        return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
-      });
 
-      const otherData = await Agriculture.findAll({
-        where: {
-          ...query,
-          period: await getAllPeriods(), // Exclude the period filter
+    const sankeyData = result.map((item) => {
+      const from =
+        item.species_1 > 4103
+          ? item.cl_specy[`${langName}`]
+          : item.cl_species_1[`${langName}`];
+      const to =
+        item.species_1 > 4103
+          ? item.cl_species_1[`${langName}`]
+          : item.cl_specy[`${langName}`];
+      return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+    });
+
+    const otherData = await Agriculture.findAll({
+      where: {
+        ...query,
+        period: await getAllPeriods(), // Exclude the period filter
+      },
+      attributes: ["id", "species", "species_1", "value", "period"],
+      include: [
+        {
+          model: Species,
+          attributes: [[langName, "name"], "code"],
+          as: "cl_specy",
         },
-        attributes: ["id", "species", "species_1", "value", "period"],
-        include: [
-          {
-            model: Species,
-            attributes: [[langName, "name"], "code"],
-            as: "cl_specy",
-          },
-          {
-            model: Species_1,
-            attributes: [[langName, "name"], "code"],
-            as: "cl_species_1",
-          },
-          { model: Unit, attributes: [[langName, "name"], "code"] },
-        ],
-        order: [
-          ["species_1", "ASC"],
-          ["period", "ASC"],
-        ],
-      });
+        {
+          model: Species_1,
+          attributes: [[langName, "name"], "code"],
+          as: "cl_species_1",
+        },
+        { model: Unit, attributes: [[langName, "name"], "code"] },
+      ],
+      order: [
+        ["species_1", "ASC"],
+        ["period", "ASC"],
+      ],
+    });
 
-      const chartData = otherData.reduce((result, item) => {
-        if (!result[`chart${item.species_1}`]) {
-          result[`chart${item.species_1}`] = [];
-        }
-        result[`chart${item.species_1}`].push(item);
-        return result;
-      }, {});
-
-      // Rename the chart keys
-      let chartCount = 1;
-      const renamedChartData = {};
-      for (const key in chartData) {
-        renamedChartData[`chart${chartCount}`] = chartData[key];
-        chartCount++;
+    const chartData = otherData.reduce((result, item) => {
+      if (!result[`chart${item.species_1}`]) {
+        result[`chart${item.species_1}`] = [];
       }
+      result[`chart${item.species_1}`].push(item);
+      return result;
+    }, {});
 
-      renamedChartData.sankeyChart = sankeyData;
-
-      // Create the final response object
-      finalResponse = {
-        sankeyChart: sankeyData,
-        ...renamedChartData,
-      };
-    } else {
-      finalResponse = result;
+    // Rename the chart keys
+    let chartCount = 1;
+    const renamedChartData = {};
+    for (const key in chartData) {
+      renamedChartData[`chart${chartCount}`] = chartData[key];
+      chartCount++;
     }
+
+    renamedChartData.sankeyChart = sankeyData;
+
+    // Create the final response object
+    finalResponse = {
+      sankeyChart: sankeyData,
+      ...renamedChartData,
+    };
 
     res.json(finalResponse);
   } catch (error) {
@@ -498,9 +480,60 @@ const getFoodBalance = async (req, res) => {
   }
 };
 
-const getSelfSufficiency = async (req, res) => {
-  res.json("test");
-  // food balance third indicator chart here
+const getSelfSufficiencyRatio = async (req, res) => {
+  const langName = req.langName;
+
+  let { period, species, indicator } = req.query;
+
+  const query = {};
+  query.section = 4;
+  query.species_1 == [4101, 4102, 4110];
+  query.indicator == 43;
+
+  if (!period) {
+    const maxYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+    });
+    query.period = maxYearResult.dataValues.maxPeriod - 1;
+  } else {
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
+  }
+  if (!species) {
+    query.species = 10;
+  } else {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  try {
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["id", "species", "species_1", "value", "period"],
+      include: [
+        {
+          model: Species,
+          attributes: [langName, "code"],
+          as: "cl_specy",
+        },
+        {
+          model: Species_1,
+          attributes: [langName, "code"],
+          as: "cl_species_1",
+        },
+        { model: Unit, attributes: [langName, "code"] },
+      ],
+      order: [["species_1", "ASC"]],
+    });
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports = {
@@ -508,5 +541,5 @@ module.exports = {
   getSectionData,
   getSectionDataV1_1,
   getFoodBalance,
-  getSelfSufficiency,
+  getSelfSufficiencyRatio,
 };

@@ -985,17 +985,17 @@ const getSelectText = async (req, res) => {
   //   query.unit = unit;
   // }
 
-  if (!year) {
-    const maxYearResult = await TradeModel.findOne({
-      attributes: [[Sequelize.fn("MAX", Sequelize.col("year")), "maxPeriod"]],
-    });
-    query.year = maxYearResult.dataValues.maxPeriod - 1;
-  } else {
-    const periodArray = String(year).split(",");
-    query.year = {
-      [Op.in]: periodArray,
-    };
-  }
+  // if (!year) {
+  //   const maxYearResult = await TradeModel.findOne({
+  //     attributes: [[Sequelize.fn("MAX", Sequelize.col("year")), "maxPeriod"]],
+  //   });
+  //   query.year = maxYearResult.dataValues.maxPeriod - 1;
+  // } else {
+  //   const periodArray = String(year).split(",");
+  //   query.year = {
+  //     [Op.in]: periodArray,
+  //   };
+  // }
 
   try {
     const years = await TradeModel.findAll({
