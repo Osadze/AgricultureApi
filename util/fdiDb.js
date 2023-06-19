@@ -2,9 +2,9 @@ require("dotenv").config();
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("fdi_new", "fdi", "Asd123$%", {
-  host: "192.168.1.29",
-  dialect: "mysql",
+const sequelize = new Sequelize(process.env.FDIDB_NAME, process.env.FDIDB_USER, process.env.FDIDB_PASW, {
+  host: process.env.FDIDB_HOST,
+  dialect: process.env.FDIDB_DIALECT,
   pool: {
     max: 5,
     min: 0,

@@ -2,9 +2,9 @@ require("dotenv").config();
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("agriculture", "agri", "Admin112358", {
-  host: "192.168.1.29",
-  dialect: "mysql",
+const sequelize = new Sequelize(process.env.AGRIDB_NAME, process.env.AGRIDB_USER, process.env.AGRIDB_PASW, {
+  host: process.env.AGRIDB_HOST,
+  dialect: process.env.AGRIDB_DIALECT,
   pool: {
     max: 5,
     min: 0,

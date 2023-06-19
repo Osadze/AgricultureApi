@@ -33,7 +33,6 @@ const port = process.env.PORT || 3001;
 Promise.all([agriDb.sync(), 
   tradeDb.sync(), 
   fdiDb.sync(),
-  // nationalDb.sync()
 ])
   .then((results) => {
     app.listen(port);

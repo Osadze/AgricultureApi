@@ -2,9 +2,9 @@ require("dotenv").config();
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize("trade1", "root", "Ana2013Mari", {
-  host: "192.168.0.139",
-  dialect: "mysql",
+const sequelize = new Sequelize(process.env.TRADEDB_NAME, process.env.TRADEDB_USER, process.env.TRADEDB_PASW, {
+  host: process.env.TRADEDB_HOST,
+  dialect: process.env.TRADEDB_DIALECT,
   pool: {
     max: 5,
     min: 0,
