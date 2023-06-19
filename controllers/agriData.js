@@ -23,31 +23,32 @@ const getAllPeriods = async () => {
 };
 
 const getMainData = async (req, res) => {
-  const langName = req.langName;
-  const lang = req.langTranslations;
-
-  const query = {};
-  const defaultRegion = 1;
-
-  const maxYearResult = await Agriculture.findOne({
-    attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
-  });
-
-  const lastYear = maxYearResult.dataValues.maxPeriod - 1;
-
-  query.region = defaultRegion;
-  query.period = lastYear;
-  query.species = [
-    10, 13, 16, 17, 30, 32, 35, 3801, 26, 39, 40, 41, 42, 2901, 2902, 2903,
-    2904,
-  ];
-  query.indicator = [12, 21, 31, 43];
-
   try {
+    const langName = req.langName;
+    const lang = req.langTranslations;
+
+    const query = {};
+    const defaultRegion = 1;
+
+    const maxYearResult = await Agriculture.findOne({
+      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
+    });
+
+    const lastYear = maxYearResult.dataValues.maxPeriod - 1;
+
+    query.region = defaultRegion;
+    query.period = lastYear;
+    query.species = [
+      10, 13, 16, 17, 30, 32, 35, 3801, 26, 39, 40, 41, 42, 2901, 2902, 2903,
+      2904,
+    ];
+    query.indicator = [12, 21, 31, 43];
+
     const result = await Agriculture.findAll({
       where: query,
       attributes: ["value", "indicator", "species"],
       include: [{ model: Species, attributes: [langName] }],
+      order: [["species", "ASC"]],
     });
     const filteredResult = result.reduce(
       (obj, item) => {

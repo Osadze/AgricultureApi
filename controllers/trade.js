@@ -30,38 +30,40 @@ const getTradeData = async (req, res) => {
     };
   }
 
-  if (unit) {
-    query.suppu = {
-      [Op.gt]: 0,
-    };
-    query.usd1000 = {
-      [Op.gt]: 0,
-    };
+  if (unit == 2) {
     query.tons = {
       [Op.gt]: 0,
     };
-  }
-
-  if (!year) {
-    const maxYearResult = await TradeModel.findOne({
-      attributes: [[Sequelize.fn("MAX", Sequelize.col("year")), "maxPeriod"]],
-    });
-    query.year = maxYearResult.dataValues.maxPeriod - 1;
+    console.log("2222222222222");
+  } else if (unit == 3) {
+    query.suppu = {
+      [Op.gt]: 0,
+    };
+    console.log("3333333333333");
   } else {
-    const periodArray = String(year).split(",");
-    query.year = {
-      [Op.in]: periodArray,
+    unit = 1
+    query.usd1000 = {
+      [Op.gt]: 0,
     };
   }
 
   try {
+    if (!year) {
+      const maxYearResult = await TradeModel.findOne({
+        attributes: [[Sequelize.fn("MAX", Sequelize.col("year")), "maxPeriod"]],
+      });
+      query.year = maxYearResult.dataValues.maxPeriod - 1;
+    } else {
+      const periodArray = String(year).split(",");
+      query.year = {
+        [Op.in]: periodArray,
+      };
+    }
+
     const attributes = ["type", ["year", "period"]];
 
     if (unit === "3") {
-      attributes.push([
-        Sequelize.fn("SUM", Sequelize.col("suppu")),
-        "totalvalueSuppu",
-      ]);
+      attributes.push([Sequelize.fn("SUM", Sequelize.col("suppu")), "value"]);
     } else if (unit === "2") {
       // Show Tons
       attributes.push([Sequelize.fn("SUM", Sequelize.col("tons")), "value"]);
