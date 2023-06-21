@@ -530,42 +530,62 @@ const getSelfSufficiencyRatio = async (req, res) => {
       order: [["species_1", "ASC"]],
     });
 
-    const modifiedResult = result.reduce((acc, obj) => {
-      const existingObj = acc.find(
-        (item) => item.period === obj.period && item.species === obj.species
+    // const modifiedResult = result.reduce((acc, obj) => {
+    //   const existingObj = acc.find(
+    //     (item) => item.period === obj.period && item.species === obj.species
+    //   );
+
+    //   if (existingObj) {
+    //     existingObj[obj.species_1] = {
+    //       name_en: obj.cl_species_1.name_en,
+    //       code: obj.cl_species_1.code,
+    //       value: parseInt(obj.value),
+    //       unit: obj.cl_unit.name_en,
+    //     };
+    //   } else {
+    //     const newObj = {
+    //       id: obj.id,
+    //       // species: obj.species,
+    //       // species_1: obj.species_1,
+    //       period: obj.period,
+    //       cl_specy: {
+    //         name_en: obj.cl_specy.name_en,
+    //         code: obj.cl_specy.code,
+    //       },
+    //     };
+    //     newObj[obj.species_1] = {
+    //       name_en: obj.cl_species_1.name_en,
+    //       code: obj.cl_species_1.code,
+    //       value: parseInt(obj.value),
+    //       unit: obj.cl_unit.name_en,
+    //     };
+    //     acc.push(newObj);
+    //   }
+
+    //   return acc;
+    // }, []);
+
+    const transformedResult = result.reduce((acc, item) => {
+      const existingItem = acc.find(
+        (i) => i.period === item.period && i.species === item.cl_specy.name_en
       );
 
-      if (existingObj) {
-        existingObj[obj.species_1] = {
-          name_en: obj.cl_species_1.name_en,
-          code: obj.cl_species_1.code,
-          value: parseInt(obj.value),
-          unit: obj.cl_unit.name_en,
-        };
+      if (existingItem) {
+        existingItem[item.cl_species_1.name_en] = item.value;
       } else {
-        const newObj = {
-          id: obj.id,
-          // species: obj.species,
-          // species_1: obj.species_1,
-          period: obj.period,
-          cl_specy: {
-            name_en: obj.cl_specy.name_en,
-            code: obj.cl_specy.code,
-          },
+        const newItem = {
+          period: item.period,
+          species: item.cl_specy.name_en,
+          [item.cl_species_1.name_en]: item.value,
+          unit: item.cl_unit.name_en,
         };
-        newObj[obj.species_1] = {
-          name_en: obj.cl_species_1.name_en,
-          code: obj.cl_species_1.code,
-          value: parseInt(obj.value),
-          unit: obj.cl_unit.name_en,
-        };
-        acc.push(newObj);
+        acc.push(newItem);
       }
 
       return acc;
     }, []);
 
-    res.json(modifiedResult);
+    res.json(transformedResult);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

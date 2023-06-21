@@ -134,7 +134,10 @@ const getSelectTexts = async (req, res) => {
                 childrens: speciesByParentId[species.code] || [],
               };
 
-              if (section == 1 && species.code >= 21 && species.code <= 99) {
+              if (
+                (section == 1 && species.code >= 21 && species.code <= 99) ||
+                (section == 1 && species.code >= 2100 && species.code <= 9999)
+              ) {
                 acc.species1.push(speciesItem);
               } else if (
                 indicator == [23, 24] &&
