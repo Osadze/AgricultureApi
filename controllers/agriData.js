@@ -3,6 +3,7 @@ const Region = require("../models/agriculture/regionCL");
 const Species = require("../models/agriculture/speciesCL");
 const Species_1 = require("../models/agriculture/species_1CL");
 const Unit = require("../models/agriculture/unitCL");
+const Indicator = require("../models/agriculture/indicatorCL")
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
@@ -190,6 +191,7 @@ const getSectionData = async (req, res) => {
         { model: Unit, attributes: [[langName, "name"], "code"] },
         { model: Species, attributes: [[langName, "name"], "code"] },
         { model: Region, attributes: [[langName, "name"], "code"] },
+        { model: Indicator, attributes: [[langName, "name"], "code"] },
       ],
     });
 
@@ -527,17 +529,18 @@ const getSelfSufficiencyRatio = async (req, res) => {
     });
     const transformedResult = result.reduce((acc, item) => {
       const existingItem = acc.find(
-        (i) => i.period === item.period && i.species === item.cl_specy.name_en
+        (i) => i.period === item.period && i.species === item.cl_specy[`${langName}`]
+        
       );
 
       if (existingItem) {
-        existingItem[item.cl_species_1.name_en] = item.value;
+        existingItem[item.cl_species_1[`${langName}`]] = item.value;
       } else {
         const newItem = {
           period: item.period,
-          species: item.cl_specy.name_en,
-          [item.cl_species_1.name_en]: item.value,
-          unit: item.cl_unit.name_en,
+          species: item.cl_specy[`${langName}`],
+          [item.cl_species_1[`${langName}`]]: item.value,
+          unit: item.cl_unit[`${langName}`],
         };
         acc.push(newItem);
       }
