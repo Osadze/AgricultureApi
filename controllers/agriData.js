@@ -491,10 +491,6 @@ const getSelfSufficiencyRatio = async (req, res) => {
   query.indicator = [41, 43];
 
   if (!period) {
-    const maxYearResult = await Agriculture.findOne({
-      attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
-    });
-    query.period = maxYearResult.dataValues.maxPeriod - 1;
   } else {
     const periodArray = String(period).split(",");
     query.period = {
@@ -529,42 +525,6 @@ const getSelfSufficiencyRatio = async (req, res) => {
       ],
       order: [["species_1", "ASC"]],
     });
-
-    // const modifiedResult = result.reduce((acc, obj) => {
-    //   const existingObj = acc.find(
-    //     (item) => item.period === obj.period && item.species === obj.species
-    //   );
-
-    //   if (existingObj) {
-    //     existingObj[obj.species_1] = {
-    //       name_en: obj.cl_species_1.name_en,
-    //       code: obj.cl_species_1.code,
-    //       value: parseInt(obj.value),
-    //       unit: obj.cl_unit.name_en,
-    //     };
-    //   } else {
-    //     const newObj = {
-    //       id: obj.id,
-    //       // species: obj.species,
-    //       // species_1: obj.species_1,
-    //       period: obj.period,
-    //       cl_specy: {
-    //         name_en: obj.cl_specy.name_en,
-    //         code: obj.cl_specy.code,
-    //       },
-    //     };
-    //     newObj[obj.species_1] = {
-    //       name_en: obj.cl_species_1.name_en,
-    //       code: obj.cl_species_1.code,
-    //       value: parseInt(obj.value),
-    //       unit: obj.cl_unit.name_en,
-    //     };
-    //     acc.push(newObj);
-    //   }
-
-    //   return acc;
-    // }, []);
-
     const transformedResult = result.reduce((acc, item) => {
       const existingItem = acc.find(
         (i) => i.period === item.period && i.species === item.cl_specy.name_en
@@ -591,6 +551,35 @@ const getSelfSufficiencyRatio = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+const getBusinessRegister = async (req, res) => {
+  
+  try {
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["id", "species", "species_1", "value", "period"],
+      include: [
+        {
+          model: Species,
+          attributes: [langName, "code"],
+          as: "cl_specy",
+        },
+        {
+          model: Species_1,
+          attributes: [langName, "code"],
+          as: "cl_species_1",
+        },
+        { model: Unit, attributes: [langName, "code"] },
+      ],
+      order: [["species_1", "ASC"]],
+    });
+
+    res.json(transformedResult);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 module.exports = {
   getMainData,
