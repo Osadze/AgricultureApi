@@ -3,7 +3,8 @@ const Region = require("../models/agriculture/regionCL");
 const Species = require("../models/agriculture/speciesCL");
 const Species_1 = require("../models/agriculture/species_1CL");
 const Unit = require("../models/agriculture/unitCL");
-const Indicator = require("../models/agriculture/indicatorCL")
+const Indicator = require("../models/agriculture/indicatorCL");
+const Register = require("../models/register/register_model");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
@@ -529,8 +530,8 @@ const getSelfSufficiencyRatio = async (req, res) => {
     });
     const transformedResult = result.reduce((acc, item) => {
       const existingItem = acc.find(
-        (i) => i.period === item.period && i.species === item.cl_specy[`${langName}`]
-        
+        (i) =>
+          i.period === item.period && i.species === item.cl_specy[`${langName}`]
       );
 
       if (existingItem) {
@@ -556,33 +557,27 @@ const getSelfSufficiencyRatio = async (req, res) => {
 };
 
 const getBusinessRegister = async (req, res) => {
-  
   try {
-    const result = await Agriculture.findAll({
-      where: query,
-      attributes: ["id", "species", "species_1", "value", "period"],
-      include: [
-        {
-          model: Species,
-          attributes: [langName, "code"],
-          as: "cl_specy",
+    const result = await Register.findAll({
+      where: {
+        Activity_Code: {
+          [Op.startsWith]: '01',
         },
-        {
-          model: Species_1,
-          attributes: [langName, "code"],
-          as: "cl_species_1",
+        X: {
+          [Op.not]: null,
         },
-        { model: Unit, attributes: [langName, "code"] },
-      ],
-      order: [["species_1", "ASC"]],
+        Y: {
+          [Op.not]: null,
+        },
+      },
     });
 
-    res.json(transformedResult);
+    res.json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 module.exports = {
   getMainData,
@@ -590,4 +585,5 @@ module.exports = {
   getSectionDataV1_1,
   getFoodBalance,
   getSelfSufficiencyRatio,
+  getBusinessRegister,
 };
