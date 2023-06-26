@@ -6,13 +6,23 @@ const agriDb = require("./util/agriDb");
 const tradeDb = require("./util/tradeDb");
 const fdiDb = require("./util/fdiDb");
 const registerDb = require("./util/registerDb");
+const languageMiddleware = require("./middleware/language");
 
 const app = express();
 
 app.use(cors());
 
-const languageMiddleware = require("./middleware/language");
 app.use(languageMiddleware);
+// app.use((req, res, next) => {
+//   if (req.path === "/api/v1/agri/data/self-sufficiency-ratio") {
+//     // Skip the middleware for the specific request
+//     next();
+//   } else {
+//     // Apply the middleware to all other requests
+//     languageMiddleware(req, res, next);
+//   }
+// });
+
 
 const dataRouter = require("./routes/agriData");
 const textRouter = require("./routes/agriText");

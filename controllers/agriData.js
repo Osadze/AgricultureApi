@@ -521,7 +521,7 @@ const getSelfSufficiencyRatio = async (req, res) => {
         },
         {
           model: Species_1,
-          attributes: [langName, "code"],
+          attributes: ["name_en", "code"],
           as: "cl_species_1",
         },
         { model: Unit, attributes: [langName, "code"] },
@@ -535,12 +535,12 @@ const getSelfSufficiencyRatio = async (req, res) => {
       );
 
       if (existingItem) {
-        existingItem[item.cl_species_1[`${langName}`]] = item.value;
+        existingItem[item.cl_species_1.name_en] = item.value;
       } else {
         const newItem = {
           period: item.period,
           species: item.cl_specy[`${langName}`],
-          [item.cl_species_1[`${langName}`]]: item.value,
+          [item.cl_species_1.name_en]: item.value,
           unit: item.cl_unit[`${langName}`],
         };
         acc.push(newItem);
@@ -561,7 +561,7 @@ const getBusinessRegister = async (req, res) => {
     const result = await Register.findAll({
       where: {
         Activity_Code: {
-          [Op.startsWith]: '01',
+          [Op.startsWith]: "01",
         },
         X: {
           [Op.not]: null,
