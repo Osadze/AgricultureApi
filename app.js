@@ -13,16 +13,6 @@ const app = express();
 app.use(cors());
 
 app.use(languageMiddleware);
-// app.use((req, res, next) => {
-//   if (req.path === "/api/v1/agri/data/self-sufficiency-ratio") {
-//     // Skip the middleware for the specific request
-//     next();
-//   } else {
-//     // Apply the middleware to all other requests
-//     languageMiddleware(req, res, next);
-//   }
-// });
-
 
 const dataRouter = require("./routes/agriData");
 const textRouter = require("./routes/agriText");

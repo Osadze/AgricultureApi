@@ -531,14 +531,14 @@ const getSelfSufficiencyRatio = async (req, res) => {
     const transformedResult = result.reduce((acc, item) => {
       const existingItem = acc.find(
         (i) =>
-          i.period === item.period && i.species === item.cl_specy[`${langName}`]
+          i.period.toString() === item.period.toString() && i.species === item.cl_specy[`${langName}`]
       );
 
       if (existingItem) {
         existingItem[item.cl_species_1.name_en] = item.value;
       } else {
         const newItem = {
-          period: item.period,
+          period: item.period.toString(),
           species: item.cl_specy[`${langName}`],
           [item.cl_species_1.name_en]: item.value,
           unit: item.cl_unit[`${langName}`],
