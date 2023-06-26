@@ -22,14 +22,14 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(helmet());
+// app.use(helmet());
 // const corsOptions = {
 //   origin: "http://192.168.0.20:8096", // Replace with your allowed domain
 // };
 
 // app.use(cors(corsOptions));
 app.use(cors());
-app.use(xss());
+// app.use(xss());
 
 app.use(languageMiddleware);
 
