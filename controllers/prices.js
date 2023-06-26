@@ -224,7 +224,7 @@ const getSelectTextsPrice = async (req, res) => {
 
     res.json({
       periodSelector,
-      speciesSelector1,
+      speciesSelector,
       speciesSelector2,
     });
   } catch (err) {
