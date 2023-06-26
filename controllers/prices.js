@@ -11,23 +11,23 @@ const getSectionDataPrice = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
 
-  let { indicator, year, quarter, species } = req.query;
+  let { year, quarter, species } = req.query;
 
   // console.log(req.query, "req.query");
 
   const query = {};
 
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-    return;
-    // } else if (indicator == 23 || indicator == 24) {
-    //   query.indicator = [23,24];
-  } else {
-    const indicatorArray = String(indicator).split(",");
-    query.indicator = {
-      [Op.in]: indicatorArray,
-    };
-  }
+  // if (!indicator) {
+  //   res.status(400).send("Missing indicator parameter");
+  //   return;
+  //   // } else if (indicator == 23 || indicator == 24) {
+  //   //   query.indicator = [23,24];
+  // } else {
+  //   const indicatorArray = String(indicator).split(",");
+  //   query.indicator = {
+  //     [Op.in]: indicatorArray,
+  //   };
+  // }
 
   if (!year) {
     // const maxYearResult = await Prices.findOne({
