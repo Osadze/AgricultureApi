@@ -419,15 +419,32 @@ const getFoodBalance = async (req, res) => {
     let finalResponse;
 
     const sankeyData = result.map((item) => {
-      const from =
-        item.species_1 > 4103
-          ? item.cl_specy[`${langName}`]
-          : item.cl_species_1[`${langName}`];
-      const to =
-        item.species_1 > 4103
-          ? item.cl_species_1[`${langName}`]
-          : item.cl_specy[`${langName}`];
-      return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+      const targetCode = "4103";
+      const targetSpecies = result.find((item) => {
+        return item.species_1 === targetCode;
+      });
+
+      if (targetSpecies.value.startsWith("-")) {
+        const from =
+          item.species_1 > 4103
+            ? item.cl_specy[`${langName}`]
+            : item.cl_species_1[`${langName}`];
+        const to =
+          item.species_1 > 4103
+            ? item.cl_species_1[`${langName}`]
+            : item.cl_specy[`${langName}`];
+        return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+      } else {
+        const from =
+          item.species_1 > 4102
+            ? item.cl_specy[`${langName}`]
+            : item.cl_species_1[`${langName}`];
+        const to =
+          item.species_1 > 4102
+            ? item.cl_species_1[`${langName}`]
+            : item.cl_specy[`${langName}`];
+        return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+      }
     });
 
     const otherData = await Agriculture.findAll({

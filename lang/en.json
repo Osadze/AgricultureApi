@@ -127,10 +127,10 @@
   },
   "5": {
     "card1": {
-      "chartTitle": "Number of employees in Georgia"
+      "chartTitle": "Number of employees in agricultural sector - Thousand persons"
     },
     "card2": {
-      "chartTitle": "Average salary in Georgia"
+      "chartTitle": "Average salary in agricultural sector - Lari"
     }
   },
   "6": {
@@ -209,16 +209,16 @@
     "card1": {
       "title": "Import",
       "code": 991,
-      "chartTitle": "Import"
+      "chartTitle": "Import of agriculutral products"
     },
     "card2": {
       "title": "Export",
       "code": 992,
-      "chartTitle": "Export"
+      "chartTitle": "Export of agriculutral products"
     }
   },
   "fdi": {
-    "chartTitle": "Foreign direct investment in agriculture",
+    "chartTitle": "Foreign direct investment in agriculture - Mill. USD",
     "investments": "investments"
   },
   "price": {
