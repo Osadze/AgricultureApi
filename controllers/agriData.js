@@ -4,7 +4,6 @@ const Species = require("../models/agriculture/speciesCL");
 const Species_1 = require("../models/agriculture/species_1CL");
 const Unit = require("../models/agriculture/unitCL");
 const Indicator = require("../models/agriculture/indicatorCL");
-const Register = require("../models/register/register_model");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
@@ -556,28 +555,6 @@ const getSelfSufficiencyRatio = async (req, res) => {
   }
 };
 
-const getBusinessRegister = async (req, res) => {
-  try {
-    const result = await Register.findAll({
-      where: {
-        Activity_Code: {
-          [Op.startsWith]: "01",
-        },
-        X: {
-          [Op.not]: null,
-        },
-        Y: {
-          [Op.not]: null,
-        },
-      },
-    });
-
-    res.json(result);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
 
 module.exports = {
   getMainData,
@@ -585,5 +562,4 @@ module.exports = {
   getSectionDataV1_1,
   getFoodBalance,
   getSelfSufficiencyRatio,
-  getBusinessRegister,
 };

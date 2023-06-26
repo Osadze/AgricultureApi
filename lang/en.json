@@ -223,6 +223,9 @@
   "price": {
     "quarter": "quarter",
     "title": "indicator",
+    "title1": "Prevoius Quarter = 100",
+    "title2": "Prevoius Year Quarter = 100",
+    "placeholder": "Select",
     "chartTitle": "Index of unit cost of agricultural products"
   }
 }

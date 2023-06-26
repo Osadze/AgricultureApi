@@ -66,39 +66,38 @@ const getSelectTextsPrice = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
 
-  let { indicator } = req.query;
-  const query = {};
+  const query1 = {};
+  query1.indicator = 71;
 
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-    return;
-  } else {
-    query.indicator = indicator;
-  }
+  const query2 = {};
+  query2.indicator = 72;
 
   try {
     const years = await Prices.findAll({
-      where: query,
+      where: query1,
       attributes: [
         [Sequelize.fn("DISTINCT", Sequelize.col("year")), "year"],
         "quarter",
       ],
-      order: [["year", "ASC"], ["quarter", "ASC"]],
+      order: [
+        ["year", "ASC"],
+        ["quarter", "ASC"],
+      ],
     });
-    
+
     const periodData = [];
     let currentYear = null;
     let currentYearObject = null;
-    
+
     years.forEach((row) => {
       const year = row.dataValues.year;
       const quarter = row.dataValues.quarter;
-    
+
       if (year !== currentYear) {
         if (currentYearObject) {
           periodData.push(currentYearObject);
         }
-    
+
         currentYear = year;
         currentYearObject = {
           name: year.toString(),
@@ -106,30 +105,30 @@ const getSelectTextsPrice = async (req, res) => {
           children: [],
         };
       }
-    
+
       const romanNumeral = getRomanNumeral(quarter);
       currentYearObject.children.push({
         name: romanNumeral,
         code: quarter.toString(),
       });
     });
-    
+
     if (currentYearObject) {
       periodData.push(currentYearObject);
     }
-    
+
     const periodSelector = {
-      title:lang.defaultS.period.title,
+      title: lang.defaultS.period.title,
       placeholder: lang.defaultS.period.placeholder,
       selectValues: periodData,
     };
-    
+
     function getRomanNumeral(number) {
       switch (number) {
         case 1:
           return `I ${lang.price.quarter}`;
         case 2:
-          return  `II ${lang.price.quarter}`;
+          return `II ${lang.price.quarter}`;
         case 3:
           return `III ${lang.price.quarter}`;
         case 4:
@@ -138,35 +137,33 @@ const getSelectTextsPrice = async (req, res) => {
           return "No Quarter";
       }
     }
-    
-    
 
-    const species = await Prices.aggregate("species", "DISTINCT", {
-      where: query,
+    const species1 = await Prices.aggregate("species", "DISTINCT", {
+      where: query1,
       plain: false,
     });
 
-    const speciesCodesAndNames = await Species.findAll({
+    const speciesCodesAndNames1 = await Species.findAll({
       attributes: ["code", [langName, "name"], "parentId"],
-      where: { code: species.map((s) => s.DISTINCT) },
+      where: { code: species1.map((s) => s.DISTINCT) },
       order: [["code", "ASC"]],
     });
 
-    let speciesWithChildren;
+    let speciesWithChildren1;
 
-    const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
+    const speciesByParentId1 = speciesCodesAndNames1.reduce((acc, curr) => {
       const parentId = curr.parentId || "null";
       acc[parentId] = acc[parentId] || [];
       acc[parentId].push(curr);
       return acc;
     }, {});
 
-    speciesWithChildren = speciesByParentId["null"].reduce(
+    speciesWithChildren1 = speciesByParentId1["null"].reduce(
       (acc, parentSpecies) => {
         const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
         const species = {
           ...dataValues,
-          childrens: speciesByParentId[parentSpecies.code] || [],
+          childrens: speciesByParentId1[parentSpecies.code] || [],
         };
 
         acc.species.push(species);
@@ -176,14 +173,57 @@ const getSelectTextsPrice = async (req, res) => {
       { species: [] }
     );
 
-    const speciesSelector = {
-      title: lang.price.title,
-      placeholder: lang.price.chartTitle,
-      selectValues: speciesWithChildren.species,    };
+    const species2 = await Prices.aggregate("species", "DISTINCT", {
+      where: query2,
+      plain: false,
+    });
+
+    const speciesCodesAndNames2 = await Species.findAll({
+      attributes: ["code", [langName, "name"], "parentId"],
+      where: { code: species2.map((s) => s.DISTINCT) },
+      order: [["code", "ASC"]],
+    });
+
+    let speciesWithChildren2;
+
+    const speciesByParentId2 = speciesCodesAndNames2.reduce((acc, curr) => {
+      const parentId = curr.parentId || "null";
+      acc[parentId] = acc[parentId] || [];
+      acc[parentId].push(curr);
+      return acc;
+    }, {});
+
+    speciesWithChildren2 = speciesByParentId2["null"].reduce(
+      (acc, parentSpecies) => {
+        const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
+        const species = {
+          ...dataValues,
+          childrens: speciesByParentId2[parentSpecies.code] || [],
+        };
+
+        acc.species.push(species);
+
+        return acc;
+      },
+      { species: [] }
+    );
+
+    const speciesSelector1 = {
+      title: lang.price.title1,
+      placeholder: lang.price.placeholder,
+      selectValues: speciesWithChildren1.species,
+    };
+
+    const speciesSelector2 = {
+      title: lang.price.title2,
+      placeholder: lang.price.placeholder,
+      selectValues: speciesWithChildren2.species,
+    };
 
     res.json({
       periodSelector,
-      speciesSelector,
+      speciesSelector1,
+      speciesSelector2,
     });
   } catch (err) {
     console.error(err);
@@ -196,7 +236,6 @@ const getTitleTextsPrice = async (req, res) => {
 
   const langName = req.langName;
 
-
   try {
     const result = await Prices.findAll({
       attributes: ["indicator"],
@@ -208,8 +247,6 @@ const getTitleTextsPrice = async (req, res) => {
       ],
     });
 
-
-
     const indicatorSet = new Set();
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;
@@ -217,12 +254,10 @@ const getTitleTextsPrice = async (req, res) => {
       const indicatorKey = `${title}_${code}`;
       if (!indicatorSet.has(indicatorKey)) {
         indicatorSet.add(indicatorKey);
-        acc.push({ title, code,});
+        acc.push({ title, code });
       }
       return acc;
     }, []);
-
-
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
@@ -236,11 +271,10 @@ const getTitleTextsPrice = async (req, res) => {
         title: item.title,
         code: parseInt(item.code),
         chartTitle: lang.price.chartTitle,
-
       };
       return acc;
     }, {});
-   
+
     res.json({ cards });
   } catch (error) {
     console.error(error);
@@ -250,5 +284,5 @@ const getTitleTextsPrice = async (req, res) => {
 module.exports = {
   getSectionDataPrice,
   getSelectTextsPrice,
-  getTitleTextsPrice
+  getTitleTextsPrice,
 };
