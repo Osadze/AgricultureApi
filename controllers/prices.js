@@ -300,8 +300,8 @@ const getSectionDataPrice_2 = async (req, res) => {
     // });
     // query.year = maxYearResult.dataValues.maxPeriod - 1;
   } else {
-    const yearArray = String(year).split(",");
-    query.year = {
+    const yearArray = String(period).split(",");
+    query.period = {
       [Op.in]: yearArray,
     };
   }
