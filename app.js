@@ -14,7 +14,6 @@ const tradeDb = require("./util/tradeDb");
 const fdiDb = require("./util/fdiDb");
 const languageMiddleware = require("./middleware/language");
 
-
 app.set("trust proxy", 1);
 app.use(
   rateLimiter({
@@ -24,6 +23,11 @@ app.use(
 );
 app.use(express.json());
 app.use(helmet());
+// const corsOptions = {
+//   origin: "http://192.168.0.20:8096", // Replace with your allowed domain
+// };
+
+// app.use(cors(corsOptions));
 app.use(cors());
 app.use(xss());
 
@@ -45,14 +49,36 @@ app.use("/api/v1.1/agri/data", dataRouterV1_1);
 
 const port = process.env.PORT || 3001;
 
-Promise.all([agriDb.sync(), 
-  tradeDb.sync(), 
-  fdiDb.sync(),
-])
-  .then((results) => {
-    app.listen(port);
-    console.log(`=========== Server Is Running On Port ${port} =============`);
+// waits for all dbs to sync and then starts the server
+
+// Promise.all([agriDb.sync(),
+//   tradeDb.sync(),
+//   fdiDb.sync(),
+// ])
+//   .then((results) => {
+//     app.listen(port);
+//     console.log(`=========== Server Is Running On Port ${port} =============`);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+// waits for only agridb to sync and then starts the server and other dbs sync on background
+
+agriDb
+  .sync()
+  .then(() => {
+    console.log("Agriculture database synchronized");
+    app.listen(port, () => {
+      console.log(
+        `=========== Server Is Running On Port ${port} =============`
+      );
+    });
+    return Promise.all([tradeDb.sync(), fdiDb.sync()]);
+  })
+  .then(() => {
+    console.log("Trade and FDI databases synchronized");
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Database synchronization error:", err);
   });

@@ -161,7 +161,7 @@ const getSectionData = async (req, res) => {
     const maxYearResult = await Agriculture.findOne({
       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
     });
-    query.period = maxYearResult.dataValues.maxPeriod - 1;
+    query.period = maxYearResult.dataValues.maxPeriod;
   } else {
     const periodArray = String(period).split(",");
     query.period = {

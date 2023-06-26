@@ -210,7 +210,7 @@ const getSelectTextsPrice = async (req, res) => {
       { species: [] }
     );
 
-    const speciesSelector1 = {
+    const speciesSelector = {
       title: lang.price.title1,
       placeholder: lang.price.placeholder,
       selectValues: speciesWithChildren1.species,
