@@ -38,7 +38,7 @@ const getMainData = async (req, res) => {
     const lastYear = maxYearResult.dataValues.maxPeriod - 1;
 
     query.region = defaultRegion;
-    query.period = lastYear;
+    query.period = [2021, 2022];
     query.species = [
       10, 13, 16, 17, 30, 32, 35, 3801, 26, 39, 40, 41, 42, 2901, 2902, 2903,
       2904,
@@ -47,7 +47,7 @@ const getMainData = async (req, res) => {
 
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ["value", "indicator", "species"],
+      attributes: ["value", "indicator", "species", "period"],
       include: [{ model: Species, attributes: [langName] }],
       order: [["species", "ASC"]],
     });
@@ -55,7 +55,7 @@ const getMainData = async (req, res) => {
       (obj, item) => {
         switch (item.indicator) {
           case 12:
-            if (item.species != 26) {
+            if (item.species != 26 && item.period == 2022) {
               obj.firstSlide.data.push({
                 name: item.cl_specy[`${langName}`],
                 value: parseInt(item.value),
@@ -63,10 +63,12 @@ const getMainData = async (req, res) => {
             }
             break;
           case 21:
-            obj.secondSlide.data.push({
-              name: item.cl_specy[`${langName}`],
-              value: parseInt(item.value),
-            });
+            if (item.period == 2022) {
+              obj.secondSlide.data.push({
+                name: item.cl_specy[`${langName}`],
+                value: parseInt(item.value),
+              });
+            }
             break;
           case 31:
             obj.thirdSlide.data.push({
@@ -75,16 +77,18 @@ const getMainData = async (req, res) => {
             });
             break;
           case 43:
-            if (obj.fourthSlide.data.length < 4) {
-              obj.fourthSlide.data.push({
-                name: item.cl_specy[`${langName}`],
-                value: parseInt(item.value),
-              });
-            } else {
-              obj.fifthSlide.data.push({
-                name: item.cl_specy[`${langName}`],
-                value: parseInt(item.value),
-              });
+            if (item.period == 2022) {
+              if (obj.fourthSlide.data.length < 4) {
+                obj.fourthSlide.data.push({
+                  name: item.cl_specy[`${langName}`],
+                  value: parseInt(item.value),
+                });
+              } else {
+                obj.fifthSlide.data.push({
+                  name: item.cl_specy[`${langName}`],
+                  value: parseInt(item.value),
+                });
+              }
             }
             break;
         }
@@ -525,12 +529,13 @@ const getSelfSufficiencyRatio = async (req, res) => {
         },
         { model: Unit, attributes: [langName, "code"] },
       ],
-      order: [["species_1", "ASC"]],
+      order: [["period", "ASC"]],
     });
     const transformedResult = result.reduce((acc, item) => {
       const existingItem = acc.find(
         (i) =>
-          i.period.toString() === item.period.toString() && i.species === item.cl_specy[`${langName}`]
+          i.period.toString() === item.period.toString() &&
+          i.species === item.cl_specy[`${langName}`]
       );
 
       if (existingItem) {
@@ -554,7 +559,6 @@ const getSelfSufficiencyRatio = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   getMainData,

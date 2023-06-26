@@ -1,6 +1,8 @@
 const Species = require("../models/agriculture/speciesCL");
 const Prices = require("../models/agriculture/prices");
+const Prices_1 = require("../models/agriculture/prices_1");
 const Indicator = require("../models/agriculture/indicatorCL");
+const Unit = require("../models/agriculture/unitCL");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
@@ -281,8 +283,119 @@ const getTitleTextsPrice = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+const getSectionDataPrice_2 = async (req, res) => {
+  const langName = req.langName;
+  const lang = req.langTranslations;
+
+  let { period, species } = req.query;
+
+  // console.log(req.query, "req.query");
+
+  const query = {};
+
+  if (!period) {
+    // const maxYearResult = await Prices.findOne({
+    //   attributes: [[Sequelize.fn("MAX", Sequelize.col("year")), "maxyear"]],
+    // });
+    // query.year = maxYearResult.dataValues.maxPeriod - 1;
+  } else {
+    const yearArray = String(year).split(",");
+    query.year = {
+      [Op.in]: yearArray,
+    };
+  }
+  if (!species) {
+    // query.species = 10;
+  } else {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  try {
+    const data = await Prices_1.findAll({
+      where: query,
+      attributes: ["id", "species", "period", "unit", "value"],
+      include: [
+        { model: Species, attributes: [[langName, "name"], "code"] },
+        { model: Unit, attributes: [[langName, "name"], "code"] },
+      ],
+    });
+
+    res.json({ result: data });
+    // }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getSelectsTextsPrice_2 = async (req, res) => {
+  const lang = req.langTranslations;
+
+  // need query
+
+  const langName = req.langName;
+  try {
+    const periods = await Prices_1.findAll({
+      attributes: [
+        [Sequelize.fn("DISTINCT", Sequelize.col("period")), "period"],
+      ],
+      // where: {
+      //   period: {
+      //     [Sequelize.Op.gte]: 2014,
+      //   },
+      // },
+      order: [["period", "ASC"]],
+    });
+
+    const periodData = periods.map((period) => ({
+      name: period.dataValues.period,
+      code: period.dataValues.period,
+    }));
+
+    const periodSelector = {
+      title: lang.defaultS.period.title,
+      placeholder: lang.defaultS.period.placeholder,
+      selectValues: periodData,
+    };
+
+    const species = await Prices_1.aggregate("species", "DISTINCT", {
+      plain: false,
+      // where: query,
+    });
+
+    const speciesCodesAndNames = await Species.findAll({
+      attributes: ["code", [langName, "name"]],
+      where: { code: species.map((s) => s.DISTINCT) },
+      order: [["code", "ASC"]],
+    });
+
+    const speciesSelector = {
+      title: lang.price.title,
+      placeholder: lang.price.placeholder,
+      selectValues: speciesCodesAndNames,
+    };
+
+    const responseObj = {};
+
+    // if (section == 4 || section == 5) {
+    responseObj.periodSelector = periodSelector;
+    responseObj.speciesSelector = speciesSelector;
+
+    res.json(responseObj);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 module.exports = {
   getSectionDataPrice,
   getSelectTextsPrice,
   getTitleTextsPrice,
+  getSectionDataPrice_2,
+  getSelectsTextsPrice_2,
 };
