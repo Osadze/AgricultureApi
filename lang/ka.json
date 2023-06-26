@@ -1,7 +1,9 @@
 {
   "defaultS": {
     "period": { "title": "წელი", "placeholder": "აირჩიეთ წელი" },
-    "region": { "title": "რეგიონი", "placeholder": "აირჩიეთ რეგიონი" }
+    "region": { "title": "რეგიონი", "placeholder": "აირჩიეთ რეგიონი" },
+    "and": "და"
+
   },
 
   "vegi": {

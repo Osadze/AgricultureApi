@@ -541,7 +541,7 @@ const getTitleTexts = async (req, res) => {
       if (card4) {
         const card3 = cards.card3;
         if (card3) {
-          card3.title = `${card4.title} და ${card3.title}`;
+          card3.title = `${card4.title} ${lang.defaultS.and} ${card3.title}`;
         }
         delete cards.card4;
       }

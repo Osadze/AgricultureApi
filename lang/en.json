@@ -1,7 +1,8 @@
 {
   "defaultS": {
     "period": { "title": "Year", "placeholder": "Select a Year" },
-    "region": { "title": "region", "placeholder": "Select a Region" }
+    "region": { "title": "region", "placeholder": "Select a Region" },
+    "and": "and"
   },
 
   "vegi": {
