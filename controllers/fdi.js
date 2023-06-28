@@ -33,9 +33,10 @@ const getFdiData = async (req, res) => {
       group: "year", // old
     });
 
-    // Add name: "investments" to each result object
+    // Divide the summed values by 2 and round up to millions
     const modifiedResult = result.map((item) => ({
       ...item.dataValues,
+      value: parseFloat((item.dataValues.value / 1000000).toFixed(1)), // Round up to 2 decimal places
       name: lang.fdi.investments,
     }));
 
