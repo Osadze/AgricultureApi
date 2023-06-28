@@ -1,11 +1,12 @@
 const express = require("express");
 
 const router = express.Router();
-const { getSelectTexts, getTitleTexts } = require("../controllers/agriText");
+const { getSelectTexts, getTitleTexts, getSelectTextsMap } = require("../controllers/agriText");
 
 const { getSelectTextsPrice ,getTitleTextsPrice,getSelectsTextsPrice_2} = require("../controllers/prices");
 
 router.route("/selects").get(getSelectTexts);
+router.route("/selects-map").get(getSelectTextsMap);
 router.route("/titles").get(getTitleTexts);
 router.route("/price/titles").get(getTitleTextsPrice);
 router.route("/price/selects").get(getSelectTextsPrice);

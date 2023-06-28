@@ -406,6 +406,249 @@ const getSelectTexts = async (req, res) => {
   }
 };
 
+const getSelectTextsMap = async (req, res) => {
+  const langName = req.langName;
+  const lang = req.langTranslations;
+
+  let { section, indicator, species, period } = req.query;
+
+  if (!section || !indicator) {
+    res.status(400).send("Missing section or indicator parameter");
+    return;
+  }
+
+  const query = {
+    section: { [Op.in]: String(section).split(",") },
+    indicator: { [Op.in]: String(indicator).split(",") },
+  };
+
+  const filter = {};
+
+  // if (species) {
+  //   const speciesArray = String(species).split(",");
+  //   query.species = {
+  //     [Op.in]: speciesArray,
+  //   };
+  // }
+  if (species) {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  if (period) {
+    const periodArray = String(period).split(",");
+    query.period = {
+      [Op.in]: periodArray,
+    };
+  }
+
+  try {
+    let periodSelector;
+
+    if (!query.period) {
+      const years = await Agriculture.findAll({
+        where: query,
+        attributes: [
+          [Sequelize.fn("DISTINCT", Sequelize.col("period")), "year"],
+        ],
+        order: [["period", "ASC"]],
+      });
+
+      const periodData = years.map((year) => ({
+        name: year.dataValues.year,
+        code: year.dataValues.year,
+      }));
+
+      periodSelector = {
+        title: lang.defaultS.period.title,
+        placeholder: lang.defaultS.period.placeholder,
+        selectValues: periodData,
+      };
+    }
+
+    const species = await Agriculture.aggregate("species", "DISTINCT", {
+      plain: false,
+      where: {
+        ...query,
+        region: {
+          [Op.not]: 1,
+        },
+      },
+      order: [["species", "ASC"]],
+    });
+
+    const speciesCodesAndNames = await Species.findAll({
+      attributes: ["code", [langName, "name"], "parentId"],
+      where: { code: species.map((s) => s.DISTINCT) },
+      order: [["code", "ASC"]],
+    });
+
+    // Iterate over the species and check the parentId
+    for (const speciesItem of speciesCodesAndNames) {
+      const { parentId } = speciesItem;
+      if (parentId !== null) {
+        const parentItem = speciesCodesAndNames.find(
+          (item) => parseInt(item.code) === parentId
+        );
+        if (!parentItem) {
+          speciesItem.parentId = null;
+        }
+      }
+    }
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["id", "value", "period", "species", "region", "indicator"],
+      include: [
+        { model: Region, attributes: [langName, "code"] },
+        { model: Indicator, attributes: [langName, "code"] },
+      ],
+    });
+
+    if (!result || result.length === 0) {
+      // Handle the case when the result is empty
+      res.status(400).send("No data found");
+      return;
+    }
+
+    // Group species by parent id
+
+    let speciesWithChildren;
+
+    let speciesSelector;
+    let speciesSelector2 = undefined;
+
+    if (!query.species) {
+      const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
+        const parentId = curr.parentId || "null";
+        acc[parentId] = acc[parentId] || [];
+        acc[parentId].push(curr);
+        return acc;
+      }, {});
+
+      // NEEDS CHANGE
+
+      if (indicator == 14) {
+        speciesWithChildren = Object.values(speciesByParentId).reduce(
+          (acc, parentSpecies) => {
+            parentSpecies.forEach((species) => {
+              const { _previousDataValues, ...dataValues } = species.dataValues;
+              const speciesItem = {
+                ...dataValues,
+                childrens: speciesByParentId[species.code] || [],
+              };
+
+              if (
+                (section == 1 && species.code >= 21 && species.code <= 99) ||
+                (section == 1 && species.code >= 2100 && species.code <= 9999)
+              ) {
+                acc.species1.push(speciesItem);
+              } else if (
+                indicator == [23, 24] &&
+                (species.code == 30 || species.code == 35)
+              ) {
+                acc.species1.push(speciesItem);
+              } else {
+                acc.species.push(speciesItem);
+              }
+            });
+
+            return acc;
+          },
+          { species: [], species1: [] }
+        );
+      } else {
+        speciesWithChildren = speciesByParentId["null"].reduce(
+          (acc, parentSpecies) => {
+            const { _previousDataValues, ...dataValues } =
+              parentSpecies.dataValues;
+            const species = {
+              ...dataValues,
+              childrens: speciesByParentId[parentSpecies.code] || [],
+            };
+
+            if (
+              (section == 1 && species.code >= 21 && species.code <= 99) ||
+              (section == 1 && species.code >= 2100 && species.code <= 9999)
+            ) {
+              acc.species1.push(species);
+            } else if (
+              indicator == [23, 24] &&
+              (species.code == 30 || species.code == 35)
+            ) {
+              acc.species1.push(species);
+            } else {
+              acc.species.push(species);
+            }
+
+            return acc;
+          },
+          { species: [], species1: [] }
+        );
+      }
+
+      let speciesSTitle = "";
+      let speciesSPlaceholder = "";
+
+      switch (true) {
+        case section == 1:
+          speciesSTitle = lang.vegi.ertwlianiS.title;
+          speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
+          break;
+        case section == 2 && indicator != [23, 24]:
+          speciesSTitle = lang.animal.indicatorS.title;
+          speciesSPlaceholder = lang.animal.indicatorS.placeholder;
+          break;
+        case indicator == [23, 24]:
+          speciesSTitle = lang.animal.LitterS.title;
+          speciesSPlaceholder = lang.animal.LitterS.placeholder;
+          break;
+        case section == 3:
+          speciesSTitle = lang.aqua.indicatorS.title;
+          speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
+          break;
+
+        default:
+          console.log(
+            "Something Is Not Right! No Title (Or Placeholder) Found"
+          );
+          break;
+      }
+
+      speciesSelector = {
+        title: speciesSTitle,
+        placeholder: speciesSPlaceholder,
+        selectValues: speciesWithChildren.species,
+      };
+
+      if (speciesWithChildren.species1.length && section == 1) {
+        speciesSelector2 = {
+          title: lang.vegi.mravalwlovaniS.title,
+          placeholder: lang.vegi.mravalwlovaniS.placeholder,
+          selectValues: speciesWithChildren.species1,
+        };
+      } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
+        speciesSelector2 = {
+          title: lang.animal.lossesS.title,
+          placeholder: lang.animal.lossesS.placeholder,
+          selectValues: speciesWithChildren.species1,
+        };
+      }
+    }
+
+    const responseObj = {};
+    responseObj.periodSelector = periodSelector;
+    responseObj.speciesSelector = speciesSelector;
+    responseObj.speciesSelector2 = speciesSelector2;
+
+    res.json(responseObj);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 const getTitleTexts = async (req, res) => {
   const lang = req.langTranslations;
 
@@ -915,4 +1158,5 @@ const getTitleTexts = async (req, res) => {
 module.exports = {
   getSelectTexts,
   getTitleTexts,
+  getSelectTextsMap
 };
