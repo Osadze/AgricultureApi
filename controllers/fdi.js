@@ -1,11 +1,14 @@
 const { Sequelize, DataTypes, Op } = require("sequelize");
 const FdiModel = require("../models/fdi/fdi_model");
 
-const getTradeData = async (req, res) => {
+const getFdiData = async (req, res) => {
   const langName = req.langName;
   const lang = req.langTranslations;
   let { year } = req.query;
   const query = {};
+
+  query.sector = "A";
+  query.quarter = year;
 
   if (!year) {
     // const maxYearResult = await FdiModel.findOne({
@@ -24,9 +27,10 @@ const getTradeData = async (req, res) => {
       where: query,
       attributes: [
         "year",
-        [Sequelize.fn("SUM", Sequelize.col("usd")), "value"],
+        ["usd","value"],
+        // [Sequelize.fn("SUM", Sequelize.col("usd")), "value"],
       ],
-      group: "year",
+      // group: "year",
     });
 
     // Add name: "investments" to each result object
@@ -84,7 +88,7 @@ const getTitleText = async (req, res) => {
       card1: {
         code: 881,
         chartTitle: lang.fdi.chartTitle,
-      }
+      },
     };
     res.json({ cards });
   } catch (error) {
@@ -94,7 +98,7 @@ const getTitleText = async (req, res) => {
 };
 
 module.exports = {
-  getTradeData,
+  getFdiData,
   getSelectText,
   getTitleText,
 };

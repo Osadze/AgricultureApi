@@ -74,7 +74,7 @@ agriDb
         `=========== Server Is Running On Port ${port} =============`
       );
     });
-    return Promise.all([tradeDb.sync(), fdiDb.sync()]);
+    // return Promise.all([tradeDb.sync(), fdiDb.sync()]);
   })
   .then(() => {
     console.log("Trade and FDI databases synchronized");
