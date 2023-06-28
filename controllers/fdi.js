@@ -8,7 +8,7 @@ const getFdiData = async (req, res) => {
   const query = {};
 
   query.sector = "A";
-  query.quarter = year;
+  // query.quarter = year; // for new
 
   if (!year) {
     // const maxYearResult = await FdiModel.findOne({
@@ -27,10 +27,10 @@ const getFdiData = async (req, res) => {
       where: query,
       attributes: [
         "year",
-        ["usd","value"],
-        // [Sequelize.fn("SUM", Sequelize.col("usd")), "value"],
+        // ["usd","value"], // new
+        [Sequelize.fn("SUM", Sequelize.col("usd")), "value"], // old
       ],
-      // group: "year",
+      group: "year", // old
     });
 
     // Add name: "investments" to each result object
