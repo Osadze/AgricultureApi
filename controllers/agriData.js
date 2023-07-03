@@ -58,7 +58,7 @@ const getMainData = async (req, res) => {
             if (item.species != 26 && item.period == 2022) {
               obj.firstSlide.data.push({
                 name: item.cl_specy[`${langName}`],
-                value: parseInt(item.value),
+                value: parseFloat(item.value),
               });
             }
             break;
@@ -66,14 +66,14 @@ const getMainData = async (req, res) => {
             if (item.period == 2022) {
               obj.secondSlide.data.push({
                 name: item.cl_specy[`${langName}`],
-                value: parseInt(item.value),
+                value: parseFloat(item.value),
               });
             }
             break;
           case 31:
             obj.thirdSlide.data.push({
               name: item.cl_specy[`${langName}`],
-              value: parseInt(item.value),
+              value: parseFloat(item.value),
             });
             break;
           case 43:
@@ -81,12 +81,12 @@ const getMainData = async (req, res) => {
               if (obj.fourthSlide.data.length < 4) {
                 obj.fourthSlide.data.push({
                   name: item.cl_specy[`${langName}`],
-                  value: parseInt(item.value),
+                  value: parseFloat(item.value),
                 });
               } else {
                 obj.fifthSlide.data.push({
                   name: item.cl_specy[`${langName}`],
-                  value: parseInt(item.value),
+                  value: parseFloat(item.value),
                 });
               }
             }
@@ -433,7 +433,7 @@ const getFoodBalance = async (req, res) => {
           item.species_1 > 4103
             ? item.cl_species_1[`${langName}`]
             : item.cl_specy[`${langName}`];
-        return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+        return { from: from, to: to, value: Math.abs(parseFloat(item.value)) }; // this is for sankeychart visual purposes only
       } else {
         const from =
           item.species_1 > 4102
@@ -443,7 +443,7 @@ const getFoodBalance = async (req, res) => {
           item.species_1 > 4102
             ? item.cl_species_1[`${langName}`]
             : item.cl_specy[`${langName}`];
-        return { from: from, to: to, value: Math.abs(parseInt(item.value)) }; // this is for sankeychart visual purposes only
+        return { from: from, to: to, value: Math.abs(parseFloat(item.value)) }; // this is for sankeychart visual purposes only
       }
     });
 

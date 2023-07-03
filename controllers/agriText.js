@@ -653,7 +653,7 @@ const getTitleTexts = async (req, res) => {
   const lang = req.langTranslations;
 
   const langName = req.langName;
-  const { section, species } = req.query;
+  const { section, species, indicator } = req.query;
 
   const query = {};
 
@@ -661,19 +661,16 @@ const getTitleTexts = async (req, res) => {
     res.status(400).send("Missing section parameter");
     return;
   } else {
-    const sectionArray = String(section).split(",");
-    query.section = {
-      [Op.in]: sectionArray,
-    };
+    query.section = section;
   }
-  if (!species) {
-    res.status(400).send("Missing species parameter");
-    return;
+  if (!indicator) {
   } else {
-    const speciesArray = String(species).split(",");
-    query.species = {
-      [Op.in]: speciesArray,
-    };
+    query.indicator = indicator;
+  }
+
+  if (!species) {
+  } else {
+    query.species = species;
   }
 
   try {
@@ -786,15 +783,27 @@ const getTitleTexts = async (req, res) => {
       // OLD CODE END
 
       // Add more conditions to modify chartTitle for other cards
-
-      acc[cardName] = {
-        title: item.title,
-        code: parseInt(item.code),
-        chartTitle: chartTitle !== undefined ? chartTitle + unit : undefined,
-        chartTitle2: chartTitle2 !== undefined ? chartTitle2 + unit : undefined,
-        chartTitle3: chartTitle3 !== undefined ? chartTitle3 + unit : undefined,
-      };
-      return acc;
+      if (section == 3) {
+        acc[cardName] = {
+          title: item.title,
+          code: parseInt(item.code),
+          chartTitle: chartTitle !== undefined ? chartTitle : undefined,
+          chartTitle2: chartTitle2 !== undefined ? chartTitle2 : undefined,
+          chartTitle3: chartTitle3 !== undefined ? chartTitle3 : undefined,
+        };
+        return acc;
+      } else {
+        acc[cardName] = {
+          title: item.title,
+          code: parseInt(item.code),
+          chartTitle: chartTitle !== undefined ? chartTitle + unit : undefined,
+          chartTitle2:
+            chartTitle2 !== undefined ? chartTitle2 + unit : undefined,
+          chartTitle3:
+            chartTitle3 !== undefined ? chartTitle3 + unit : undefined,
+        };
+        return acc;
+      }
     }, {});
 
     // Remove card4 and add its title to card3
