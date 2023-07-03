@@ -653,7 +653,7 @@ const getTitleTexts = async (req, res) => {
   const lang = req.langTranslations;
 
   const langName = req.langName;
-  const { section } = req.query;
+  const { section, species } = req.query;
 
   const query = {};
 
@@ -666,23 +666,40 @@ const getTitleTexts = async (req, res) => {
       [Op.in]: sectionArray,
     };
   }
+  if (!species) {
+    res.status(400).send("Missing species parameter");
+    return;
+  } else {
+    const speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
 
   try {
     const result = await Agriculture.findAll({
       where: query,
-      attributes: ["indicator"],
+      attributes: ["indicator", "species"],
       include: [
         {
           model: Indicator,
           attributes: [langName, "code", "sort_Id"],
         },
+        {
+          model: Unit,
+          attributes: [langName, "code"],
+        },
       ],
     });
+
+    const unitsMap = new Map(); // Create a map to store the units for each indicator
 
     const indicatorSet = new Set();
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;
       const title = item.cl_indicator[langName];
+      unitsMap.set(code, item.cl_unit[langName]);
+
       const indicatorKey = `${title}_${code}`;
       if (!indicatorSet.has(indicatorKey)) {
         indicatorSet.add(indicatorKey);
@@ -702,6 +719,8 @@ const getTitleTexts = async (req, res) => {
       const chartTitle = choosenCard?.chartTitle;
       const chartTitle2 = choosenCard?.chartTitle2;
       const chartTitle3 = choosenCard?.chartTitle3;
+      const code = item.code;
+      const unit = unitsMap.get(code); // Get the unit based on the indicator code
 
       if (section === "5" && cardName == "card2") {
         item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
@@ -771,9 +790,9 @@ const getTitleTexts = async (req, res) => {
       acc[cardName] = {
         title: item.title,
         code: parseInt(item.code),
-        chartTitle: chartTitle,
-        chartTitle2: chartTitle2,
-        chartTitle3: chartTitle3,
+        chartTitle: chartTitle !== undefined ? chartTitle + unit : undefined,
+        chartTitle2: chartTitle2 !== undefined ? chartTitle2 + unit : undefined,
+        chartTitle3: chartTitle3 !== undefined ? chartTitle3 + unit : undefined,
       };
       return acc;
     }, {});
@@ -1158,5 +1177,5 @@ const getTitleTexts = async (req, res) => {
 module.exports = {
   getSelectTexts,
   getTitleTexts,
-  getSelectTextsMap
+  getSelectTextsMap,
 };
