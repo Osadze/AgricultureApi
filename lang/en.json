@@ -101,16 +101,16 @@
   },
   "3": {
     "card1": {
-      "chartTitle": "Fish production - tons"
+      "chartTitle": "Fish production"
     },
     "card2": {
-      "chartTitle": "Fish in reservoirs - tons"
+      "chartTitle": "Fish in reservoirs"
     },
     "card3": {
-      "chartTitle": "Share of sold fish - percentage"
+      "chartTitle": "Share of sold fish"
     },
     "card4": {
-      "chartTitle": "Price at the farm gate - GEL/kg"
+      "chartTitle": "Price at the farm gate"
     }
   },
   "4": {
