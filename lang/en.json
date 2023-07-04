@@ -2,7 +2,8 @@
   "defaultS": {
     "period": { "title": "Year", "placeholder": "Select a Year" },
     "region": { "title": "region", "placeholder": "Select a Region" },
-    "and": "and"
+    "and": "and",
+    "or": "or"
   },
 
   "vegi": {
@@ -11,7 +12,7 @@
       "placeholder": "Select a Culture"
     },
     "mravalwlovaniS": {
-      "title": "Perennial Crops",
+      "title": "Permanent Crops",
       "placeholder": "Select a Culture"
     }
   },
@@ -71,7 +72,7 @@
   "1": {
     "card1": {
       "chartTitle": "Production of annual crops - thousand tons",
-      "chartTitle2": "Production of perennial crops - thousand tons"
+      "chartTitle2": "Production of Permanent crops - thousand tons"
     },
     "card2": {
       "chartTitle": "Cultivated area - thousand hectares"
@@ -81,7 +82,7 @@
     },
     "card4": {
       "chartTitle": "Price of annual crops at the farm gate - GEL/kg",
-      "chartTitle2": "Price of perennial crops at the farm gate - GEL/kg"
+      "chartTitle2": "Price of Permanent crops at the farm gate - GEL/kg"
     }
   },
   "2": {
@@ -228,5 +229,67 @@
     "title2": "Prevoius Year Quarter = 100",
     "placeholder": "Select",
     "chartTitle": "Index of unit cost of agricultural products"
+  },
+  "chartTitles": {
+    "forOne": {
+      "11": "Sown Area of",
+      "12": "Production of",
+      "13": "Average yield of",
+      "14": "Farm gate price of",
+      "21": "Number of",
+      "22": "Production of",
+      "23": "Losses of",
+      "24": "Litter of",
+      "31": "Production of",
+      "32": "in Waterbodies",
+      "33": "Share of sold",
+      
+      "41": "რესურსები და გამოყენება",
+      "42": "მოხმარება ერთ სულზე წელიწადში",
+      "43": "თვითუზრუნველყოფის კოეფიციენტი",
+      "51": "დასაქმება",
+      "52": "საშუალო ხელფასი",
+      "53": "მედიანური ხელფასი",
+      "61": "სოფლის, სატყეო და თევზის მეურნეობა,",
+      "62": "მემცენარეობა და მეცხოველეობა, ნადირობა და აღნიშნულ სფეროებში მომსახურების გაწევა",
+      "63": "მეტყევეობა და ხე-ტყის დამზადება",
+      "64": "თევზჭერა და აკვაკულტურა",
+      "71": "წინა კვარტალი = 100",
+      "72": "წინა წლის კვარტალი = 100"
+    },
+    "forMany": {
+      "11": "Sown Area of annual crops",
+      "12": {
+        "annual": "Production of annual crops",
+        "perma": "Production of Permanent crops"
+      },
+      "13": "Average yield of annual crops",
+      "14": {
+        "annual": "Farm gate price of annual crops",
+        "perma": "Farm gate price of Permanent crops",
+        "animal": "Farm gate price of livestock products",
+        "aqua": "Farm gate price of fish"
+      },
+      "21": "Number of livestock, poultry and beehives",
+      "22": "Production of livestock products",
+      "23": "Losses",
+      "24": "Litter",
+      "31": "Fish Production",
+      "32": "Fish in Waterbodies",
+      "33": "Share of sold fish",
+
+      "41": "რესურსები და გამოყენება",
+      "42": "მოხმარება ერთ სულზე წელიწადში",
+      "43": "თვითუზრუნველყოფის კოეფიციენტი",
+      "51": "დასაქმება",
+      "52": "საშუალო ხელფასი",
+      "53": "მედიანური ხელფასი",
+      "61": "სოფლის, სატყეო და თევზის მეურნეობა,",
+      "62": "მემცენარეობა და მეცხოველეობა, ნადირობა და აღნიშნულ სფეროებში მომსახურების გაწევა",
+      "63": "მეტყევეობა და ხე-ტყის დამზადება",
+      "64": "თევზჭერა და აკვაკულტურა",
+      "71": "წინა კვარტალი = 100",
+      "72": "წინა წლის კვარტალი = 100"
+    }
   }
 }

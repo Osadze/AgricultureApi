@@ -13,6 +13,7 @@ const Species = sequelize.define("cl_species", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
   code: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -24,6 +25,10 @@ const Species = sequelize.define("cl_species", {
   parentId: {
     type: DataTypes.INTEGER,
     allowNull: true,
+  },
+  name_ka1: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
 },
 {

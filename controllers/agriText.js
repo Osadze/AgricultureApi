@@ -649,11 +649,114 @@ const getSelectTextsMap = async (req, res) => {
   }
 };
 
-const getTitleTexts = async (req, res) => {
+const getChartTitleTexts = async (req, res) => {
+  const lang = req.langTranslations;
+  const langName = req.langName;
+  const langName1 = req.langName1;
+  const { section, indicator, species } = req.query;
+  const query = {};
+
+  if (!indicator) {
+    res.status(400).send("Missing indicator parameter");
+  } else {
+    query.indicator = indicator;
+  }
+
+  if (!section) {
+    res.status(400).send("Missing section parameter");
+  } else {
+    query.section = section;
+  }
+
+  let speciesArray = {};
+
+  if (!species) {
+    res.status(400).send("Missing species parameter");
+  } else {
+    speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  try {
+    const result = await Agriculture.findOne({
+      where: {
+        indicator: indicator,
+        species: {
+          [Op.in]: speciesArray,
+        },
+      },
+      attributes: [],
+      include: [
+        {
+          model: Indicator,
+          attributes: [langName, "code"],
+        },
+        {
+          model: Species,
+          attributes: [langName, langName1],
+        },
+        {
+          model: Unit,
+          attributes: [langName],
+        },
+      ],
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "Chart title not found" });
+    }
+
+    const speciesName = result.cl_specy[langName];
+    const speciesName1 = result.cl_specy[langName1];
+    const indicatorName = result.cl_indicator[langName];
+    const indicatorCode = result.cl_indicator.code;
+    const unitName = result.cl_unit[langName];
+
+    const response = {};
+
+    switch (true) {
+      case speciesArray.length > 1 &&
+        section === "1" &&
+        (indicator === "12" || indicator === "14"):
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
+        response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
+        break;
+      case speciesArray.length > 1 && section === "2" && indicator === "14":
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
+        break;
+      case speciesArray.length > 1 && section === "3" && indicator === "14":
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+        break;
+      case speciesArray.length > 1:
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        break;
+      case speciesArray.length > 1:
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        break;
+      case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
+        response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
+        response.unit = `(${unitName})`;
+        break;
+      default:
+        response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
+        response.unit = `(${unitName})`;
+        break;
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getIndicatorsTexts = async (req, res) => {
   const lang = req.langTranslations;
 
   const langName = req.langName;
-  const { section, species, indicator } = req.query;
+  const { section } = req.query;
 
   const query = {};
 
@@ -662,15 +765,6 @@ const getTitleTexts = async (req, res) => {
     return;
   } else {
     query.section = section;
-  }
-  if (!indicator) {
-  } else {
-    query.indicator = indicator;
-  }
-
-  if (!species) {
-  } else {
-    query.species = species;
   }
 
   try {
@@ -689,13 +783,10 @@ const getTitleTexts = async (req, res) => {
       ],
     });
 
-    const unitsMap = new Map(); // Create a map to store the units for each indicator
-
     const indicatorSet = new Set();
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;
       const title = item.cl_indicator[langName];
-      unitsMap.set(code, item.cl_unit[langName]);
 
       const indicatorKey = `${title}_${code}`;
       if (!indicatorSet.has(indicatorKey)) {
@@ -713,11 +804,7 @@ const getTitleTexts = async (req, res) => {
       // console.log(lang[`${section}`][cardName]?.chartTitle);
       const choosenCard = lang[`${section}`][cardName];
 
-      const chartTitle = choosenCard?.chartTitle;
-      const chartTitle2 = choosenCard?.chartTitle2;
-      const chartTitle3 = choosenCard?.chartTitle3;
       const code = item.code;
-      const unit = unitsMap.get(code); // Get the unit based on the indicator code
 
       if (section === "5" && cardName == "card2") {
         item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
@@ -742,45 +829,119 @@ const getTitleTexts = async (req, res) => {
         // console.log("cardName", cardName);
       }
 
-      // OLD CODE START
+      // Add more conditions to modify chartTitle for other cards
+      acc[cardName] = {
+        title: item.title,
+        code: parseInt(item.code),
+      };
+      return acc;
+    }, {});
 
-      // Modify chartTitle based on the card
+    // Remove card4 and add its title to card3
+    if (section === "2") {
+      const card4 = cards.card4;
+      if (card4) {
+        const card3 = cards.card3;
+        if (card3) {
+          card3.title = `${card4.title} ${lang.defaultS.or} ${card3.title}`;
+        }
+        delete cards.card4;
+      }
+      // Change card5 to card4
+      const card5 = cards.card5;
+      if (card5) {
+        cards.card4 = {
+          title: card5.title,
+          code: card5.code,
+        };
+        delete cards.card5;
+      }
+    }
+    res.json(cards);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
-      // switch (cardName) {
-      //   case "card1":
-      //     chartTitle = lang[`${section}`].card1.chartTitle;
-      //     chartTitle2 = lang[`${section}`].card1.chartTitle2;
-      //     chartTitle3 = lang[`${section}`].card1.chartTitle3;
-      //     break;
-      //   case "card2":
-      //     if (section === "5") {
-      //       item.title = "test"; // Modify title for card2 in section 5
-      //     }
-      //     chartTitle = lang[`${section}`].card2.chartTitle;
-      //     chartTitle2 = lang[`${section}`].card2.chartTitle2;
-      //     chartTitle3 = lang[`${section}`].card2.chartTitle3;
-      //     break;
-      //   case "card3":
-      //     if (section === "5") {
-      //       return acc; // Skip adding card3 to the cards object
-      //     } else {
-      //       chartTitle = lang[`${section}`].card3.chartTitle;
-      //       chartTitle2 = lang[`${section}`].card3.chartTitle2;
-      //       chartTitle3 = lang[`${section}`].card3.chartTitle3;
-      //     }
-      //     break;
-      //   case "card4":
-      //     console.log(cardName);
-      //     chartTitle = lang[`${section}`].card4.chartTitle;
-      //     chartTitle2 = lang[`${section}`].card4.chartTitle2;
-      //     chartTitle3 = lang[`${section}`].card4.chartTitle3;
-      //     break;
-      //   default:
-      //     // console.log("def");
-      //     break;
-      // }
+const getTitleTexts = async (req, res) => {
+  const lang = req.langTranslations;
 
-      // OLD CODE END
+  const langName = req.langName;
+  const { section } = req.query;
+
+  const query = {};
+
+  if (!section) {
+    res.status(400).send("Missing section parameter");
+    return;
+  } else {
+    query.section = section;
+  }
+
+  try {
+    const result = await Agriculture.findAll({
+      where: query,
+      attributes: ["indicator", "species"],
+      include: [
+        {
+          model: Indicator,
+          attributes: [langName, "code", "sort_Id"],
+        },
+        {
+          model: Unit,
+          attributes: [langName, "code"],
+        },
+      ],
+    });
+
+    const indicatorSet = new Set();
+    const uniqueIndicators = result.reduce((acc, item) => {
+      const code = item.cl_indicator.code;
+      const title = item.cl_indicator[langName];
+      const indicatorKey = `${title}_${code}`;
+      if (!indicatorSet.has(indicatorKey)) {
+        indicatorSet.add(indicatorKey);
+        acc.push({ title, code, sort_Id: item.cl_indicator.sort_Id });
+      }
+      return acc;
+    }, []);
+
+    // Sort the uniqueIndicators array based on the sort_Id attribute
+    uniqueIndicators.sort((a, b) => a.sort_Id - b.sort_Id);
+
+    const cards = uniqueIndicators.reduce((acc, item, index) => {
+      const cardName = `card${index + 1}`;
+      // console.log(lang[`${section}`][cardName]?.chartTitle);
+      const choosenCard = lang[`${section}`][cardName];
+
+      const chartTitle = choosenCard?.chartTitle;
+      const chartTitle2 = choosenCard?.chartTitle2;
+      const chartTitle3 = choosenCard?.chartTitle3;
+      const code = item.code;
+
+      if (section === "5" && cardName == "card2") {
+        item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
+        // console.log("cardName", cardName);
+      }
+
+      if (section === "5" && cardName === "card3") {
+        // console.log("cardName", cardName);
+
+        return acc; // Skip adding card3 to the cards object
+      }
+      if (
+        section === "6" &&
+        (cardName === "card2" || cardName === "card3" || cardName === "card4")
+      ) {
+        // console.log("cardName", cardName);
+
+        return acc; // Skip adding card3 to the cards object
+      }
+      if (section === "6" && cardName == "card1") {
+        item.title = undefined;
+        // console.log("cardName", cardName);
+      }
 
       // Add more conditions to modify chartTitle for other cards
       if (section == 3) {
@@ -796,11 +957,9 @@ const getTitleTexts = async (req, res) => {
         acc[cardName] = {
           title: item.title,
           code: parseInt(item.code),
-          chartTitle: chartTitle !== undefined ? chartTitle + unit : undefined,
-          chartTitle2:
-            chartTitle2 !== undefined ? chartTitle2 + unit : undefined,
-          chartTitle3:
-            chartTitle3 !== undefined ? chartTitle3 + unit : undefined,
+          chartTitle: chartTitle !== undefined ? chartTitle : undefined,
+          chartTitle2: chartTitle2 !== undefined ? chartTitle2 : undefined,
+          chartTitle3: chartTitle3 !== undefined ? chartTitle3 : undefined,
         };
         return acc;
       }
@@ -812,7 +971,7 @@ const getTitleTexts = async (req, res) => {
       if (card4) {
         const card3 = cards.card3;
         if (card3) {
-          card3.title = `${card4.title} ${lang.defaultS.and} ${card3.title}`;
+          card3.title = `${card4.title} ${lang.defaultS.or} ${card3.title}`;
         }
         delete cards.card4;
       }
@@ -836,355 +995,10 @@ const getTitleTexts = async (req, res) => {
   }
 };
 
-// const getTitleTexts = async (req, res) => {
-//   const langName = req.langName;
-//   const { section } = req.query;
-
-//   const query = {};
-
-//   if (!section) {
-//     res.status(400).send("Missing section parameter");
-//     return;
-//   } else {
-//     const sectionArray = String(section).split(",");
-//     query.section = {
-//       [Op.in]: sectionArray,
-//     };
-//   }
-
-//   try {
-//     const result = await Agriculture.findAll({
-//       where: query,
-//       attributes: ["indicator"],
-//       include: [
-//         {
-//           model: Indicator,
-//           attributes: [langName, "code", "sort_Id"],
-//         },
-//       ],
-//     });
-
-//     const indicatorSet = new Set();
-//     const uniqueIndicators = result.reduce((acc, item) => {
-//       const code = item.cl_indicator.code;
-//       const title = item.cl_indicator[langName];
-
-//       const indicatorKey = `${title}_${code}`;
-//       if (!indicatorSet.has(indicatorKey)) {
-//         indicatorSet.add(indicatorKey);
-//         acc.push({ title, code, sort_Id: item.cl_indicator.sort_Id });
-//       }
-//       return acc;
-//     }, []);
-
-//     // Sort the uniqueIndicators array based on the sort_Id attribute
-//     uniqueIndicators.sort((a, b) => a.sort_Id - b.sort_Id);
-
-//     const cards = uniqueIndicators.reduce((acc, item, index) => {
-//       const cardName = `card${index + 1}`;
-//       acc[cardName] = { title: item.title, code: parseInt(item.code) };
-//       return acc;
-//     }, {});
-
-//     // Remove card4 and add its title to card3
-//     if (section === "2") {
-//       const card4 = cards.card4;
-//       if (card4) {
-//         const card3 = cards.card3;
-//         if (card3) {
-//           card3.title = `${card4.title} და ${card3.title}`;
-//         }
-//         delete cards.card4;
-//       }
-//       // Change card5 to card4
-//       const card5 = cards.card5;
-//       if (card5) {
-//         cards.card4 = { title: card5.title, code: card5.code };
-//         delete cards.card5;
-//       }
-//     }
-
-// res.json({ cards });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
-// const getSelectTextsv1 = async (req, res) => {
-//   let { section, indicator, species, period, region } = req.query;
-
-//   const query = {};
-
-//   if (!section) {
-//     res.status(400).send("Missing section parameter");
-//     return;
-//   } else {
-//     const sectionArray = String(section).split(",");
-//     query.section = {
-//       [Op.in]: sectionArray,
-//     };
-//   }
-
-//   if (!indicator) {
-//     res.status(400).send("Missing indicator parameter");
-//     return;
-//   } else {
-//     const indicatorArray = String(indicator).split(",");
-//     query.indicator = {
-//       [Op.in]: indicatorArray,
-//     };
-//   }
-
-//   if (species) {
-//     query.species = species;
-//   }
-
-//   if (period) {
-//     query.period = period;
-//   }
-
-//   if (region) {
-//     query.region = region;
-//   }
-
-//   try {
-//     const species = await Agriculture.aggregate("species", "DISTINCT", {
-//       plain: false,
-//       where: query,
-//     });
-
-//     const speciesCodesAndNames = await Species.findAll({
-//       attributes: ["code", "nameKa", "parentId"],
-//       where: { code: species.map((s) => s.DISTINCT) },
-//       order: [["code", "ASC"]],
-//     });
-
-//     // Group species by parent id
-//     const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
-//       const parentId = curr.parentId || "null";
-//       if (!acc[parentId]) {
-//         acc[parentId] = [];
-//       }
-//       acc[parentId].push(curr);
-//       return acc;
-//     }, {});
-
-//     // Map species to include children property
-//     const speciesWithChildren = speciesByParentId["null"].reduce(
-//       (acc, parentSpecies) => {
-//         // Create a copy of the dataValues object without the _previousDataValues property
-//         const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-//         const species = {
-//           ...dataValues,
-//           childrens: speciesByParentId[parentSpecies.code] || [],
-//         };
-//         // If section = 1 , vegetation, then split it into two arrays
-//         // vegetatins with code under 21 are Annual crops and 21 or more than 21 Perennial cultivars
-//         if (section == 1 && species.code < 21) {
-//           acc.species1.push(species);
-//         } else {
-//           acc.species.push(species);
-//         }
-//         return acc;
-//       },
-//       { species: [], species1: [] }
-//     );
-
-//     const years = await Agriculture.findAll({
-//       attributes: [
-//         [Sequelize.fn("DISTINCT", Sequelize.col("period")), "nameKa"],
-//       ],
-//       where: query,
-//       order: [["period", "ASC"]],
-//     });
-
-//     const regions = await Region.findAll({
-//       attributes: ["code", "nameKa"],
-//       order: [["code", "ASC"]],
-//     });
-
-//     if (section == 1) {
-//       res.json({
-//         species1: speciesWithChildren.species1,
-//         species2: speciesWithChildren.species,
-//         years,
-//         regions,
-//       });
-//     } else {
-//       res.json({
-//         species1: speciesWithChildren.species,
-//         years,
-//         regions,
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
-// const getAgricultureText = async (req, res) => {
-//   let { section, indicator } = req.query;
-
-//   const query = {};
-
-//   if (!section) {
-//     res.status(400).send("Missing section parameter");
-//     return;
-//   } else {
-//     const sectionArray = String(section).split(",");
-//     query.section = {
-//       [Op.in]: sectionArray,
-//     };
-//   }
-
-//   if (!indicator) {
-//     res.status(400).send("Missing indicator parameter");
-//     return;
-//   } else {
-//     const indicatorArray = String(indicator).split(",");
-//     query.indicator = {
-//       [Op.in]: indicatorArray,
-//     };
-//   }
-
-//   try {
-//     const species = await Agriculture.aggregate("species", "DISTINCT", {
-//       plain: false,
-//       where: query,
-//     });
-
-//     const speciesCodesAndNames = await Species.findAll({
-//       attributes: ["code", "nameKa", "parentId"],
-//       where: { code: species.map((s) => s.DISTINCT) },
-//       order: [["code", "ASC"]],
-//     });
-
-//     // Group species by parent id
-//     const speciesByParentId = speciesCodesAndNames.reduce((acc, curr) => {
-//       const parentId = curr.parentId || "null";
-//       if (!acc[parentId]) {
-//         acc[parentId] = [];
-//       }
-//       acc[parentId].push(curr);
-//       return acc;
-//     }, {});
-
-//     // Map species to include children property
-//     const speciesWithChildren = speciesByParentId["null"].reduce(
-//       (acc, parentSpecies) => {
-//         // Create a copy of the dataValues object without the _previousDataValues property
-//         const { _previousDataValues, ...dataValues } = parentSpecies.dataValues;
-//         const species = {
-//           ...dataValues,
-//           childrens: speciesByParentId[parentSpecies.code] || [],
-//         };
-//         // If section = 1 , vegetation, then split it into two arrays
-//         // vegetatins with code under 21 are Annual crops and 21 or more than 21 Perennial cultivars
-//         if (section == 1 && species.code < 21) {
-//           acc.species1.push(species);
-//         } else {
-//           acc.species.push(species);
-//         }
-//         return acc;
-//       },
-//       { species: [], species1: [] }
-//     );
-
-//     const years = await Agriculture.findAll({
-//       attributes: [[Sequelize.fn("DISTINCT", Sequelize.col("period")), "nameKa"]],
-//       where: query,
-//       order: [["period", "ASC"]],
-//     });
-
-//     const regions = await Region.findAll({
-//       attributes: ["code", "nameKa"],
-//       order: [["code", "ASC"]],
-//     });
-
-//     if (section == 1) {
-//       res.json({
-//         species1: speciesWithChildren.species1,
-//         species2: speciesWithChildren.species,
-//         years,
-//         regions,
-//       });
-//     } else {
-//       res.json({
-//         species1: speciesWithChildren.species,
-//         years,
-//         regions,
-//       });
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
-// const getAgricultures = async (req, res) => {
-//   let { indicator, period, species, region } = req.query;
-
-//   const query = {};
-
-//   if (indicator) {
-//     query.indicator = indicator;
-//   } else {
-//     query.indicator = 1;
-//   }
-
-//   if (period) {
-//     const periodArray = String(period).split(",");
-//     query.period = {
-//       [Op.in]: periodArray,
-//     };
-//   } else {
-//     const maxYearResult = await Agriculture.findOne({
-//       attributes: [[Sequelize.fn("MAX", Sequelize.col("period")), "maxPeriod"]],
-//     });
-//     period = maxYearResult.dataValues.maxPeriod - 1;
-//     query.period = period;
-//   }
-
-//   if (species) {
-//     const speciesArray = String(species).split(",");
-//     query.species = {
-//       [Op.in]: speciesArray,
-//     };
-//   } else {
-//     query.species = 10;
-//   }
-
-//   if (region) {
-//     const regionArray = String(region).split(",");
-//     query.region = {
-//       [Op.in]: regionArray,
-//     };
-//   } else {
-//     query.region = 1;
-//   }
-
-//   try {
-//     const result = await Agriculture.findAll({
-//       where: query,
-//       attributes: ["id", "value", "period"],
-//       include: [
-//         { model: Species, attributes: ["nameKa", "code"] },
-//         { model: Unit, attributes: ["nameKa", "code"] },
-//         { model: Region, attributes: ["nameKa", "code"] },
-//       ],
-//     });
-
-//     res.json(result);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
-
 module.exports = {
   getSelectTexts,
-  getTitleTexts,
+  getChartTitleTexts,
   getSelectTextsMap,
+  getIndicatorsTexts,
+  getTitleTexts,
 };
