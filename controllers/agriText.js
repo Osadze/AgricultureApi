@@ -1,6 +1,7 @@
 const Agriculture = require("../models/agriculture/agriculture_model");
 const Region = require("../models/agriculture/regionCL");
 const Species = require("../models/agriculture/speciesCL");
+const Species_1 = require("../models/agriculture/species_1CL");
 const Unit = require("../models/agriculture/unitCL");
 const Indicator = require("../models/agriculture/indicatorCL");
 const { Sequelize, Op } = require("sequelize");
@@ -649,108 +650,6 @@ const getSelectTextsMap = async (req, res) => {
   }
 };
 
-const getChartTitleTexts = async (req, res) => {
-  const lang = req.langTranslations;
-  const langName = req.langName;
-  const langName1 = req.langName1;
-  const { section, indicator, species } = req.query;
-  const query = {};
-
-  if (!indicator) {
-    res.status(400).send("Missing indicator parameter");
-  } else {
-    query.indicator = indicator;
-  }
-
-  if (!section) {
-    res.status(400).send("Missing section parameter");
-  } else {
-    query.section = section;
-  }
-
-  let speciesArray = {};
-
-  if (!species) {
-    // res.status(400).send("Missing species parameter");
-  } else {
-    speciesArray = String(species).split(",");
-    query.species = {
-      [Op.in]: speciesArray,
-    };
-  }
-
-  try {
-    const result = await Agriculture.findOne({
-      where: query,
-      attributes: [],
-      include: [
-        {
-          model: Indicator,
-          attributes: [langName, "code"],
-        },
-        {
-          model: Species,
-          attributes: [langName, langName1],
-        },
-        {
-          model: Unit,
-          attributes: [langName],
-        },
-      ],
-    });
-
-    if (!result) {
-      return res.status(404).json({ message: "Chart title not found" });
-    }
-
-    const speciesName = result.cl_specy[langName];
-    const speciesName1 = result.cl_specy[langName1];
-    const indicatorName = result.cl_indicator[langName];
-    const indicatorCode = result.cl_indicator.code;
-    const unitName = result.cl_unit[langName];
-
-    const response = {};
-    console.log(speciesArray);
-
-    switch (true) {
-      case speciesArray.length === undefined:
-        response.chartTitle = null;
-        break;
-      case speciesArray.length > 1 &&
-        section === "1" &&
-        (indicator === "12" || indicator === "14"):
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
-        response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
-        break;
-      case speciesArray.length > 1 && section === "2" && indicator === "14":
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
-        break;
-      case speciesArray.length > 1 && section === "3" && indicator === "14":
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
-        break;
-      case speciesArray.length > 1:
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
-        break;
-      case speciesArray.length > 1:
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
-        break;
-      case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
-        response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
-        response.unit = `${unitName}`;
-        break;
-      default:
-        response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
-        response.unit = `${unitName}`;
-        break;
-    }
-
-    res.json(response);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 const getIndicatorsTexts = async (req, res) => {
   const lang = req.langTranslations;
 
@@ -862,6 +761,225 @@ const getIndicatorsTexts = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+const getChartTitleTexts = async (req, res) => {
+  const lang = req.langTranslations;
+  const langName = req.langName;
+  const langName1 = req.langName1;
+  const { section, indicator, species } = req.query;
+  const query = {};
+
+  let speciesArray = {};
+  let indicatorArray = {};
+
+  if (!indicator) {
+    res.status(400).send("Missing indicator parameter");
+  } else {
+    indicatorArray = String(indicator).split(",");
+    query.indicator = {
+      [Op.in]: indicatorArray,
+    };
+  }
+
+  if (!section) {
+    res.status(400).send("Missing section parameter");
+  } else {
+    query.section = section;
+  }
+
+  if (!species) {
+    // res.status(400).send("Missing species parameter");
+  } else {
+    speciesArray = String(species).split(",");
+    query.species = {
+      [Op.in]: speciesArray,
+    };
+  }
+
+  try {
+    const result = await Agriculture.findOne({
+      where: query,
+      attributes: [],
+      include: [
+        {
+          model: Indicator,
+          attributes: [langName, "code"],
+        },
+        {
+          model: Species,
+          attributes: [langName, langName1],
+        },
+        {
+          model: Species_1,
+          attributes: [langName],
+          as: "cl_species_1",
+        },
+        {
+          model: Unit,
+          attributes: [langName],
+        },
+      ],
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "Chart title not found" });
+    }
+
+    const speciesName = result.cl_specy[langName];
+    const speciesName1 = result.cl_specy[langName1];
+    const indicatorName = result.cl_indicator[langName];
+    const indicatorCode = result.cl_indicator.code;
+    const unitName = result.cl_unit[langName];
+    const species1name = result.cl_species_1[langName];
+
+    const response = {};
+    console.log(indicator);
+
+    switch (true) {
+      case speciesArray.length === undefined:
+        response.chartTitle = null;
+        break;
+      case speciesArray.length > 1 &&
+        section === "1" &&
+        (indicator === "12" || indicator === "14"):
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
+        response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
+        break;
+      case speciesArray.length > 1 && section === "2" && indicator === "14":
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
+        break;
+      case indicator === "23,24" || indicator === "24,23":
+        response.chartTitle = `${lang.chartTitles.forMany[24]}`;
+        response.chartTitle1 = `${lang.chartTitles.forMany[23]}`;;
+        break;
+      case speciesArray.length > 1 && section === "3" && indicator === "14":
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+        break;
+      case speciesArray.length > 1:
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        break;
+      case speciesArray.length > 1:
+        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        break;
+      case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
+        response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
+        response.unit = `${unitName}`;
+        break;
+      default:
+        response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
+        response.unit = `${unitName}`;
+        break;
+    }
+
+    res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// const getChartTitleTexts = async (req, res) => {
+//   const lang = req.langTranslations;
+//   const langName = req.langName;
+//   const langName1 = req.langName1;
+//   const { section, indicator, species } = req.query;
+//   const query = {};
+
+//   if (!indicator) {
+//     res.status(400).send("Missing indicator parameter");
+//   } else {
+//     query.indicator = indicator;
+//   }
+
+//   if (!section) {
+//     res.status(400).send("Missing section parameter");
+//   } else {
+//     query.section = section;
+//   }
+
+//   let speciesArray = {};
+
+//   if (!species) {
+//     // res.status(400).send("Missing species parameter");
+//   } else {
+//     speciesArray = String(species).split(",");
+//     query.species = {
+//       [Op.in]: speciesArray,
+//     };
+//   }
+
+//   try {
+//     const result = await Agriculture.findOne({
+//       where: query,
+//       attributes: [],
+//       include: [
+//         {
+//           model: Indicator,
+//           attributes: [langName, "code"],
+//         },
+//         {
+//           model: Species,
+//           attributes: [langName, langName1],
+//         },
+//         {
+//           model: Unit,
+//           attributes: [langName],
+//         },
+//       ],
+//     });
+
+//     if (!result) {
+//       return res.status(404).json({ message: "Chart title not found" });
+//     }
+
+//     const speciesName = result.cl_specy[langName];
+//     const speciesName1 = result.cl_specy[langName1];
+//     const indicatorName = result.cl_indicator[langName];
+//     const indicatorCode = result.cl_indicator.code;
+//     const unitName = result.cl_unit[langName];
+
+//     const response = {};
+//     console.log(speciesArray);
+
+//     switch (true) {
+//       case speciesArray.length === undefined:
+//         response.chartTitle = null;
+//         break;
+//       case speciesArray.length > 1 &&
+//         section === "1" &&
+//         (indicator === "12" || indicator === "14"):
+//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
+//         response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
+//         break;
+//       case speciesArray.length > 1 && section === "2" && indicator === "14":
+//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
+//         break;
+//       case speciesArray.length > 1 && section === "3" && indicator === "14":
+//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+//         break;
+//       case speciesArray.length > 1:
+//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+//         break;
+//       case speciesArray.length > 1:
+//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+//         break;
+//       case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
+//         response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
+//         response.unit = `${unitName}`;
+//         break;
+//       default:
+//         response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
+//         response.unit = `${unitName}`;
+//         break;
+//     }
+
+//     res.json(response);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
 
 const getTitleTexts = async (req, res) => {
   const lang = req.langTranslations;
