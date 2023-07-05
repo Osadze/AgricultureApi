@@ -671,7 +671,7 @@ const getChartTitleTexts = async (req, res) => {
   let speciesArray = {};
 
   if (!species) {
-    res.status(400).send("Missing species parameter");
+    // res.status(400).send("Missing species parameter");
   } else {
     speciesArray = String(species).split(",");
     query.species = {
@@ -681,12 +681,7 @@ const getChartTitleTexts = async (req, res) => {
 
   try {
     const result = await Agriculture.findOne({
-      where: {
-        indicator: indicator,
-        species: {
-          [Op.in]: speciesArray,
-        },
-      },
+      where: query,
       attributes: [],
       include: [
         {
@@ -715,8 +710,12 @@ const getChartTitleTexts = async (req, res) => {
     const unitName = result.cl_unit[langName];
 
     const response = {};
+    console.log(speciesArray);
 
     switch (true) {
+      case speciesArray.length === undefined:
+        response.chartTitle = null;
+        break;
       case speciesArray.length > 1 &&
         section === "1" &&
         (indicator === "12" || indicator === "14"):
@@ -737,11 +736,11 @@ const getChartTitleTexts = async (req, res) => {
         break;
       case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
         response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
-        response.unit = `(${unitName})`;
+        response.unit = `${unitName}`;
         break;
       default:
         response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
-        response.unit = `(${unitName})`;
+        response.unit = `${unitName}`;
         break;
     }
 
