@@ -4,7 +4,7 @@
     "region": { "title": "region", "placeholder": "Select a Region" },
     "and": "and",
     "or": "or",
-    "balance": "Food balance sheets for"
+    "balance": "Food balance sheets"
   },
 
   "vegi": {
@@ -164,8 +164,8 @@
         "unit": "GEL"
       },
       {
-        "name": "Full Release",
-        "value": 6330.6,
+        "name": "Output of agriculture",
+        "value": 6023.3,
         "unit": "Million GEL"
       }
     ],
@@ -174,22 +174,22 @@
       {
         "name": "Export",
         "value": 1141.6,
-        "unit": "million USD"
+        "unit": "Million USD"
       },
       {
-        "name": "full release",
-        "value": 1349.6,
-        "unit": "million USD"
+        "name": "Production Value",
+        "value": 869.9,
+        "unit": "Million GEL"
       },
 
       {
         "name": "Foreign Direct Investments",
         "value": 1813.9,
-        "unit": "One thousand US dollars"
+        "unit": "Thousand US dollars"
       },
       {
-        "name": "Registered Organizations",
-        "value": 140,
+        "name": "Registered Economic Entities",
+        "value": 2652,
         "unit": "Unit"
       }
     ]

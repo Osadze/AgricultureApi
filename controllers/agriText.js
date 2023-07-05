@@ -976,7 +976,7 @@ const getChartTitlesSupply = async (req, res) => {
       if (lang === "ka") {
         maintitle =`${speciesName1} ${langjson.defaultS.balance}`
       } else {
-        maintitle =`${langjson.defaultS.balance} ${speciesName1} `
+        maintitle =`${langjson.defaultS.balance} for ${speciesName1}`
         
       }
 
