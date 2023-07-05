@@ -3,7 +3,7 @@ const FdiModel = require("../models/fdi/fdi_model");
 
 const getFdiData = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
   let { year } = req.query;
   const query = {};
 
@@ -37,7 +37,7 @@ const getFdiData = async (req, res) => {
     const modifiedResult = result.map((item) => ({
       ...item.dataValues,
       value: parseFloat((item.dataValues.value / 1000000).toFixed(1)), // Round up to 2 decimal places
-      name: lang.fdi.investments,
+      name: langjson.fdi.investments,
     }));
 
     res.json(modifiedResult);
@@ -47,7 +47,7 @@ const getFdiData = async (req, res) => {
 };
 
 const getSelectText = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
   try {
@@ -67,8 +67,8 @@ const getSelectText = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: lang.defaultS.period.title,
-      placeholder: lang.defaultS.period.placeholder,
+      title: langjson.defaultS.period.title,
+      placeholder: langjson.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -80,7 +80,7 @@ const getSelectText = async (req, res) => {
 };
 
 const getTitleText = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
 
@@ -88,7 +88,7 @@ const getTitleText = async (req, res) => {
     const cards = {
       card1: {
         code: 881,
-        chartTitle: lang.fdi.chartTitle,
+        chartTitle: langjson.fdi.chartTitle,
       },
     };
     res.json({ cards });

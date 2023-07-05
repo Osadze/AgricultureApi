@@ -12,7 +12,7 @@ const languageMiddleware = require("../middleware/language");
 
 const getSelectTexts = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { section, indicator, species, period, region } = req.query;
 
@@ -73,8 +73,8 @@ const getSelectTexts = async (req, res) => {
       }));
 
       periodSelector = {
-        title: lang.defaultS.period.title,
-        placeholder: lang.defaultS.period.placeholder,
+        title: langjson.defaultS.period.title,
+        placeholder: langjson.defaultS.period.placeholder,
         selectValues: periodData,
       };
     }
@@ -221,38 +221,38 @@ const getSelectTexts = async (req, res) => {
 
       switch (true) {
         case section == 1:
-          speciesSTitle = lang.vegi.ertwlianiS.title;
-          speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
+          speciesSTitle = langjson.vegi.ertwlianiS.title;
+          speciesSPlaceholder = langjson.vegi.ertwlianiS.placeholder;
           break;
         case section == 2 && indicator != [23, 24]:
-          speciesSTitle = lang.animal.indicatorS.title;
-          speciesSPlaceholder = lang.animal.indicatorS.placeholder;
+          speciesSTitle = langjson.animal.indicatorS.title;
+          speciesSPlaceholder = langjson.animal.indicatorS.placeholder;
           break;
         case indicator == [23, 24]:
-          speciesSTitle = lang.animal.LitterS.title;
-          speciesSPlaceholder = lang.animal.LitterS.placeholder;
+          speciesSTitle = langjson.animal.LitterS.title;
+          speciesSPlaceholder = langjson.animal.LitterS.placeholder;
           break;
         case indicator == [52, 53]:
-          speciesSTitle = lang.salary.avarage.title;
-          speciesSPlaceholder = lang.salary.avarage.placeholder;
+          speciesSTitle = langjson.salary.avarage.title;
+          speciesSPlaceholder = langjson.salary.avarage.placeholder;
           break;
         case section == 3:
-          speciesSTitle = lang.aqua.indicatorS.title;
-          speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
+          speciesSTitle = langjson.aqua.indicatorS.title;
+          speciesSPlaceholder = langjson.aqua.indicatorS.placeholder;
           break;
         case section == 4:
           speciesSTitle = "";
-          speciesSPlaceholder = lang.foodBalance.indicatorS.placeholder;
+          speciesSPlaceholder = langjson.foodBalance.indicatorS.placeholder;
           break;
         case section == 5 && indicator != [52, 53]:
-          speciesSTitle = lang.employment.indicatorS.title;
-          speciesSPlaceholder = lang.employment.indicatorS.placeholder;
+          speciesSTitle = langjson.employment.indicatorS.title;
+          speciesSPlaceholder = langjson.employment.indicatorS.placeholder;
           break;
         case section == 6:
-          speciesSTitle = lang.business.speciesSelector.title;
-          speciesSPlaceholder = lang.business.speciesSelector.placeholder;
-          indicatorTitle = lang.business.indicatorS.title;
-          indicatorPlaceholder = lang.business.indicatorS.placeholder;
+          speciesSTitle = langjson.business.speciesSelector.title;
+          speciesSPlaceholder = langjson.business.speciesSelector.placeholder;
+          indicatorTitle = langjson.business.indicatorS.title;
+          indicatorPlaceholder = langjson.business.indicatorS.placeholder;
           break;
 
         default:
@@ -270,19 +270,19 @@ const getSelectTexts = async (req, res) => {
 
       if (speciesWithChildren.species1.length && section == 1) {
         speciesSelector2 = {
-          title: lang.vegi.mravalwlovaniS.title,
-          placeholder: lang.vegi.mravalwlovaniS.placeholder,
+          title: langjson.vegi.mravalwlovaniS.title,
+          placeholder: langjson.vegi.mravalwlovaniS.placeholder,
           selectValues: speciesWithChildren.species1,
         };
       } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
         speciesSelector2 = {
-          title: lang.animal.lossesS.title,
-          placeholder: lang.animal.lossesS.placeholder,
+          title: langjson.animal.lossesS.title,
+          placeholder: langjson.animal.lossesS.placeholder,
           selectValues: speciesWithChildren.species1,
         };
       } else if (speciesWithChildren.species1.length && indicator == [52, 53]) {
         speciesSelector2 = {
-          title: lang.salary.median.title,
+          title: langjson.salary.median.title,
           placeholder: undefined,
           selectValues: undefined,
         };
@@ -307,8 +307,8 @@ const getSelectTexts = async (req, res) => {
       }, []);
 
       regionSelector = {
-        title: lang.defaultS.region.title,
-        placeholder: lang.defaultS.region.placeholder,
+        title: langjson.defaultS.region.title,
+        placeholder: langjson.defaultS.region.placeholder,
         selectValues: regionNameAndCode,
       };
     }
@@ -409,7 +409,7 @@ const getSelectTexts = async (req, res) => {
 
 const getSelectTextsMap = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { section, indicator, species, period } = req.query;
 
@@ -463,8 +463,8 @@ const getSelectTextsMap = async (req, res) => {
       }));
 
       periodSelector = {
-        title: lang.defaultS.period.title,
-        placeholder: lang.defaultS.period.placeholder,
+        title: langjson.defaultS.period.title,
+        placeholder: langjson.defaultS.period.placeholder,
         selectValues: periodData,
       };
     }
@@ -594,20 +594,20 @@ const getSelectTextsMap = async (req, res) => {
 
       switch (true) {
         case section == 1:
-          speciesSTitle = lang.vegi.ertwlianiS.title;
-          speciesSPlaceholder = lang.vegi.ertwlianiS.placeholder;
+          speciesSTitle = langjson.vegi.ertwlianiS.title;
+          speciesSPlaceholder = langjson.vegi.ertwlianiS.placeholder;
           break;
         case section == 2 && indicator != [23, 24]:
-          speciesSTitle = lang.animal.indicatorS.title;
-          speciesSPlaceholder = lang.animal.indicatorS.placeholder;
+          speciesSTitle = langjson.animal.indicatorS.title;
+          speciesSPlaceholder = langjson.animal.indicatorS.placeholder;
           break;
         case indicator == [23, 24]:
-          speciesSTitle = lang.animal.LitterS.title;
-          speciesSPlaceholder = lang.animal.LitterS.placeholder;
+          speciesSTitle = langjson.animal.LitterS.title;
+          speciesSPlaceholder = langjson.animal.LitterS.placeholder;
           break;
         case section == 3:
-          speciesSTitle = lang.aqua.indicatorS.title;
-          speciesSPlaceholder = lang.aqua.indicatorS.placeholder;
+          speciesSTitle = langjson.aqua.indicatorS.title;
+          speciesSPlaceholder = langjson.aqua.indicatorS.placeholder;
           break;
 
         default:
@@ -625,14 +625,14 @@ const getSelectTextsMap = async (req, res) => {
 
       if (speciesWithChildren.species1.length && section == 1) {
         speciesSelector2 = {
-          title: lang.vegi.mravalwlovaniS.title,
-          placeholder: lang.vegi.mravalwlovaniS.placeholder,
+          title: langjson.vegi.mravalwlovaniS.title,
+          placeholder: langjson.vegi.mravalwlovaniS.placeholder,
           selectValues: speciesWithChildren.species1,
         };
       } else if (speciesWithChildren.species1.length && indicator == [23, 24]) {
         speciesSelector2 = {
-          title: lang.animal.lossesS.title,
-          placeholder: lang.animal.lossesS.placeholder,
+          title: langjson.animal.lossesS.title,
+          placeholder: langjson.animal.lossesS.placeholder,
           selectValues: speciesWithChildren.species1,
         };
       }
@@ -651,7 +651,7 @@ const getSelectTextsMap = async (req, res) => {
 };
 
 const getIndicatorsTexts = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
   const { section } = req.query;
@@ -699,13 +699,13 @@ const getIndicatorsTexts = async (req, res) => {
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
-      // console.log(lang[`${section}`][cardName]?.chartTitle);
-      const choosenCard = lang[`${section}`][cardName];
+      // console.log(langjson[`${section}`][cardName]?.chartTitle);
+      const choosenCard = langjson[`${section}`][cardName];
 
       const code = item.code;
 
       if (section === "5" && cardName == "card2") {
-        item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
+        item.title = langjson.salary.indicatorTitle; // Modify title for card2 in section 5
         // console.log("cardName", cardName);
       }
 
@@ -741,7 +741,7 @@ const getIndicatorsTexts = async (req, res) => {
       if (card4) {
         const card3 = cards.card3;
         if (card3) {
-          card3.title = `${card4.title} ${lang.defaultS.or} ${card3.title}`;
+          card3.title = `${card4.title} ${langjson.defaultS.or} ${card3.title}`;
         }
         delete cards.card4;
       }
@@ -763,11 +763,12 @@ const getIndicatorsTexts = async (req, res) => {
 };
 
 const getChartTitleTexts = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
   const langName = req.langName;
   const langName1 = req.langName1;
-  const { section, indicator, species } = req.query;
+  const { section, indicator, species, lang } = req.query;
   const query = {};
+  console.log(req.langTranslations);
 
   let speciesArray = {};
   let indicatorArray = {};
@@ -834,7 +835,9 @@ const getChartTitleTexts = async (req, res) => {
 
     const response = {};
     console.log(indicator);
+    console.log(lang);
 
+    // this switch case is for every exeption for charttitles, first of all we are spliting it into two groups, first group is where we have more than one species selected(speciesArray.length > 1), in that case charttitle should be recived from json file, charttitles.forMany and unit is not needed, other group is where we have only one specy, in this case we should get title from chartTitles.forOne with names.ka1 from db for georgian and for english just name.en and also we need units from db based on specy that is selected.
     switch (true) {
       case speciesArray.length === undefined:
         response.chartTitle = null;
@@ -842,33 +845,35 @@ const getChartTitleTexts = async (req, res) => {
       case speciesArray.length > 1 &&
         section === "1" &&
         (indicator === "12" || indicator === "14"):
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
-        response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].annual}`;
+        response.chartTitle1 = `${langjson.chartTitles.forMany[indicatorCode].perma}`;
         break;
       case speciesArray.length > 1 && section === "2" && indicator === "14":
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].animal}`;
         break;
       case indicator === "23,24" || indicator === "24,23":
-        response.chartTitle = `${lang.chartTitles.forMany[24]}`;
-        response.chartTitle1 = `${lang.chartTitles.forMany[23]}`;;
+        response.chartTitle = `${langjson.chartTitles.forMany[24]}`;
+        response.chartTitle1 = `${langjson.chartTitles.forMany[23]}`;
         break;
       case speciesArray.length > 1 && section === "3" && indicator === "14":
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
         break;
       case speciesArray.length > 1:
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
         break;
       case speciesArray.length > 1:
-        response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
         break;
       case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
-        response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
+        response.chartTitle = `${speciesName1} ${langjson.chartTitles.forOne[indicatorCode]}`;
         response.unit = `${unitName}`;
         break;
       default:
-        response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
+        response.chartTitle = `${langjson.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
         response.unit = `${unitName}`;
+        console.log("default");
+
         break;
     }
 
@@ -880,7 +885,7 @@ const getChartTitleTexts = async (req, res) => {
 };
 
 // const getChartTitleTexts = async (req, res) => {
-//   const lang = req.langTranslations;
+//   const langjson = req.langTranslations;
 //   const langName = req.langName;
 //   const langName1 = req.langName1;
 //   const { section, indicator, species } = req.query;
@@ -949,27 +954,27 @@ const getChartTitleTexts = async (req, res) => {
 //       case speciesArray.length > 1 &&
 //         section === "1" &&
 //         (indicator === "12" || indicator === "14"):
-//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].annual}`;
-//         response.chartTitle1 = `${lang.chartTitles.forMany[indicatorCode].perma}`;
+//         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].annual}`;
+//         response.chartTitle1 = `${langjson.chartTitles.forMany[indicatorCode].perma}`;
 //         break;
 //       case speciesArray.length > 1 && section === "2" && indicator === "14":
-//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].animal}`;
+//         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].animal}`;
 //         break;
 //       case speciesArray.length > 1 && section === "3" && indicator === "14":
-//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode].aqua}`;
+//         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
 //         break;
 //       case speciesArray.length > 1:
-//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+//         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
 //         break;
 //       case speciesArray.length > 1:
-//         response.chartTitle = `${lang.chartTitles.forMany[indicatorCode]}`;
+//         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
 //         break;
-//       case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
-//         response.chartTitle = `${speciesName1} ${lang.chartTitles.forOne[indicatorCode]}`;
+//       case speciesArray.length <= 1 && (langjson === "ka" || indicator === "32"):
+//         response.chartTitle = `${speciesName1} ${langjson.chartTitles.forOne[indicatorCode]}`;
 //         response.unit = `${unitName}`;
 //         break;
 //       default:
-//         response.chartTitle = `${lang.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
+//         response.chartTitle = `${langjson.chartTitles.forOne[indicatorCode]} ${speciesName1}`;
 //         response.unit = `${unitName}`;
 //         break;
 //     }
@@ -982,7 +987,7 @@ const getChartTitleTexts = async (req, res) => {
 // };
 
 const getTitleTexts = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
   const { section } = req.query;
@@ -1029,8 +1034,8 @@ const getTitleTexts = async (req, res) => {
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
-      // console.log(lang[`${section}`][cardName]?.chartTitle);
-      const choosenCard = lang[`${section}`][cardName];
+      // console.log(langjson[`${section}`][cardName]?.chartTitle);
+      const choosenCard = langjson[`${section}`][cardName];
 
       const chartTitle = choosenCard?.chartTitle;
       const chartTitle2 = choosenCard?.chartTitle2;
@@ -1038,7 +1043,7 @@ const getTitleTexts = async (req, res) => {
       const code = item.code;
 
       if (section === "5" && cardName == "card2") {
-        item.title = lang.salary.indicatorTitle; // Modify title for card2 in section 5
+        item.title = langjson.salary.indicatorTitle; // Modify title for card2 in section 5
         // console.log("cardName", cardName);
       }
 
@@ -1088,7 +1093,7 @@ const getTitleTexts = async (req, res) => {
       if (card4) {
         const card3 = cards.card3;
         if (card3) {
-          card3.title = `${card4.title} ${lang.defaultS.or} ${card3.title}`;
+          card3.title = `${card4.title} ${langjson.defaultS.or} ${card3.title}`;
         }
         delete cards.card4;
       }

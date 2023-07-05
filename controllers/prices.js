@@ -9,7 +9,7 @@ const languageMiddleware = require("../middleware/language");
 
 const getSectionDataPrice = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { year, quarter, species } = req.query;
 
@@ -66,7 +66,7 @@ const getSectionDataPrice = async (req, res) => {
 
 const getSelectTextsPrice = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const query1 = {};
   query1.indicator = 71;
@@ -120,21 +120,21 @@ const getSelectTextsPrice = async (req, res) => {
     }
 
     const periodSelector = {
-      title: lang.defaultS.period.title,
-      placeholder: lang.defaultS.period.placeholder,
+      title: langjson.defaultS.period.title,
+      placeholder: langjson.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
     function getRomanNumeral(number) {
       switch (number) {
         case 1:
-          return `I ${lang.price.quarter}`;
+          return `I ${langjson.price.quarter}`;
         case 2:
-          return `II ${lang.price.quarter}`;
+          return `II ${langjson.price.quarter}`;
         case 3:
-          return `III ${lang.price.quarter}`;
+          return `III ${langjson.price.quarter}`;
         case 4:
-          return `IV ${lang.price.quarter}`;
+          return `IV ${langjson.price.quarter}`;
         default:
           return "No Quarter";
       }
@@ -211,14 +211,14 @@ const getSelectTextsPrice = async (req, res) => {
     );
 
     const speciesSelector = {
-      title: lang.price.title1,
-      placeholder: lang.price.placeholder,
+      title: langjson.price.title1,
+      placeholder: langjson.price.placeholder,
       selectValues: speciesWithChildren1.species,
     };
 
     const speciesSelector2 = {
-      title: lang.price.title2,
-      placeholder: lang.price.placeholder,
+      title: langjson.price.title2,
+      placeholder: langjson.price.placeholder,
       selectValues: speciesWithChildren2.species,
     };
 
@@ -234,7 +234,7 @@ const getSelectTextsPrice = async (req, res) => {
 };
 
 const getTitleTextsPrice = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
 
@@ -263,8 +263,8 @@ const getTitleTextsPrice = async (req, res) => {
 
     const cards = uniqueIndicators.reduce((acc, item, index) => {
       const cardName = `card${index + 1}`;
-      // console.log(lang[`${section}`][cardName]?.chartTitle);
-      // const choosenCard = lang[`${section}`][cardName];
+      // console.log(langjson[`${section}`][cardName]?.chartTitle);
+      // const choosenCard = langjson[`${section}`][cardName];
       const choosenCard = [cardName];
 
       const chartTitle = choosenCard?.chartTitle;
@@ -272,7 +272,7 @@ const getTitleTextsPrice = async (req, res) => {
       acc[cardName] = {
         title: item.title,
         code: parseInt(item.code),
-        chartTitle: lang.price.chartTitle,
+        chartTitle: langjson.price.chartTitle,
       };
       return acc;
     }, {});
@@ -286,7 +286,7 @@ const getTitleTextsPrice = async (req, res) => {
 
 const getSectionDataPrice_2 = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { period, species } = req.query;
 
@@ -333,7 +333,7 @@ const getSectionDataPrice_2 = async (req, res) => {
 };
 
 const getSelectsTextsPrice_2 = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   // need query
 
@@ -357,8 +357,8 @@ const getSelectsTextsPrice_2 = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: lang.defaultS.period.title,
-      placeholder: lang.defaultS.period.placeholder,
+      title: langjson.defaultS.period.title,
+      placeholder: langjson.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -374,8 +374,8 @@ const getSelectsTextsPrice_2 = async (req, res) => {
     });
 
     const speciesSelector = {
-      title: lang.price.title,
-      placeholder: lang.price.placeholder,
+      title: langjson.price.title,
+      placeholder: langjson.price.placeholder,
       selectValues: speciesCodesAndNames,
     };
 

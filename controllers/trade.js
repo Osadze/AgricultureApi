@@ -853,7 +853,7 @@ const hs6ForAgri = [
 
 const getTradeData = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { type, year, hs6, unit } = req.query;
   const query = {};
@@ -936,7 +936,7 @@ const getTradeData = async (req, res) => {
     const modifiedResult = result.map((item) => ({
       ...item.toJSON(),
       unit: {
-        name: lang.trade.unitNames[unit],
+        name: langjson.trade.unitNames[unit],
         code: unit,
       },
     }));
@@ -949,7 +949,7 @@ const getTradeData = async (req, res) => {
 
 const getSelectText = async (req, res) => {
   const langName = req.langName;
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   let { type, year, unit } = req.query;
   const query = {};
@@ -1859,8 +1859,8 @@ const getSelectText = async (req, res) => {
     }));
 
     const periodSelector = {
-      title: lang.defaultS.period.title,
-      placeholder: lang.defaultS.period.placeholder,
+      title: langjson.defaultS.period.title,
+      placeholder: langjson.defaultS.period.placeholder,
       selectValues: periodData,
     };
 
@@ -1884,20 +1884,20 @@ const getSelectText = async (req, res) => {
 
     //can be improved
     const units = [
-      { name: lang.trade.unitNames[1], code: 1 },
-      { name: lang.trade.unitNames[2], code: 2 },
-      { name: lang.trade.unitNames[3], code: 3 },
+      { name: langjson.trade.unitNames[1], code: 1 },
+      { name: langjson.trade.unitNames[2], code: 2 },
+      { name: langjson.trade.unitNames[3], code: 3 },
     ];
 
     const unitSelector = {
-      title: lang.trade.unitS.title,
-      placeholder: lang.trade.unitS.placeholder,
+      title: langjson.trade.unitS.title,
+      placeholder: langjson.trade.unitS.placeholder,
       selectValues: units,
     };
 
     const speciesSelector = {
-      title: lang.trade.speciesS.title,
-      placeholder: lang.trade.speciesS.placeholder,
+      title: langjson.trade.speciesS.title,
+      placeholder: langjson.trade.speciesS.placeholder,
       selectValues: speciesCodesAndNames,
     };
 
@@ -1915,14 +1915,14 @@ const getSelectText = async (req, res) => {
 };
 
 const getTitleText = async (req, res) => {
-  const lang = req.langTranslations;
+  const langjson = req.langTranslations;
 
   const langName = req.langName;
 
   try {
     const cards = {
-      card1: lang.trade.card1,
-      card2: lang.trade.card2,
+      card1: langjson.trade.card1,
+      card2: langjson.trade.card2,
     };
 
     res.json({ cards });

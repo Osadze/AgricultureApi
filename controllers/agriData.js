@@ -26,7 +26,7 @@ const getAllPeriods = async () => {
 const getMainData = async (req, res) => {
   try {
     const langName = req.langName;
-    const lang = req.langTranslations;
+    const langjson = req.langTranslations;
 
     const query = {};
     const defaultRegion = 1;
@@ -95,26 +95,26 @@ const getMainData = async (req, res) => {
         return obj;
       },
       {
-        firstSlide: { title: lang.mainDataSlides.firstSlide, data: [] },
-        secondSlide: { title: lang.mainDataSlides.secondSlide, data: [] },
-        thirdSlide: { title: lang.mainDataSlides.thirdSlide, data: [] },
+        firstSlide: { title: langjson.mainDataSlides.firstSlide, data: [] },
+        secondSlide: { title: langjson.mainDataSlides.secondSlide, data: [] },
+        thirdSlide: { title: langjson.mainDataSlides.thirdSlide, data: [] },
         fourthSlide: {
-          title: lang.mainDataSlides.fourthSlide,
+          title: langjson.mainDataSlides.fourthSlide,
           data: [],
         },
         fifthSlide: {
-          title: lang.mainDataSlides.fifthSlide,
+          title: langjson.mainDataSlides.fifthSlide,
           data: [],
         },
         sixsthSlide: {
           //Todo: needs update after db
-          title: lang.mainDataSlides.sixsthSlide,
-          data: lang.mainDataSlides.sixsthSlideTemp,
+          title: langjson.mainDataSlides.sixsthSlide,
+          data: langjson.mainDataSlides.sixsthSlideTemp,
         },
         seventhSlide: {
           //Todo: needs update after db
-          title: lang.mainDataSlides.seventhSlide,
-          data: lang.mainDataSlides.seventhSlideTemp,
+          title: langjson.mainDataSlides.seventhSlide,
+          data: langjson.mainDataSlides.seventhSlideTemp,
         },
       }
     );
