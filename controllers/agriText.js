@@ -853,6 +853,8 @@ const getChartTitleTexts = async (req, res) => {
       case indicator === "23,24" || indicator === "24,23":
         response.chartTitle = `${langjson.chartTitles.forMany[24]}`;
         response.chartTitle1 = `${langjson.chartTitles.forMany[23]}`;
+        response.unit = `${unitName}`;
+
         break;
       case speciesArray.length > 1 && section === "3" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
