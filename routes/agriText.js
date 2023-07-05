@@ -7,6 +7,7 @@ const {
   getSelectTextsMap,
   getIndicatorsTexts,
   getTitleTexts,
+  getChartTitlesSupply
 } = require("../controllers/agriText");
 
 const {
@@ -18,7 +19,8 @@ const {
 router.route("/selects").get(getSelectTexts);
 router.route("/selects-map").get(getSelectTextsMap);
 router.route("/chart-titles").get(getChartTitleTexts);
-router.route("/titles").get(getTitleTexts);
+router.route("/chart-titles-supply").get(getChartTitlesSupply);
+router.route("/titles").get(getTitleTexts); // old
 router.route("/indicator-titles").get(getIndicatorsTexts);
 router.route("/price/titles").get(getTitleTextsPrice);
 router.route("/price/selects").get(getSelectTextsPrice);
