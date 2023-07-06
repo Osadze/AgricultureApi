@@ -803,7 +803,7 @@ const getChartTitleTexts = async (req, res) => {
       include: [
         {
           model: Indicator,
-          attributes: [langName, "code"],
+          attributes: [langName, langName1, "code"],
         },
         {
           model: Species,
@@ -828,6 +828,7 @@ const getChartTitleTexts = async (req, res) => {
     const speciesName = result.cl_specy[langName];
     const speciesName1 = result.cl_specy[langName1];
     const indicatorName = result.cl_indicator[langName];
+    const indicatorName1 = result.cl_indicator[langName1];
     const indicatorCode = result.cl_indicator.code;
     const unitName = result.cl_unit[langName];
     const species1name = result.cl_species_1[langName];
@@ -846,9 +847,13 @@ const getChartTitleTexts = async (req, res) => {
         (indicator === "12" || indicator === "14"):
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].annual}`;
         response.chartTitle1 = `${langjson.chartTitles.forMany[indicatorCode].perma}`;
+        response.unit = `${unitName}`;
+
         break;
       case speciesArray.length > 1 && section === "2" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].animal}`;
+        response.unit = `${unitName}`;
+
         break;
       case indicator === "23,24" || indicator === "24,23":
         response.chartTitle = `${langjson.chartTitles.forMany[24]}`;
@@ -859,12 +864,36 @@ const getChartTitleTexts = async (req, res) => {
       case speciesArray.length > 1 && section === "3" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
+        response.unit = `${unitName}`;
+        break;
+      //business ->
+      case indicatorArray.length <= 1 && lang === "ka" && section === "6":
+        response.chartTitle = `${indicatorName1} ${speciesName}`;
+        response.unit = `${unitName}`;
+        break;
+      case indicatorArray.length <= 1 && lang === "en" && section === "6":
+        response.chartTitle = `${speciesName} of ${indicatorName1}`;
+        response.unit = `${unitName}`;
+        break;
+      case indicatorArray.length > 1 && lang === "ka" && section === "6":
+        response.chartTitle = `${langjson[6].card1.chartTitle} ${speciesName}`;
+        response.unit = `${unitName}`;
+        break;
+      case indicatorArray.length > 1 && lang === "en" && section === "6":
+        response.chartTitle = `${speciesName} of ${langjson[6].card1.chartTitle}`;
+        response.unit = `${unitName}`;
+        break;
+
+      // <-
+      case speciesArray.length > 1:
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
+        response.unit = `${unitName}`;
+
         break;
       case speciesArray.length > 1:
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
-        break;
-      case speciesArray.length > 1:
-        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
+        response.unit = `${unitName}`;
+
         break;
       case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
         response.chartTitle = `${speciesName1} ${langjson.chartTitles.forOne[indicatorCode]}`;
@@ -974,12 +1003,122 @@ const getChartTitlesSupply = async (req, res) => {
         };
       });
 
-      let maintitle
+      let maintitle;
       if (lang === "ka") {
-        maintitle =`${speciesName1} ${langjson.defaultS.balance}`
+        maintitle = `${speciesName1} ${langjson.defaultS.balance}`;
       } else {
-        maintitle =`${langjson.defaultS.balance} for ${speciesName1}`
-        
+        maintitle = `${langjson.defaultS.balance} for ${speciesName1}`;
+      }
+
+      const response = {
+        maintitle: maintitle,
+        unit: unitName, // Modify the format of the main title as per your requirements
+        data: processedResult,
+      };
+
+      res.json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+};
+
+const getChartTitlesBusiness = async (req, res) => {
+  const langjson = req.langTranslations;
+  const langName = req.langName;
+  const langName1 = req.langName1;
+  const { species, lang } = req.query;
+  const query = {};
+
+  query.indicator = 41;
+  query.period = 2021;
+  // query.indicator = 41;
+
+  if (!species) {
+    // res.status(400).send("Missing species parameter");
+  } else {
+    query.species = species;
+
+    try {
+      const result = await Agriculture.findAll({
+        where: {
+          ...query,
+          species_1: {
+            [Op.gt]: 1,
+          },
+        },
+
+        attributes: ["species_1", "species", "unit", "indicator", "period"],
+        include: [
+          {
+            model: Species,
+            attributes: [langName, langName1],
+          },
+          {
+            model: Species_1,
+            attributes: [langName],
+            as: "cl_species_1",
+          },
+          {
+            model: Unit,
+            attributes: [langName],
+          },
+        ],
+      });
+
+      // Process the results to get distinct Species_1 values
+
+      if (!result) {
+        return res.status(404).json({ message: "Chart title not found" });
+      }
+
+      let species_1;
+      let speciesName;
+      let speciesName1;
+      let unitName;
+      let species1name;
+
+      const processedResult = result.map((item) => {
+        let chartTitle;
+
+        species_1 = item.species_1;
+        speciesName = item.cl_specy[langName];
+        speciesName1 = item.cl_specy[langName1];
+        unitName = item.cl_unit[langName];
+        species1name = item.cl_species_1[langName];
+
+        switch (true) {
+          case lang === "ka" && species_1 >= 4104 && species_1 <= 4106:
+            chartTitle = `${speciesName} ${species1name}`;
+            break;
+          case lang === "ka":
+            chartTitle = `${speciesName1} ${species1name}`;
+            break;
+          case lang === "en" && species_1 >= 4104 && species_1 <= 4106:
+            chartTitle = `${speciesName} for ${species1name}`;
+            break;
+          case lang === "en":
+            chartTitle = `${species1name} of ${speciesName}`;
+            break;
+          default:
+            chartTitle = `${speciesName1} ${species1name}`;
+            console.log("default");
+            break;
+        }
+
+        return {
+          chartTitle: chartTitle,
+          unit: unitName,
+          // Include any other necessary attributes from the result
+        };
+      });
+
+      let maintitle;
+      if (lang === "ka") {
+        maintitle = `${speciesName1} ${langjson.defaultS.balance}`;
+      } else {
+        maintitle = `${langjson.defaultS.balance} for ${speciesName1}`;
       }
 
       const response = {

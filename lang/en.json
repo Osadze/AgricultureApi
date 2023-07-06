@@ -72,33 +72,33 @@
 
   "1": {
     "card1": {
-      "chartTitle": "Production of annual crops - thousand tons",
-      "chartTitle2": "Production of Permanent crops - thousand tons"
+      "chartTitle": "Production of annual crops",
+      "chartTitle2": "Production of Permanent crops"
     },
     "card2": {
-      "chartTitle": "Cultivated area - thousand hectares"
+      "chartTitle": "Cultivated area"
     },
     "card3": {
-      "chartTitle": "Average yield - tons/hectare"
+      "chartTitle": "Average yield"
     },
     "card4": {
-      "chartTitle": "Price of annual crops at the farm gate - GEL/kg",
-      "chartTitle2": "Price of Permanent crops at the farm gate - GEL/kg"
+      "chartTitle": "Price of annual crops at the farm gate",
+      "chartTitle2": "Price of Permanent crops at the farm gate"
     }
   },
   "2": {
     "card1": {
-      "chartTitle": "Number of livestock, poultry and bee families - thousand souls"
+      "chartTitle": "Number of livestock, poultry and bee families"
     },
     "card2": {
-      "chartTitle": "Production of livestock products - thousand tons"
+      "chartTitle": "Production of livestock products"
     },
     "card3": {
       "chartTitle": "Increment - Thousand Souls",
       "chartTitle2": "The Fall - A Thousand Souls"
     },
     "card4": {
-      "chartTitle": "Price at the farm gate - GEL/piece"
+      "chartTitle": "Price at the farm gate"
     }
   },
   "3": {
@@ -129,15 +129,15 @@
   },
   "5": {
     "card1": {
-      "chartTitle": "Number of employees in agricultural sector - Thousand persons"
+      "chartTitle": "Number of employees in agricultural sector"
     },
     "card2": {
-      "chartTitle": "Average salary in agricultural sector - Lari"
+      "chartTitle": "Average salary in agricultural sector"
     }
   },
   "6": {
     "card1": {
-      "chartTitle": "Business Statistics in Georgia"
+      "chartTitle": "agricultural sector"
     }
   },
   "mainDataSlides": {

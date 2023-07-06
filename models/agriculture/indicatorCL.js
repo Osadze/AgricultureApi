@@ -21,6 +21,10 @@ const Indicator = sequelize.define("cl_indicator", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  name_ka1: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   sort_Id: {
     type: DataTypes.INTEGER,
     allowNull: true,
