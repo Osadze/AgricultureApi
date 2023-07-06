@@ -834,8 +834,6 @@ const getChartTitleTexts = async (req, res) => {
     const species1name = result.cl_species_1[langName];
 
     const response = {};
-    console.log(indicator);
-    console.log(lang);
 
     // this switch case is for every exeption for charttitles, first of all we are spliting it into two groups, first group is where we have more than one species selected(speciesArray.length > 1), in that case charttitle should be recived from json file, charttitles.forMany and unit is not needed, other group is where we have only one specy, in this case we should get title from chartTitles.forOne with names.ka1 from db for georgian and for english just name.en and also we need units from db based on specy that is selected.
     switch (true) {
@@ -946,7 +944,7 @@ const getChartTitlesSupply = async (req, res) => {
           },
           {
             model: Species_1,
-            attributes: [langName],
+            attributes: [langName, "sort_id"],
             as: "cl_species_1",
           },
           {
@@ -954,6 +952,7 @@ const getChartTitlesSupply = async (req, res) => {
             attributes: [langName],
           },
         ],
+        order: [[{ model: Species_1, as: "cl_species_1" }, "sort_id", "ASC"]],
       });
 
       // Process the results to get distinct Species_1 values
