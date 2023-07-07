@@ -680,7 +680,7 @@ const getIndicatorsTexts = async (req, res) => {
         },
       ],
     });
-
+  
     const indicatorSet = new Set();
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;

@@ -4,7 +4,8 @@
     "region": { "title": "region", "placeholder": "Select a Region" },
     "and": "and",
     "or": "or",
-    "balance": "Food balance sheets"
+    "balance": "Food balance sheets",
+    "year":"Year"
   },
 
   "vegi": {

@@ -4,6 +4,8 @@ const Species = require("../models/agriculture/speciesCL");
 const Species_1 = require("../models/agriculture/species_1CL");
 const Unit = require("../models/agriculture/unitCL");
 const Indicator = require("../models/agriculture/indicatorCL");
+const Pages = require("../models/agriculture/PagesCL");
+const SlidersData = require("../models/agriculture/sliders_data_model");
 const { Sequelize, Op } = require("sequelize");
 const sequelize = require("../util/agriDb");
 const languageMiddleware = require("../middleware/language");
@@ -120,6 +122,52 @@ const getMainData = async (req, res) => {
     );
 
     res.json(filteredResult);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+};
+const getMainDataNew = async (req, res) => {
+  try {
+    const langName = req.langName;
+    const langjson = req.langTranslations;
+
+    const query = {};
+
+    const result = await SlidersData.findAll({
+      where: query,
+      attributes: ["id", "pages", langName, "unit", "value"],
+      include: [
+        { model: Pages, attributes: [langName, "period"], as: "cl_pages" },
+        { model: Unit, attributes: [langName] },
+      ],
+      order: [["id", "ASC"]],
+    });
+
+    // Group items based on their page IDs
+    const groupedData = result.reduce((acc, item) => {
+      const pageId = item.pages;
+      const name = item[langName];
+      const title = `${item.cl_pages[langName]}, ${item.cl_pages.period} ${langjson.defaultS.year}`;
+      const value = parseFloat(item.value);
+      const unit = item.cl_unit[langName];
+
+      // Check if the page ID already exists in the accumulator
+      if (!acc[pageId]) {
+        // If not, create a new object for the page ID
+        acc[pageId] = {
+          title: title,
+          data: [],
+        };
+      }
+
+      // Push the new item into the data array corresponding to the page ID
+      acc[pageId].data.push({ name: name, value: value, unit: unit });
+
+      return acc;
+    }, {});
+
+    res.json(groupedData);
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
@@ -579,6 +627,7 @@ const getSelfSufficiencyRatio = async (req, res) => {
 
 module.exports = {
   getMainData,
+  getMainDataNew,
   getSectionData,
   getSectionDataV1_1,
   getFoodBalance,

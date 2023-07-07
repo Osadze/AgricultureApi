@@ -6,6 +6,7 @@ const {
   getMainData,
   getFoodBalance,
   getSelfSufficiencyRatio,
+  getMainDataNew
 } = require("../controllers/agriData");
 
 const {
@@ -15,6 +16,7 @@ const {
 
 router.route("/sections").get(getSectionData);
 router.route("/main").get(getMainData);
+router.route("/main-new").get(getMainDataNew);
 router.route("/balance").get(getFoodBalance);
 router.route("/self-sufficiency-ratio").get(getSelfSufficiencyRatio);
 router.route("/price").get(getSectionDataPrice);
