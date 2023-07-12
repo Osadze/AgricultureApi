@@ -851,37 +851,51 @@ const getChartTitleTexts = async (req, res) => {
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].animal}`;
         response.unit = `${unitName}`;
         break;
-      case (indicator === "23" || indicator === "24") && lang !== "en":
+      case speciesArray.length === 1 &&
+        (indicator === "23" || indicator === "24") &&
+        lang !== "en":
         response.chartTitle = `${speciesName1} ${langjson.chartTitles.forMany[indicator]}`;
         response.unit = `${unitName}`;
         break;
-      case (indicator === "23" || indicator === "24") && lang === "en":
-        response.chartTitle = `${langjson.chartTitles.forMany[indicator]} of ${speciesName1} `;
+      case speciesArray.length === 1 &&
+        (indicator === "23" || indicator === "24") &&
+        lang === "en":
+        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]} of ${speciesName1} `;
         response.unit = `${unitName}`;
         break;
       case speciesArray.length > 1 && section === "3" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
-        response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
+        response.unit = `${unitName}`;
+        break;
+      case speciesArray.length === 1 &&
+        section === "3" &&
+        indicator === "33" &&
+        lang !== "en":
+        response.chartTitle = `${langjson.chartTitles.forOne[indicatorCode]} ${speciesName1} ${langjson.chartTitles.forOne[331]}`;
         response.unit = `${unitName}`;
         break;
       //business ->
-      case indicatorArray.length <= 1 && lang !== "en" && section === "6":
-        response.chartTitle = `${indicatorName1} ${speciesName}`;
+      case lang !== "en" &&
+        section === "6" &&
+        ["6101", "6102", "6103", "6104", "6112"].includes(species):
+        response.chartTitle = `${langjson.chartTitles.forOne[61]} ${speciesName}`;
         response.unit = `${unitName}`;
         break;
-      case indicatorArray.length <= 1 && lang === "en" && section === "6":
-        response.chartTitle = `${speciesName} of ${indicatorName1}`;
+      case lang !== "en" && section === "6":
+        response.chartTitle = `${langjson.chartTitles.forOne[611]} ${speciesName}`;
         response.unit = `${unitName}`;
         break;
-      case indicatorArray.length > 1 && lang !== "en" && section === "6":
-        response.chartTitle = `${langjson[6].card1.chartTitle} ${speciesName}`;
+      case lang === "en" &&
+        section === "6" &&
+        ["6101", "6102", "6103", "6104", "6112"].includes(species):
+        response.chartTitle = `${speciesName} of ${langjson.chartTitles.forOne[61]}`;
         response.unit = `${unitName}`;
         break;
-      case indicatorArray.length > 1 && lang === "en" && section === "6":
-        response.chartTitle = `${speciesName} of ${langjson[6].card1.chartTitle}`;
-        response.unit = `${unitName}`;
-        break;
+      case lang === "en" && section === "6":
+        response.chartTitle = `${speciesName} in ${langjson.chartTitles.forOne[61]}`;
 
+        response.unit = `${unitName}`;
+        break;
       // <-
       case speciesArray.length > 1:
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode]}`;
