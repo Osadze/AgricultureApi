@@ -248,26 +248,9 @@ const getSectionData = async (req, res) => {
     });
 
     const result = [];
-    const result2 = [];
 
-    // if (indicator == 23 || indicator == 24) {
-    //   data.forEach((item) => {
-    //     switch (item.indicator) {
-    //       case 23:
-    //         result.push(item);
-    //         break;
-    //       case 24:
-    //         result2.push(item);
-    //         break;
-    //       default:
-    //         break;
-    //     }
-    //   });
-    //   res.json({ result, result2 });
-    // }else {
-    // console.log(data);
     res.json({ result: data });
-    // }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

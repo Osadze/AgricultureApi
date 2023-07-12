@@ -835,6 +835,8 @@ const getChartTitleTexts = async (req, res) => {
 
     const response = {};
 
+    console.log(speciesArray, "saskajksjm");
+
     // this switch case is for every exeption for charttitles, first of all we are spliting it into two groups, first group is where we have more than one species selected(speciesArray.length > 1), in that case charttitle should be recived from json file, charttitles.forMany and unit is not needed, other group is where we have only one specy, in this case we should get title from chartTitles.forOne with names.ka1 from db for georgian and for english just name.en and also we need units from db based on specy that is selected.
     switch (true) {
       case speciesArray.length === undefined:
@@ -877,7 +879,9 @@ const getChartTitleTexts = async (req, res) => {
       //business ->
       case lang !== "en" &&
         section === "6" &&
-        ["6101", "6102", "6103", "6104", "6112"].includes(species):
+        speciesArray.some((speciesCode) =>
+          ["6101", "6102", "6103", "6104", "6112"].includes(speciesCode)
+        ):
         response.chartTitle = `${langjson.chartTitles.forOne[61]} ${speciesName}`;
         response.unit = `${unitName}`;
         break;
@@ -887,7 +891,9 @@ const getChartTitleTexts = async (req, res) => {
         break;
       case lang === "en" &&
         section === "6" &&
-        ["6101", "6102", "6103", "6104", "6112"].includes(species):
+        speciesArray.some((speciesCode) =>
+          ["6101", "6102", "6103", "6104", "6112"].includes(speciesCode)
+        ):
         response.chartTitle = `${speciesName} of ${langjson.chartTitles.forOne[61]}`;
         response.unit = `${unitName}`;
         break;
