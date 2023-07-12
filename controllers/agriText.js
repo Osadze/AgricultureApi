@@ -680,7 +680,7 @@ const getIndicatorsTexts = async (req, res) => {
         },
       ],
     });
-  
+
     const indicatorSet = new Set();
     const uniqueIndicators = result.reduce((acc, item) => {
       const code = item.cl_indicator.code;
@@ -846,18 +846,18 @@ const getChartTitleTexts = async (req, res) => {
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].annual}`;
         response.chartTitle1 = `${langjson.chartTitles.forMany[indicatorCode].perma}`;
         response.unit = `${unitName}`;
-
         break;
       case speciesArray.length > 1 && section === "2" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].animal}`;
         response.unit = `${unitName}`;
-
         break;
-      case indicator === "23,24" || indicator === "24,23":
-        response.chartTitle = `${langjson.chartTitles.forMany[24]}`;
-        response.chartTitle1 = `${langjson.chartTitles.forMany[23]}`;
+      case (indicator === "23" || indicator === "24") && lang !== "en":
+        response.chartTitle = `${speciesName1} ${langjson.chartTitles.forMany[indicator]}`;
         response.unit = `${unitName}`;
-
+        break;
+      case (indicator === "23" || indicator === "24") && lang === "en":
+        response.chartTitle = `${langjson.chartTitles.forMany[indicator]} of ${speciesName1} `;
+        response.unit = `${unitName}`;
         break;
       case speciesArray.length > 1 && section === "3" && indicator === "14":
         response.chartTitle = `${langjson.chartTitles.forMany[indicatorCode].aqua}`;
@@ -865,7 +865,7 @@ const getChartTitleTexts = async (req, res) => {
         response.unit = `${unitName}`;
         break;
       //business ->
-      case indicatorArray.length <= 1 && lang === "ka" && section === "6":
+      case indicatorArray.length <= 1 && lang !== "en" && section === "6":
         response.chartTitle = `${indicatorName1} ${speciesName}`;
         response.unit = `${unitName}`;
         break;
@@ -873,7 +873,7 @@ const getChartTitleTexts = async (req, res) => {
         response.chartTitle = `${speciesName} of ${indicatorName1}`;
         response.unit = `${unitName}`;
         break;
-      case indicatorArray.length > 1 && lang === "ka" && section === "6":
+      case indicatorArray.length > 1 && lang !== "en" && section === "6":
         response.chartTitle = `${langjson[6].card1.chartTitle} ${speciesName}`;
         response.unit = `${unitName}`;
         break;
@@ -893,7 +893,7 @@ const getChartTitleTexts = async (req, res) => {
         response.unit = `${unitName}`;
 
         break;
-      case speciesArray.length <= 1 && (lang === "ka" || indicator === "32"):
+      case speciesArray.length <= 1 && (lang !== "en" || indicator === "32"):
         response.chartTitle = `${speciesName1} ${langjson.chartTitles.forOne[indicatorCode]}`;
         response.unit = `${unitName}`;
         break;
@@ -1022,7 +1022,6 @@ const getChartTitlesSupply = async (req, res) => {
     }
   }
 };
-
 
 // const getChartTitleTexts = async (req, res) => {
 //   const langjson = req.langTranslations;
