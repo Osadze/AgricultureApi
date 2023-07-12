@@ -47,7 +47,7 @@
   "salary": {
     "indicatorTitle": "ხელფასები",
     "avarage": {
-      "title": "მაჩვენებლები",
+      "title": "საშუალო ხელფასი",
       "placeholder": "აირჩიეთ"
     },
     "median": {
